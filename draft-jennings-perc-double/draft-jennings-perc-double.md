@@ -167,17 +167,20 @@ The OHB extension is either one octet in length, two octets in length, or
 three octets in length.  The length of the OHB indicates what data is
 contained in the extension.
 
-If the OHB is one octet in length, it contains both the original X bit
-and PT field value.  In this case, the OHB has this form:
+If the OHB is one octet in length, it contains the original
+PT field value.  In this case, the OHB has this form:
 
 {align="left"}
 ~~~~~
  0
  0 1 2 3 4 5 6 7
 +---------------+
-|X|     PT      |
+|R|     PT      |
 +---------------+
 ~~~~~
+
+Note that "R" indicates a reserved bit that MUST be set to zero when
+sending a packet and ignored upon receipt.
 
 If the OHB is two octets in length, it contains the original RTP packet
 sequence number.  In this case, the OHB has this form:
@@ -191,8 +194,8 @@ sequence number.  In this case, the OHB has this form:
 +-------------------------------+
 ~~~~~
 
-If the OHB is three octets in length, it contains the original X bit,
-PT field value, and RTP packet sequence number.  In this case, the OHB has
+If the OHB is three octets in length, it contains the original
+PT field value and RTP packet sequence number.  In this case, the OHB has
 this form:
 
 {align="left"}
@@ -200,12 +203,13 @@ this form:
  0                   1                   2
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
 +---------------+-------------------------------+
-|X|     PT      |        Sequence Number        |
+|R|     PT      |        Sequence Number        |
 +---------------+-------------------------------+
 ~~~~~
 
 If an MDD modifies an original RTP header value, the MDD MUST include the
-OHB extension to reflect the changed value.  If another MDD along the
+OHB extension to reflect the changed value, setting the X bit in the RTP header
+to 1 if no header extensions were originally present.  If another MDD along the
 media path makes additional changes to the RTP header and any original
 value is not already present in the OHB, the MDD must extend the OHB by
 adding the changed value to the OHB.  To properly preserve original
@@ -230,15 +234,11 @@ The processes is as follows:
   
 * If the endpoint wishes to insert header extensions that can be modified
   by an MDD, it MUST insert an OHB header extension at the end of
-  any header extensions protected end-to-end, then add any MDD-modifiable
+  any header extensions protected end-to-end (if any), then add any MDD-modifiable
   header extensions.  The OHB MUST replicate the information found in
   the RTP header following the application of the inner cryptographic
-  transform.  For example, if the packet had no header extensions when the inner
-  cryptographic transform was applied, the X bit would be 0.  If the
-  endpoint introduces an OHB and then adds MDD-modifiable header
-  extensions, the X bit in the OHB would be 0.  After introducing the
-  OHB and MDD-modifiable header extensions, of course, the X bit in the
-  RTP header would be set to 1.
+  transform.  If not already set, the endpoint MUST set the X bit in the
+  RTP header to 1 when introducing the OHB extension.  
 
 * Apply the outer cryptographic transform to the RTP packet.  If encrypting
   RTP header extensions hop-by-hop, then [@!RFC6904] MUST be used
@@ -264,12 +264,16 @@ hop.
 * Change any required parameters
 
 * If a changed RTP header field is not already in the OHB, add it with its
-  original value to the OHB.  An MDD MAY add information to the OHB, but
+  original value to the OHB.  An MDD can add information to the OHB, but
   MUST NOT change existing information in the OHB.
 
 * If the MDD resets a parameter to its original value, it MAY drop it from the
   OHB as long as there are no other header extensions following the OHB.
-  Note that this might result in a decrease in the size of the OHB.
+  Note that this might result in a decrease in the size of the OHB.  It is
+  also possible for the MDD to remove the OHB entirely if all parameters
+  in the RTP header are reset to their original values and no other header
+  extensions follow the OHB.  If the OHB is removed and no other extension
+  is present, the X bit in the RTP header MUST be set to 0.
 
 * The MDD MUST NOT delete any header extensions before the OHB, but MAY
   add, delete, or modify any that follow the OHB.
@@ -308,10 +312,11 @@ decrypts and verifies with the inner cryptographic context.
     OHB (if present).
 
   * Insert all header extensions up to the OHB extension, but exclude the OHB
-    and any header extensions that follow the OHB.  If the original X bit is 1, then the remaining
+    and any header extensions that follow the OHB.  If there are no extensions
+    remaining, then the X bit MUST bet set to 0.  If there are extensions
+    remaining, then the remaining
     extensions MUST be padded to the first 32-bit boundary and the overall
-    length of the header extensions adjusted accordingly.  If the original
-    X bit is 0, then the header extensions would be removed entirely.
+    length of the header extensions adjusted accordingly.
 
   * Payload is the original encrypted payload.
 
