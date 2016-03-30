@@ -1,3 +1,8 @@
+# Info
+
+We want to make it easy for people to find github repo for IETF drafts and be able to contribute. At the same time we want to make sure the management of this is scalable. This has lead to a proposal of one repo for the WG with a team for all the people that can merge PRs into this repo. (anyone can contribute by forking the repo and sending a PR). The WG chairs are the team maintainers and can add and remove people the  team that can merge in PR. Having a repo per draft was considered. 
+
+
 # Making a new WG repo
 
 1. Create the repo using the name of the WG
