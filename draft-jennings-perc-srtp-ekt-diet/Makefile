@@ -2,21 +2,23 @@
 
 SRC  := $(wildcard draft-*.xml)
 
-HTML := $(patsubst %.xml,%.html,$(SRC))
-TXT  := $(patsubst %.xml,%.txt,$(SRC))
-DIF  := $(patsubst %.xml,%.diff.html,$(SRC))
-PDF  := $(patsubst %.xml,%.pdf,$(SRC))
+VERSION = 01
+
+HTML := $(patsubst %.xml,%-$(VERSION).html,$(SRC))
+TXT  := $(patsubst %.xml,%-$(VERSION).txt,$(SRC))
+DIF  := $(patsubst %.xml,%-$(VERSION).diff.html,$(SRC))
+PDF  := $(patsubst %.xml,%-$(VERSION).pdf,$(SRC))
 
 all: $(HTML) $(TXT) $(DIF)
 
 clean:
 	rm -f *~ draft*.html draft*pdf draft*txt
 
-%.html: %.xml
-	xml2rfc $^ --html
+%-$(VERSION).html: %.xml
+	xml2rfc $^ --html -o $@
 
-%.txt: %.xml
-	xml2rfc $^ --text 
+%-$(VERSION).txt: %.xml
+	xml2rfc $^ --text -o $@
 
 %.diff.html: %.txt
 	htmlwdiff  $^.old $^ >  $@
