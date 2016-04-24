@@ -299,7 +299,7 @@ fix the flow diagram to show ACK message and switch direction to server-initiate
 
 
  <t> TODO: move following syntax to ABNF. Move name of Short to Empty.
- Move name of Full to KEK. Drop extra EKT. </t>
+ Move name of Full to EncryptedKey. Drop extra EKT. </t>
         
         <figure anchor="tag_formats"
                 title="EKT data formats">
@@ -371,7 +371,7 @@ Short_EKT_Field = '00000000'
             appropriate EKT Key and other parameters for the receiver to use
             when processing the packet. Each time a different EKT Key
            is received, it will have a larger SPI than the previos key. The length of this field is
-            15 bits.  The parameters identified by this field are:
+            16 bits.  The parameters identified by this field are:
 
            <list
               style="symbols">
@@ -938,10 +938,12 @@ CertificateVerify*
 Finished                     -------->
                                         [ChangeCipherSpec]
                              <--------            Finished
-ekt_key                      --------> 
+ekt_key                      <-------- 
+ACK                          --------> 
 SRTP packets                 <------->      SRTP packets
 SRTP packets                 <------->      SRTP packets
-ekt_key (rekey)              --------> 
+ekt_key (rekey)              <-------
+ACK                          --------> 
 SRTP packets                 <------->      SRTP packets
 SRTP packets                 <------->      SRTP packets
 ]]></artwork>
