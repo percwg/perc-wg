@@ -130,12 +130,6 @@ The keys and salt for these contexts are generated with the following steps:
 * Assign the key and salt values generated for the inner (end-to-end) transform.
 
 * Assign the key and salt values for the outer (hop-by-hop) transform.
-
-As a special case, the outer cryptographic transform MAY be the NULL cipher
-(see [@!RFC3711]) if a secure transport such as [@RFC6347] is used over a
-hop (i.e., between an endpoint and MDD or between two MDDs).  In that case, the
-key and salt values generated would be the length required only for the inner
-cryptographic transform.
   
 Obviously, if the MDD is to be able to modify header fields but not decrypt the
 payload, then it must have cryptographic context for the outer transform, but
@@ -357,15 +351,6 @@ and is thus viewed as an acceptable trade-off in processing efficiency.
 Note that names for the cryptographic transforms are of the form
 DOUBLE_(inner transform)_(outer transform).
 
-This specification also allows for the NULL cipher to be used as the outer
-cryptographic transform in cases where a secure transport is used over the
-hop, with those transforms identified as
-DOUBLE_AEAD_AES_128_GCM_NULL_NULL and
-DOUBLE_AEAD_AES_256_GCM_NULL_NULL.
-
-Open Issue: It is not clear if the NULL ciphers are needed or not.  The authors
-plan to remove them from the next version of the draft unless there is a
-reasonable support and reasons to keep them in.
 
 While this document only defines a profile based on AES-GCM, it is possible
 for future documents to define further profiles with different inner and
@@ -397,17 +382,6 @@ which to use; there is risk in using either that depends on the session setup.
 The security properties for both the inner and outer key holders are the same as
 the security properties of classic SRTP.
 
-The NULL cipher MUST be used in conjunction with an encrypted transport
-for both RTP and RTCP.  Use of the NULL cipher for the outer cryptographic
-context without the use of an encrypted transport exposes the RTCP traffic
-to undetectable modification as it is transmitted over the network.
-Likewise, RTP traffic under the same conditions would be subject to
-modification that would not be detectable by the MDD.  While the endpoint
-could detect modification of the end-to-end information, reliance on
-information like payload type value in the packet received from the MDD
-could present problems such as attempting to decode media with the wrong
-codec.
-
 # IANA Considerations
 
 ## RTP Header Extension
@@ -432,12 +406,10 @@ Note to RFC Editor: Replace RFCXXXX with the RFC number of this specification.
 We request IANA to add the following values to defines a DTLS-SRTP "SRTP
 Protection Profile" defined in [@!RFC5764].
 
-| Value        | Profile                                  | Reference |
-|:-------------|:-----------------------------------------|:----------|
-|  {TBD, TBD}  | DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM | RFCXXXX   |
-|  {TBD, TBD}  | DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM | RFCXXXX   |
-|  {TBD, TBD}  | DOUBLE_AEAD_AES_128_GCM_NULL_NULL        | RFCXXXX   |
-|  {TBD, TBD}  | DOUBLE_AEAD_AES_256_GCM_NULL_NULL        | RFCXXXX   |
+| Value  | Profile                                  | Reference |
+|:-------|:-----------------------------------------|:----------|
+|  {TBD}  | DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM | RFCXXXX   |
+|  {TBD}  | DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM | RFCXXXX   |
 
 Note to IANA: Please assign value RFCXXXX and update table to point at
 this RFC for these values.
@@ -467,39 +439,16 @@ DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM
     auth_tag_length:        N/A
     maximum lifetime:       at most 2^31 SRTCP packets and
                             at most 2^48 SRTP packets
-
-DOUBLE_AEAD_AES_128_GCM_NULL_NULL
-    cipher:                 AES_128_GCM then identity transform
-    cipher_key_length:      128 bits
-    cipher_salt_length:     96 bits
-    aead_auth_tag_length:   16 octets
-    auth_function:          NULL
-    auth_key_length:        N/A
-    auth_tag_length:        N/A
-    maximum lifetime:       at most 2^31 SRTCP packets and
-                            at most 2^48 SRTP packets
-
-DOUBLE_AEAD_AES_256_GCM_NULL_NULL
-    cipher:                 AES_256_GCM then identity transform
-    cipher_key_length:      256 bits
-    cipher_salt_length:     96 bits
-    aead_auth_tag_length:   16 octets
-    auth_function:          NULL
-    auth_key_length:        N/A
-    auth_tag_length:        N/A
-    maximum lifetime:       at most 2^31 SRTCP packets and
-                            at most 2^48 SRTP packets
 ~~~~
 
-Except when the NULL cipher is used for the outer (HBH) transform, the first
+The first
 half of the key and salt is used for the inner (E2E) transform and the
-second half is used for the outer (HBH) transform.  For those that use the NULL
-cipher for the outer transform, the the key and salt is applied only
-to the inner transform.
+second half is used for the outer (HBH) transform. 
 
 
 # Acknowledgments
 
-Many thanks to review from GET YOUR NAME HERE. Please, send comments.
+Many thanks to review from Suhas Nandakumar, David Benham, Magnus
+Westerlund and significant text from Richard Barnes.
 
 {backmatter}
