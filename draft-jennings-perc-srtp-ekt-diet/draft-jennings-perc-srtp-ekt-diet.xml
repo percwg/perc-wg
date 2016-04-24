@@ -280,7 +280,7 @@ fix the flow diagram to show ACK message and switch direction to server-initiate
 :                        EKT Ciphertext                         :
 :                                                               :
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Security Parameter Index  |1|
+|   Security Parameter Index  |   Length                        | 2 
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ]]></artwork>
 
@@ -298,17 +298,21 @@ fix the flow diagram to show ACK message and switch direction to server-initiate
         </figure>
 
 
-  
+ <t> TODO: move following syntax to ABNF. Move name of Short to Empty.
+ Move name of Full to KEK. Drop extra EKT. </t>
         
         <figure anchor="tag_formats"
                 title="EKT data formats">
 <artwork align="left"><![CDATA[
 
+EKT_Msg_Type_Full = 2 ;  8 bits
+EKT_Msg_Length ; 16 bits. length in octets including type and length 
+
 EKT_Plaintext = SRTP_Master_Key || SSRC || ROC || TTL
 
 EKT_Ciphertext = EKT_Encrypt(EKT_Key, EKT_Plaintext)
 
-Full_EKT_Field = EKT_Ciphertext || SPI ||  '1'
+Full_EKT_Field = EKT_Ciphertext || SPI ||  EKT_Msg_Length || EKT_Msg_Type_Full
 
 Short_EKT_Field = '00000000' 
 
@@ -385,10 +389,24 @@ Short_EKT_Field = '00000000'
             each SRTP session, each distinct EKT parameter set that may be used
             MUST be associated with a distinct SPI value, to avoid ambiguity. 
            </t>
-            
-            <t hangText="Final bit:"> The last bit is used to indicate the
-            type of the Field. This MUST be 1 in the Full EKT Field
-            format and 0 in Short EKT Field.</t>
+
+	   <t hangText="EKT_Msg_Length"> All EKT message other that
+	   Short EKT Field must have a length as the second from last
+	   elements.  This is the length in octets of the full EKT
+	   message including this length field and the following
+	   message type. </t>
+	   
+            <t hangText="Message Type"> The last byte is used to
+            indicate the type of the Field. This MUST be 2 in the Full
+            EKT Field format and 0 in Short EKT Field. Future
+            specifications that define new types SHOULD use even
+            values until all the even code points are consumed to
+            avoid conflicts with pre standards version of EKT that
+            have been deployed.  Values less than 64 are mandatory to
+	    understand the whole EKT field SHOULD be discarded if it
+	    contains value message type that is less than 64 and not
+	    implemented.   TODO - add IANA registry for
+            this. </t>
                   
 
           </list>
