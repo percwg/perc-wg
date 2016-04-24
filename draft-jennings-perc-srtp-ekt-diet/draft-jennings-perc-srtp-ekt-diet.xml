@@ -304,7 +304,7 @@ fix the flow diagram to show ACK message and switch direction to server-initiate
                 title="EKT data formats">
 <artwork align="left"><![CDATA[
 
-EKT_Plaintext = SRTP_Master_Key || SSRC || ROC 
+EKT_Plaintext = SRTP_Master_Key || SSRC || ROC || TTL
 
 EKT_Ciphertext = EKT_Encrypt(EKT_Key, EKT_Plaintext)
 
@@ -327,7 +327,7 @@ Short_EKT_Field = '00000000'
                <t hangText="EKT_Plaintext:">The data that is input to the EKT
                encryption operation.  This data never appears on the wire, and
                is used only in computations internal to EKT. This is the
-               concatenation of the SRTP Master Key, the SSRC, and the ROC.
+               concatenation of the SRTP Master Key, the SSRC, ROC, and the TTL.
                </t>
 
                <t hangText="EKT_Ciphertext:">The data that is output from the EKT
@@ -352,6 +352,15 @@ Short_EKT_Field = '00000000'
             is set to the current value of the SRTP rollover counter in the SRTP
             context associated with the SSRC in the SRTP or SRTCP packet.  The
             length of this field is 32 bits.
+            </t>
+
+	        <t hangText="Time to Live (TTL):">The maximum amount
+		of time that this key can be used. A unsigned 16 bit
+		integer representing duration in seconds. The SRTP
+		Master key in this message MUST NOT be used for
+		encrypting or decrypting information after this
+		time. Open Issue: does this need to be absolute time
+		not duration? TODO: discuss in security section. 
                </t>
 
             <t hangText="Security Parameter Index (SPI):">This field indicates the
