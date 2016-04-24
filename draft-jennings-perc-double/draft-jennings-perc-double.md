@@ -351,7 +351,6 @@ and is thus viewed as an acceptable trade-off in processing efficiency.
 Note that names for the cryptographic transforms are of the form
 DOUBLE_(inner transform)_(outer transform).
 
-
 While this document only defines a profile based on AES-GCM, it is possible
 for future documents to define further profiles with different inner and
 outer transforms in this same framework.  For example, if a new SRTP
@@ -367,6 +366,11 @@ outer cryptographic transforms, the total additional length is 32 octets.
 If no other header extensions are present in the packet and the OHB is
 introduced, that will consume an additional 8 octets.  If other extensions
 are already present, the OHB will consume up to 4 additional octets.
+
+Open Issue: For an audio confernce using opus in a narrowband
+configuration at TBD kbps with 20 ms packetizaton, the total bandwidth
+of the RTP would change from TBD to TBD. Do we want to consider having
+some AES-GCM transfroms with reduced length authentication tags?
 
 
 # Security Considerations
