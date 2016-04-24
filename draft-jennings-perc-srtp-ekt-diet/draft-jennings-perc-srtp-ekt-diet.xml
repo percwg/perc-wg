@@ -506,7 +506,7 @@ Short_EKT_Field = '00000000'
 
           <t><list style="numbers">
             
-           <t> The final bit is checked to determine which EKT format
+           <t> The final byte is checked to determine which EKT format
            is in use.  When an SRTP or SRTCP packet contains a Short
            EKT Field, the Short EKT Field is removed from the packet
            then normal SRTP or SRTCP processing occurs.  If the
@@ -567,10 +567,15 @@ Short_EKT_Field = '00000000'
            retreived. </t>
                   
            <t> The SRTP Master Key, ROC, and Master Salt from the
-           prevous step are saved in a
-           map indexed by the SSRC found in the EKT Plaintext and
-           used for any future inbound or about crypto operations on
-           packets with the that SSRC. </t>
+           prevous step are saved in a map indexed by the SSRC found
+           in the EKT Plaintext and can be used for any future crypto
+           operations for inbound or outbound packets with the that
+           SSRC. Outbound packets SHOULD continue to use the old key
+           for 250 ms after receipt of the new key.  This gives all
+           the receivers in the system time to get the new key before
+           they start receiving media encrypted with the new key. The
+           key MUST NOT be used beyond the lifetime found in the TTL
+           field. </t>
            
             <!-- JUNK THIS <t>The newly accepted SRTP master key, the SRTP parameters
             from the matching parameter set, and the SSRC from the
