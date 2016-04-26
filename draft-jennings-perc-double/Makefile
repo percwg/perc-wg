@@ -17,7 +17,7 @@ all: $(DRAFT)-$(VERSION).txt $(DRAFT)-$(VERSION).html
 diff: $(DRAFT).diff.html
 
 clean:
-	-rm -f $(DRAFT).{txt,html,xml,pdf}
+	-rm -f $(DRAFT)-$(VERSION).{txt,html,xml,pdf} $(DRAFT).diff.html
 
 %.txt: %.xml
 	$(xml2rfc) $< -o $@ --text
