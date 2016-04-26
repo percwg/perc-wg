@@ -281,7 +281,9 @@ hop.
 * The MDD MAY modify any header extension appearing after the OHB, but
   MUST NOT modify header extensions that are present before the OHB.
 
-* Apply the cryptographic transform to the packet.  If encrypting RTP
+* Apply the cryptographic transform to the packet. If the RTP Sequence
+  Number has been modified, SRTP processing happens as defined in SRTP
+  and which will end up using the new Sequence Number. If encrypting RTP
   header extensions hop-by-hop, then [@!RFC6904] MUST be used.
 
 ## Decrypting a Packet
@@ -309,7 +311,9 @@ decrypts and verifies with the inner cryptographic context.
 
   * Payload is the original encrypted payload.
 
-* Apply the inner cryptographic transform to this synthetic SRTP packet.  If the
+* Apply the inner cryptographic transform to this synthetic SRTP
+  packet.  Note if the RTP Sequence Number was changed by the MDD, the
+  syntetic packet has the original Sequence Number. If the
   integrity check does not pass, discard the packet.  If decrypting RTP
   header extensions end-to-end, then [@!RFC6904] MUST be used when decrypting
   the RTP packet using the inner cryptographic context.
@@ -375,9 +379,37 @@ some AES-GCM transfroms with reduced length authentication tags?
 
 # Security Considerations
 
-It is obviously critical that the intermediary have only the outer transform
-parameters and not the inner transform parameters.  We rely on an external key management protocol
-to assure this property.
+To summarize what is encrypted and authenticated, we will refer to all
+the RTP fields and headers created by the sender and before the pay
+load as the initial envelope and the RTP payload information with the
+media as the payload. Any additional headers added by the MDD are
+referred to as the extra envelope. The sender uses the E2E key to
+encrypts the payload and authenticate the payload + initial
+envelope which using an AEAD cipher results in a slight longer new
+payload.  Then the sender uses the HBH key to encrypt the new payload
+and authenticate the initial envelope and new payload.
+
+The MDD has the HBH key so it can check the authentication of the
+received packet across the initial envelope and payload data but it
+can't decrypt the payload as it does not have the E2E key. It can add
+extra envelope information. It then authenticates the initial plus
+extra envelope information plus payload with a HBH key. This HBH for
+the outgoing packet is typically different than the HBH key for the
+incoming packet.
+
+The receiver can check the authentication of the initial and extra
+envelope information.  This,  along with the OBH, i used to construct a
+synthetic packet that is should be identital to one the sender
+created and the receiver can check that it is identical and then
+decrypt the original payload. 
+
+The end result is that if the authentications succeed, the receiver
+knows exactly what the original sender sent, as well as exactly which
+modifications were made by the MDD. 
+
+It is obviously critical that the intermediary have only the outer
+transform parameters and not the inner transform parameters.  We rely
+on an external key management protocol to assure this property.
 
 Modifications by the intermediary result in the recipient getting two values for
 changed parameters (original and modified).  The recipient will have to choose
