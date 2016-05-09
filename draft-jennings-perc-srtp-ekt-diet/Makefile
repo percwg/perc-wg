@@ -2,14 +2,16 @@
 
 SRC  := $(wildcard draft-*.xml)
 
-VERSION = 02
+VERSION = 00
 
 HTML := $(patsubst %.xml,%-$(VERSION).html,$(SRC))
 TXT  := $(patsubst %.xml,%-$(VERSION).txt,$(SRC))
 DIF  := $(patsubst %.xml,%-$(VERSION).diff.html,$(SRC))
 PDF  := $(patsubst %.xml,%-$(VERSION).pdf,$(SRC))
 
-all: $(HTML) $(TXT) $(DIF)
+all: $(HTML) $(TXT)
+
+diff: $(DIF)
 
 clean:
 	rm -f *~ draft*.html draft*pdf draft*txt
