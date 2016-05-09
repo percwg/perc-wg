@@ -6,8 +6,8 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 #  mmark (https://github.com/miekg/mmark)
 mmark ?= mmark
 
-DRAFT = draft-jennings-perc-double
-VERSION = 02
+DRAFT = draft-ietf-perc-double
+VERSION = 00
 
 .PHONY: all clean diff
 .PRECIOUS: %.xml
