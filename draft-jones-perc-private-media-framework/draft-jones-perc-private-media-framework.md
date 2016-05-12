@@ -118,7 +118,7 @@ An MDD forwards RTP flows between endpoints in the conference while performing p
 
 An endpoint's ability to join a conference hosted by an MDD **MUST NOT** alone be interpreted as being authorized to have access to the E2E media encryption keys, as the MDD does not have the ability to determine whether an endpoint is authorized.
 
-An MDD **MUST** perform its role in properly forwarding media packets while taking measures to mitigate the adverse effects of denial of service attacks (refer to Section (#attacks)), etc, to a level equal to or better than traditional conferencing (i.e. pre-PERC) deployments.
+An MDD **MUST** perform its role in properly forwarding media packets while taking measures to mitigate the adverse effects of denial of service attacks (refer to (#attacks)), etc, to a level equal to or better than traditional conferencing (i.e. pre-PERC) deployments.
 
 An MDD or associated conferencing infrastructure may also initiate or terminate various conference control related messaging, which is outside the scope of this framework document.
 
@@ -198,7 +198,7 @@ Any given RTP media flow can be identified by its SSRC, and endpoints might send
 
 Thus, endpoints **MUST** maintain a list of SSRCs from received RTP flows and each SSRC's associated E2E Key(i) information.  Following a change of the KEK (i.e., EKT Key), prior E2E Key(i) information **SHOULD** be retained just long enough to ensure that late-arriving or out-of-order packets can be successfully decrypted and rendered. See Section 2.2.2 of [@!I-D.ietf-perc-srtp-ekt-diet]. The endpoint **SHOULD** discard the E2E Key(i) and KEK information when it leaves the conference.
 
-If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions with E2E encryption.  [TO DO: Add a list to this doc of RTP Header Extensions that are off limits to - the MUST NOTs - be E2E encrypted.]
+If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions with E2E encryption. See To Do List in (#dolist).
 
 ## HBH Keys and Hop Operations
 
