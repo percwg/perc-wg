@@ -11,11 +11,11 @@
     Title = "DTLS Tunnel between Media Distribution Device and Key Management Function to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
-    docName = "draft-jones-perc-dtls-tunnel-02"
+    docName = "draft-jones-perc-dtls-tunnel-03"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
-    
+
     [pi]
     subcompact = "yes"
 
@@ -33,7 +33,7 @@
       region = "North Carolina"
       code = "27709"
       country = "USA"
-      
+
     #
     # Revision History
     #   00 - Initial draft.
@@ -48,6 +48,8 @@
     #        Much editorial cleanup.
     #   02 - The protection profile was inadvertently left out of the Key
     #        Info message.
+    #   03 - Modified the protocol to reduce the message sizes.
+    #        Added text related to MTU size considerations
     #
 
 %%%
@@ -129,7 +131,7 @@ as depicted in (#fig-tunnel):
 |     |     DTLS        |             v                |
 +-----+     Tunnel      +------------------------------+
                                       ^
-                                      |             
+                                      |
                                       | DLTS-SRTP
                                       |
                                       v
@@ -153,9 +155,12 @@ keying material by following the operations defined.
 # Example Message Flows
 
 This section provides an example message flow to help clarify the
-procedures described later in this document.  Note that it is assumed
-that a mutually authenticated DTLS association is already established
-between the MDD and KMF for the purpose of sending tunneled messages.
+procedures described later in this document. It is necessary
+that the MMF and MDD establish a mutually authenticated DTLS
+association for the purpose of sending tunneled messages,
+though the complete DTLS handshake for the tunnel is not shown
+in (#fig-message-flow) since there is nothing new this document
+introduces with regard to those procedures.
 
 Once the tunnel is established, it is possible for the MDD to relay the
 DTLS messages between the endpoint and the KMF. (#fig-message-flow)
@@ -169,6 +174,9 @@ or Key Info data.
 {#fig-message-flow align="center"}
 ~~~
 Endpoint                     MDD                       KMF
+    |                         |                         |
+    |                         |<========================|
+    |                         |   DTLS Association Made |
     |                         |                         |
     |------------------------>|========================>|
     | DTLS handshake message  | Tunnel + Profiles       |
@@ -195,11 +203,11 @@ information:
 * Protocol version
 * Association ID
 * DTLS message being tunneled
-    
-Additionally, all messages sent by the MDD will contain MDD-supported
+
+All messages sent by the MDD will contain MDD-supported
 SRTP protection profiles at the end of the Tunnel message.  The KMF will
-need to select a common profile supported by both the endpoint and the
-MDD to ensure that hop-by-hop operations can successfully be performed.
+select a common profile supported by both the endpoint and the MDD to
+ensure that hop-by-hop operations can successfully be performed.
 
 Further, the KMF will provide the SRTP [@!RFC3711] keying material for
 HBH operations at the time it sends a DTLS Finished message to the
@@ -230,29 +238,46 @@ in order to establish the keys used for encryption and authentication.
 The endpoint uses the normal procedures to establish a DTLS-SRTP
 association with the KMF.
 
-## Media Distribution Device Tunneling Procedures
+## Tunnel Establishment Procedures
 
-The MDD, acting as a client, establishes a mutually authenticated DTLS
-association between itself and a KMF to relay DTLS messages from any
-number of endpoints to that KMF.  This MDD initiated DTLS association is
-called a "tunnel" to differentiate it from the DTLS associations
-initiated by endpoints.
+Either the MDD or KMF acts initiates the establishment of a DTLS tunnel.
+Which entity acts as the DTLS client when establishing the tunnel and
+what event triggers the establishment of the tunnel are outside the
+scope of this document.  Further, how the trust relationships are
+established between the KMF and MDD are also outside the scope of this
+document.
 
-The MDD **MUST** establish a tunnel with the KMF in advance of, or no
-later than the point, when an endpoint attempts to establish a DTLS
+A tunnel **MUST* be a mutually authenticated DTLS association.  It is
+used to relay DTLS messages between any number of endpoints and the KMF.
+
+The MDD or KMF **MUST** establish a tunnel in advance of, or no later
+than the point, when an endpoint attempts to establish a DTLS
 association with the KMF.
+
+An MDD **MAY** have more than one tunnel established between itself and
+one or more KMFs.  When multiple tunnels are established, which tunnel
+or tunnels to use to send messages for a given conference is outside the
+scope of this document.
+
+## Media Distribution Device Tunneling Procedures
 
 The MDD **MUST** forward all messages received from an endpoint for a
 given DTLS association through the same tunnel if more than one tunnel
 has been established between it and a KMF.  An MDD is not precluded from
 establishing more than one tunnel to a given KMF.
 
-The MDD **MUST** assign a tunnel-unique "association identifier" for
+The MDD **MUST** assign a unique "association identifier" for
 each endpoint-initiated DTLS association and include it in all messages
 forwarded to the KMF.  The KMF will subsequently include in this
 identifier in all messages it sends so that the MDD can map messages
-received via a given tunnel and forward those messages to the correct
-endpoint.
+received via a tunnel and forward those messages to the correct
+endpoint.  The association identifier **SHOULD** be randomly assigned
+and values not re-used for a period of time sufficient to ensure
+no late-arriving messages might be delivered to the wrong endpoint.
+It is **RECOMMENDED** that the association identifier not be re-used
+for at least 24 hours.
+
+>Editor's Note: do we want to recommend a time and is 24 hours sufficient?
 
 The tunnel protocol enables the KMF to separately provide HBH keying
 material to the MDD for each of the individual endpoint DTLS
@@ -273,8 +298,8 @@ When a message from the KMF includes "Key Info," the MDD **MUST**
 extract the cipher and keying material conveyed in order to subsequently
 perform HBH encryption and authentication operations for RTP and RTCP
 packets sent between it and an endpoint.  Since the HBH keying material
-will be different for each endpoint, the MDD uses the tunnel-unique
-association identifier included by the KMF to ensure that the HBH keying
+will be different for each endpoint, the MDD uses the association
+identifier included by the KMF to ensure that the HBH keying
 material is used with the correct endpoint.
 
 The MDD **MUST** forward all messages received from either the endpoint
@@ -282,41 +307,33 @@ or the KMF to ensure proper communication between those two entities.
 
 ## Key Management Function Tunneling Procedures
 
-The KMF **MUST** be prepared to establish one or more tunnels (DTLS
-associations) with the MDD for the purpose of relaying DTLS messages
-between an endpoint and the KMF.  The KMF acts as a server and the MDD
-acts as a client to establish a tunnel.
-
 When the MDD relays a DTLS message from an endpoint, the MDD will
 include an association identifier that is unique per endpoint-originated
-DTLS association and is relayed via the tunnel.  The association
-identifier remains constant for the life of the DTLS association.  The
-KMF identifies each distinct endpoint-originated DTLS association by the
-association identifier and the tunnel over which the DTLS association
-was established.  
+DTLS association.  The association identifier remains constant for the
+life of the DTLS association.  The KMF identifies each distinct
+endpoint-originated DTLS association by the association identifier.
 
 The KMF **MUST** encapsulate the DTLS message inside a Tunnel message
-(see (#tunneling-protocol)) when sending a message to an endpoint.  
+(see (#tunneling-protocol)) when sending a message to an endpoint.
 
 The KMF **MUST** use the same association identifier in messages sent to
-an endpoint and **MUST** send all messages for a given endpoint DTLS
-association via the same tunnel.  This ensures the MDD can forward the
-messages to the correct endpoint.
+an endpoint as was received in messages from that endpoint.  This ensures
+the MDD can forward the messages to the correct endpoint.
 
 The KMF extracts tunneled DTLS messages from an endpoint and acts on
 those messages as if that endpoint had established the DTLS association
-directly with the KMF, which is acting as the server and the endpoint as
-the client.  The handling of the messages and certificates is exactly
-the same as normal DTLS-SRTP procedures between endpoints. 
+directly with the KMF.  The KMF is acting as the server and the endpoint
+is acting as the client.  The handling of the messages and certificates
+is exactly the same as normal DTLS-SRTP procedures between endpoints.
 
 The KMF **MUST** send a DTLS Finished message to the endpoint at the
-point the the DTLS handshake completes.  This is accomplished by
-utilizing the Tunnel + Key Info message.  The Key Info includes the
-selected cipher (i.e. protection profile), , MKI [@!RFC3711] value (if
-any), SRTP master keys, and SRTP master salt values.
+point the the DTLS handshake completes using the Tunnel + Key Info
+message.  The Key Info includes the selected cipher (i.e. protection
+profile), MKI [@!RFC3711] value (if any), SRTP master keys, and SRTP
+master salt values.
 
 The KMF **MUST** select a cipher that is supported by both the endpoint
-and the MDD for proper operations.
+and the MDD to ensure proper HBH operations.
 
 # Tunneling Protocol
 
@@ -339,32 +356,26 @@ the following format:
 ~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+-------------------------------+
-| Version (H)   | Version (L)   |                               |
-+---------------+---------------+                               |
-|                                                               |
-|   Association Identifier                                      |
-|                                                               |
-|                               +-------------------------------+
-|                               |  DTLS Message Length          |
++---------------------------------------------------------------+
+|                     Association Identifier                    |
 +-------------------------------+-------------------------------+
+|  DTLS Message Length          |                               :
++-------------------------------+                               :
 :                                                               :
 :                     Tunneled DTLS Message                     :
 :                                                               :
 +---------------------------------------------------------------+
 ~~~
 
-Version (H): This is the protocol major version number (set to 0x01).
-
-Version (L): This is the protocol minor version number (set to 0x00).
-
-Association Identifier: This is the 16-octet association identifier.
+Association Identifier: This is the association identifier used
+to uniquely identify each endpoint in a conference (32-bits).
 
 DTLS Message Length: Length in octets of following Tunneled DTLS
-Message.
+Message (16-bits).
 
 Tunneled DTLS Message: This is the DTLS message exchanged between the
-endpoint and KMF.
+endpoint and KMF.  The length varies based on the value specified
+in the previous field.
 
 ## Tunnel Message + Profiles
 
@@ -375,15 +386,11 @@ message is shown below:
 ~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+-------------------------------+
-| Version (H)   | Version (L)   |                               |
-+---------------+---------------+                               |
-|                                                               |
++---------------------------------------------------------------+
 |                     Association Identifier                    |
-|                                                               |
-|                               +-------------------------------+
-|                               |  DTLS Message Length          |
 +-------------------------------+-------------------------------+
+|  DTLS Message Length          |                               :
++-------------------------------+                               :
 :                                                               :
 :                     Tunneled DTLS Message                     :
 :                                                               :
@@ -416,15 +423,11 @@ will send a Tunnel message with the Key Info appended as shown below:
 ~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------+---------------+-------------------------------+
-| Version (H)   | Version (L)   |                               |
-+---------------+---------------+                               |
-|                                                               |
-|   Association Identifier                                      |
-|                                                               |
-|                               +-------------------------------+
-|                               |  DTLS Message Length          |
++---------------------------------------------------------------+
+|                     Association Identifier                    |
 +-------------------------------+-------------------------------+
+|  DTLS Message Length          |                               :
++-------------------------------+                               :
 :                                                               :
 :                     Tunneled DTLS Message                     :
 :                                                               :
@@ -484,6 +487,34 @@ SWSMS Length: The length of the "Server Write SRTP Master Salt" field.
 Server Write SRTP Master Salt: The value of the SRTP master salt used by
 the server (MDD).
 
+# MTU Considerations
+
+Tunneling DTLS messages received by an endpoint inside the DTLS tunnel
+between the MDD and KMF does introduce a small risk of message
+fragmentation, particularly with the handshake messages carrying client
+and  server certificates.
+
+When sending application data, the DTLS records have a 13 octet header
+and generally a small authentication tag (typically, 16 to 32 octets),
+an Initialization Vector of for block ciphers (e.g., 16 octets of AES-CBC)
+and a small amount of padding when block ciphers are utilized (e.g. up to
+15 octets for AES-CBC).  The Tunnel message introduces six (6) octets of
+overhead to contain the association identifier and length of the tunneled
+message.  The Profiles part of the Tunnel + Profiles message adds at least
+4 additional octets, but may be longer depending on the number of
+protection profiles advertised by the MDD.
+
+Thus, each DTLS message carried via the tunnel will impose several dozen
+octets of overhead.  Therefore, it is **RECOMMENDED** that endpoints
+and the KMF reduce the assumed MTU size used for DTLS messages by
+96 octets in order to avoid IP-level packet fragmentation of DTLS messages
+relayed through the tunnel.
+
+While the Tunnel + Key Info message is larger than Tunnel + Profiles, the
+DTLS message(s) transmitted in that flight (ChangeCipherSpec and Finished)
+are very small and do not impose a risk introducing packet fragmentation
+for all present-day ciphers.
+
 # To-Do List
 
 The MDD and KMF may need to coordinate or exchange a "conference
@@ -514,7 +545,7 @@ information to untrusted parties.
 The supported profile information send from the MDD to the KMF is not
 particularly sensitive as it only provides the crypt algorithms
 supported by the MDD but it is still protected by the DTLS session from
-the MDD to KMF. 
+the MDD to KMF.
 
 # Acknowledgments
 
