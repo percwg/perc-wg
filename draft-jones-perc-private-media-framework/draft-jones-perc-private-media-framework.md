@@ -196,7 +196,7 @@ Figure: Keys per Entity
 
 Any given RTP media flow can be identified by its SSRC, and endpoints might send more than one at a time and change the mix of media flows transmitted during the life of a conference.
 
-Thus, endpoints **MUST** maintain a list of SSRCs from received RTP flows and each SSRC's associated E2E Key(i) information.  Following a change of the KEK (i.e., EKT Key), prior E2E Key(i) information **SHOULD** be retained just long enough to ensure that late-arriving or out-of-order packets can be successfully decrypted and rendered. [NOTE: Perhaps a separate best practices document can recommend durations after some real world testing?]  The endpoint **SHOULD** discard the E2E Key(i) and KEK information when it leaves the conference.
+Thus, endpoints **MUST** maintain a list of SSRCs from received RTP flows and each SSRC's associated E2E Key(i) information.  Following a change of the KEK (i.e., EKT Key), prior E2E Key(i) information **SHOULD** be retained just long enough to ensure that late-arriving or out-of-order packets can be successfully decrypted and rendered. See Section 2.2.2 of [@!I-D.ietf-perc-srtp-ekt-diet]. The endpoint **SHOULD** discard the E2E Key(i) and KEK information when it leaves the conference.
 
 If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions with E2E encryption.  [TO DO: Add a list to this doc of RTP Header Extensions that are off limits to - the MUST NOTs - be E2E encrypted.]
 
@@ -308,9 +308,7 @@ Within the window from last packet forwarded to the receiver and the latest rece
 
 The splicing attack is an attack where an MDD receiving multiple media sources splices one media stream into the other.  If the MDD is able to change the SSRC without the receiver having any method for verifying the original source ID, then the MDD could first deliver stream A and then later forward stream B under the same SSRC as stream A was previously using.  Not allowing the MDD to change the SSRC mitigates this attack.
 
-# To-Do List
-
-## What is Needed to Realize this Framework
+# To-Do List {#dolist}
 
 - Endpoints and KMF must securely convey their respective certificate information directly or indirectly via some other means or identity service provider.
 
