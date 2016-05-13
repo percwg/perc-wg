@@ -196,21 +196,21 @@ Figure: Keys per Entity
 
 Any given RTP media flow can be identified by its SSRC, and endpoints might send more than one at a time and change the mix of media flows transmitted during the life of a conference.
 
-Thus, endpoints **MUST** maintain a list of SSRCs from received RTP flows and each SSRC's associated E2E Key(i) information.  Following a change of the KEK (i.e., EKT Key), prior E2E Key(i) information **SHOULD** be retained just long enough to ensure that late-arriving or out-of-order packets can be successfully decrypted and rendered. See Section 2.2.2 of [@!I-D.ietf-perc-srtp-ekt-diet]. The endpoint **SHOULD** discard the E2E Key(i) and KEK information when it leaves the conference.
+Thus, endpoints **MUST** maintain a list of SSRCs from received RTP flows and each SSRC's associated E2E Key(i) information.  Following a change of the KEK (i.e., EKT Key), prior E2E Key(i) information **SHOULD** be retained long enough to ensure that late-arriving or out-of-order packets can be successfully decrypted and rendered. The endpoint **MUST** discard the E2E Key(i) and KEK information when it leaves the conference.
 
-If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions with E2E encryption. See To Do List in (#dolist).
+If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions encrypted with E2E keys. See To Do List in (#dolist).
 
 ## HBH Keys and Hop Operations
 
 To ensure the integrity of transmitted media packets, this framework requires that every packet be authenticated hop-by-hop (HBH) between an endpoint and an MDD, as well between MDDs.  The authentication key used for hop-by-hop authentication is derived from an SRTP master key shared only on the respective hop (HBH Key(j); j={a given hop}).  Each HBH Key(j) is distinct per hop and no two hops ever intentionally use the same SRTP master key.
 
-Using hop-by-hop authentication gives the MDD the ability to change certain RTP header values.  Which values the MDD can change in the RTP header are defined in [@!I-D.jennings-perc-double].  RTCP can only be encrtpted, giving the MDD the flexibility to forward RTCP content unchanged, transmit compound RTCP packets or to initiate RTCP packets for reporting statistics or conveying other information.  Performing hop-by-hop authentication for all RTP and RTCP packets also helps provide replay protection (see (#attacks)).
+Using hop-by-hop authentication gives the MDD the ability to change certain RTP header values.  Which values the MDD can change in the RTP header are defined in [@!I-D.ietf-perc-double].  RTCP can only be encrtpted, giving the MDD the flexibility to forward RTCP content unchanged, transmit compound RTCP packets or to initiate RTCP packets for reporting statistics or conveying other information.  Performing hop-by-hop authentication for all RTP and RTCP packets also helps provide replay protection (see (#attacks)).
 
 If there is a need to encrypt one or more RTP header extensions hop-by-hop, an encryption key is derived from the hop-by-hop SRTP master key to encrypt header extensions as per [@!RFC6904].  This will still give the switching MDD visibility into header extensions, such as the one used to determine audio level [@RFC6464] of conference participants.  Note that when RTP header extensions are encrypted, all hops - in the untrusted domain at least - will need to decrypt and re-encrypt these encrypted header extensions.
 
 ## Key Exchange
 
-To facilitate key exchange required to establish or generate an E2E key and a HBH key for an endpoint and the same HBH key for the MDD, this framework utilizes a DTLS-SRTP [@!RFC5764] association between an endpoint and the KMF.  To establish this association, an endpoint will send DTLS-SRTP messages to the MDD which will then forward them to the MDD as defined in DTLS Tunnel for PERC [@!I-D.jones-perc-dtls-tunnel].  The KEK (i.e., EKT Key) is also conveyed by the KMF over the DTLS association to endpoints via procedures defined in PERC EKT [I-D.jennings-perc-srtp-ekt-diet].
+To facilitate key exchange required to establish or generate an E2E key and a HBH key for an endpoint and the same HBH key for the MDD, this framework utilizes a DTLS-SRTP [@!RFC5764] association between an endpoint and the KMF.  To establish this association, an endpoint will send DTLS-SRTP messages to the MDD which will then forward them to the MDD as defined in DTLS Tunnel for PERC [@!I-D.jones-perc-dtls-tunnel].  The KEK (i.e., EKT Key) is also conveyed by the KMF over the DTLS association to endpoints via procedures defined in PERC EKT [I-D.ietf-perc-srtp-ekt-diet].
 
 MDDs use DTLS-SRTP [@!RFC5764] directly with a peer MDD to establish HBH keys for transmitting RTP and RTCP packets that peer MDD.  The KMF does not facilitate establishing HBH keys for use between MDDs.
 
@@ -244,7 +244,7 @@ Following the initial key information exchange with the KMF, endpoints will be a
 
 The KEK (i.e., EKT Key) may need to change from time-to-time during the life of a conference, such as when a new participant joins or leaves a conference.  Dictating if, when or how often a conference is to be re-keyed is outside the scope of this document, but this framework does accommodate re-keying during the life of a conference.
 
-When a KMF decides to rekey a conference, it transmits a specific message defined in PERC EKT [I-D.jennings-perc-srtp-ekt-diet] to each of the conference participants.  The endpoint **MUST** create a new SRTP master key and prepare to send that key inside a Full EKT Field using the new EKT Key. Since it may take some time for all of the endpoints in conference to finish re-keying, senders **SHOULD** delay a short period of time before sending media encrypted with the new master key, but it **MUST** be prepared to make use of the information from a new inbound EKT Key immediately. [TO DO: Either need to pick a short delay period for endpoints to use per above, defer to a future best practices document or consider having the KMF manage the delay period given it knows the size of a given conference.]
+When a KMF decides to rekey a conference, it transmits a specific message defined in PERC EKT [I-D.jennings-perc-srtp-ekt-diet] to each of the conference participants.  The endpoint **MUST** create a new SRTP master key and prepare to send that key inside a Full EKT Field using the new EKT Key. Since it may take some time for all of the endpoints in conference to finish re-keying, senders **SHOULD** delay a short period of time before sending media encrypted with the new master key, but it **MUST** be prepared to make use of the information from a new inbound EKT Key immediately. [TO DO: Either need to pick a short delay period for endpoints to use per above, defer to a future best practices document or consider having the KMF manage the delay period given it knows the size of a given conference.]  See Section 2.2.2 of [@!I-D.ietf-perc-srtp-ekt-diet].
 
 # Entity Trust
 
@@ -312,11 +312,11 @@ The splicing attack is an attack where an MDD receiving multiple media sources s
 
 - Consider adding a list of RTP header extensions that shoould/must not be E2E encrypted.
 
-- Endpoints and KMF must securely convey their respective certificate information directly or indirectly via some other means or identity service provider.
+- Endpoints and KMF must securely convey their respective certificate information directly or indirectly via some means or identity service provider.
 
-- If as in "Double" draft, the ROC value is no longer in the clear and associated with the "outer" protection scheme, we may need to require that the MDD maintain a separate ROC value for each SSRC sent to each separate endpoint.  This ROC value should start at 0 regardless of the sequence number in that first packet sent to an endpoint.  [EDIT: Do we document this in this framework or in Double draft?]
+- If as in "Double" draft, the ROC value is no longer in the clear and associated with the "outer" protection scheme, we may need to require that the MDD maintain a separate ROC value for each SSRC sent to each endpoint.  This ROC value should start at 0 regardless of the sequence number in that first packet sent to an endpoint.  
 
-- Investigate adding ability to enable the transmission of one-way media from a non-trusted device (e.g., announcements). One possible solution is to have the KMF send an "ekt_key" message that is explicitly labeled for receive-only and giving that to announcement servers.  As opposed to modifying the EKT spec for this PERC-specific need, we could say in the framework that EKT Keys with a SPI > 32000, say, are intended for this purpose and trusted endpoints should only use those EKT Keys to decrypt Full EKT Fields received from such transmitters.  Thus, trusted endpoints would never send media with EKT Keys having those SPI values.
+- Investigate adding ability to enable the transmission of one-way media from a non-trusted device (e.g., announcements). One possible solution is to have the KMF send an "ekt_key" message that is explicitly labeled for receive-only and giving that to announcement servers.  As opposed to modifying the EKT spec for this PERC-specific need, we could define EKT Keys with a SPI > 32000, for example, are intended for this purpose and trusted endpoints should only use those EKT Keys to decrypt Full EKT Fields received from such transmitters.  Thus, trusted endpoints would never send media with EKT Keys having those SPI values.
 
 # IANA Considerations
 
