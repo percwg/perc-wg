@@ -8,7 +8,7 @@
     Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-jones-perc-private-media-framework-02"
+    docName = "draft-ietf-perc-private-media-framework-02"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "Private Media Framework", "conferencing"]
@@ -51,11 +51,11 @@ This document describes a solution framework for ensuring that media confidentia
 
 # Introduction
 
-Switched conferencing is an increasingly popular model for multimedia conferences with multiple participants using a combination of audio, video, text, and other media types.  With this model, real-time media flows from conference participants are not mixed, transcoded, transrated, recomposed, or otherwise manipulated by a media distribution device (MDD), as might be the case with a traditional media server or multipoint control unit (MCU).  Instead, media flows transmitted by conference participants are simply forwarded by the MDD to each of the other participants, often forwarding only a subset of flows based on voice activity detection or other criteria.  In some instances, the switching MDDs may make limited modifications to RTP [@!RFC3550] headers, for example, but the actual media content (e.g., voice or video data) is unaltered.
+Switched conferencing is an increasingly popular model for multimedia conferences with multiple participants using a combination of audio, video, text, and other media types.  With this model, real-time media flows from conference participants are not mixed, transcoded, transrated, recomposed, or otherwise manipulated by a media distribution device (MDD), as might be the case with a traditional media server or multipoint control unit (MCU).  Instead, media flows transmitted by conference participants are simply forwarded by the MDD to each of the other participants, often forwarding only a subset of flows based on voice activity detection or other criteria.  In some instances, the MDDs may make limited modifications to RTP [@!RFC3550] headers, for example, but the actual media content (e.g., voice or video data) is unaltered.
 
-An advantage of switched conferencing is that MDDs can be deployed on general-purpose computing hardware.  This, in turn, means that it is possible to deploy switching MDDs in virtualized environments, including private and public clouds.  Deploying conference resources in a cloud environment might introduce a higher security risk.  Whereas traditional conference resources were usually deployed in private networks that were protected, cloud-based conference resources might be viewed as less secure since they are not always physically controlled by those who use the hardware.  Additionally, there are usually several ports open to the public in cloud deployments, such as for remote administration, and so on.
+An advantage of switched conferencing is that media distribution devices can be more easily deployed on general-purpose computing hardware, including virtualized environments in private and public clouds.  Deploying conference resources in a public cloud environment might introduce a higher security risk.  Whereas traditional conference resources were usually deployed in private networks that were protected, cloud-based conference resources might be viewed as less secure since they are not always physically controlled by those who use them.  Additionally, there are usually several ports open to the public in cloud deployments, such as for remote administration, and so on.
 
-This document defines a solution framework wherein privacy is ensured by making it impossible for an MDD to gain access to keys needed to decrypt or authenticate the actual media content sent between conference participants.  At the same time, the framework allows for the switching MDD to modify certain RTP headers; add, remove, encrypt, or decrypt RTP header extensions; and encrypt and decrypt RTCP packets.  The framework also prevents replay attacks by authenticating each packet transmitted between a given participant and the switching MDD by using a key that is independent from the media encryption and authentication key(s) and is unique to the participating endpoint and the switching MDD.
+This document defines a solution framework wherein media privacy is ensured by making it impossible for an media distribution device to gain access to keys needed to decrypt or authenticate the actual media content sent between conference participants. At the same time, the framework allows for the media distribution device to modify certain RTP headers; add, remove, encrypt, or decrypt RTP header extensions; and encrypt and decrypt RTCP packets.  The framework also prevents replay attacks by authenticating each packet transmitted between a given participant and the media distribution device using a key that is independent from the media encryption and authentication key(s) and is unique to each participating endpoint.
 
 A goal of this document is to define a framework for enhanced privacy in RTP-based conferencing environments while utilizing existing security procedures defined for RTP with minimal enhancements.
 
@@ -65,17 +65,17 @@ The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**", "**SHALL 
 
 Additionally, this solution framework uses the following conventions, terms and acronyms:
 
-E2E (End-to-End): Communications from one endpoint through one or more MDDs to the endpoint at the other end.
+E2E (End-to-End): Communications from one endpoint through one or more Media Distribution Devices to the endpoint at the other end.
 
-HBH (Hop-by-Hop): Communications between an endpoint and an MDD or between MDDs.
+HBH (Hop-by-Hop): Communications between an endpoint and an Media Distribution Device or between Media Distribution Devices.
 
-Endpoint: An RTP flow terminating entity that has possession of E2E media encryption keys and terminates end-to-end (E2E) encryption.  This may include embedded user conferencing equipment or browsers on computers, media gateways, MCUs, media recording device and more that are in the trusted domain for a given deployment.
+Endpoint: An RTP flow terminating entity that has possession of E2E media encryption keys and terminates E2E encryption.  This may include embedded user conferencing equipment or browsers on computers, media gateways, MCUs, media recording device and more that are in the trusted domain for a given deployment.
 
-MDD (Media Distribution Device): An RTP middlebox that is not allowed to to have access to E2E encryption keys.  It may operate according to any of the RTP topologies [@I-D.ietf-avtcore-rtp-topologies-update] per the constraints defined by the PERC system, which includes, but not limited to, having no access to RTP media unencrypted and having limits on what RTP header field it can alter.
+MDD (Media Distribution Device): An RTP middlebox that is not allowed to to have access to E2E encryption keys.  It may operate according to any of the RTP topologies [@I-D.ietf-avtcore-rtp-topologies-update] per the constraints defined by the PERC system, which includes, but not limited to, having no access to RTP media unencrypted and having limits on what RTP header field it can alter.  This entity may also be called "Media Distributor" or "Distributor" throughoout this or other PERC documents.
 
-KMF (Key Management Function): An entity that is a logical function which passes keying material and related information to endpoints and MDDs that is appropriate for each.  The KMF might be co-resident with another entity trusted with E2E keying material.
+KMF (Key Management Function): An entity that is a logical function which passes keying material and related information to endpoints and Media Distribution Devices that is appropriate for each.  The KMF might be co-resident with another entity trusted with E2E keying material.
 
-Conference: Two or more participants communicating via trusted endpoints to exchange RTP flows through one or more MDDs.
+Conference: Two or more participants communicating via trusted endpoints to exchange RTP flows through one or more Media Distribution Devices.
 
 Third Party: Any entity that is not an Endpoint, MDD, KMF or Call Processing entity as described in this document.
 
@@ -114,11 +114,11 @@ The architecture described in this framework document enables conferencing infra
 
 ### MDD
 
-An MDD forwards RTP flows between endpoints in the conference while performing per-hop authentication of each RTP packet.  The MDD may need access to one or more RTP headers or header extensions, potentially adding or modifying a certain subset.  The MDD will also relay secured messaging between the endpoints and the key management function and will acquire per-hop key information from the KMF.  The actual media content **MUST NOT** not be decryptable by an MDD, so it is untrusted to have access to the E2E media encryption keys, which this framework's key exchange mechanisms will prevent.
+A Media Distribution Device (MDD) forwards RTP flows between endpoints in the conference while performing per-hop authentication of each RTP packet.  The MDD may need access to one or more RTP headers or header extensions, potentially adding or modifying a certain subset.  The MDD will also relay secured messaging between the endpoints and the key management function and will acquire per-hop key information from the KMF.  The actual media content **MUST NOT** not be decryptable by an MDD, so it is untrusted to have access to the E2E media encryption keys, which this framework's key exchange mechanisms will prevent.
 
 An endpoint's ability to join a conference hosted by an MDD **MUST NOT** alone be interpreted as being authorized to have access to the E2E media encryption keys, as the MDD does not have the ability to determine whether an endpoint is authorized.
 
-An MDD **MUST** perform its role in properly forwarding media packets while taking measures to mitigate the adverse effects of denial of service attacks (refer to Section (#attacks)), etc, to a level equal to or better than traditional conferencing (i.e. pre-PERC) deployments.
+An MDD **MUST** perform its role in properly forwarding media packets while taking measures to mitigate the adverse effects of denial of service attacks (refer to (#attacks)), etc, to a level equal to or better than traditional conferencing (i.e. pre-PERC) deployments.
 
 An MDD or associated conferencing infrastructure may also initiate or terminate various conference control related messaging, which is outside the scope of this framework document.
 
@@ -142,15 +142,15 @@ An endpoint is considered trusted and will have access to E2E key information.  
 
 The KMF, which may be collocated with an endpoint or exist standalone, is responsible for providing key information to endpoints for both end-to-end and hop-by-hop security and for providing key information to MDDs for the hop-by-hop security.
 
-Interaction between the KMF and the call processing function may be necessary to for proper conference-to-endpoint mappings, which may or may not be satisfied by getting information directly from the endpoints or via some other means. [TO DO: Revisit this text after design choice(s) are made between the alternatives.]
+Interaction between the KMF and the call processing function may be necessary to for proper conference-to-endpoint mappings, which may or may not be satisfied by getting information directly from the endpoints or via some other means. See (#dolist) for a related item in the To Do list.
 
-Obviously, the KMF needs to be closely managed to prevent exploitation by an adversary, as any kind of security compromise of the KMF puts the security of the conference at risk.
+The KMF needs to be secured and managed in a way to prevent exploitation by an adversary, as any kind of compromise of the KMF puts the security of the conference at risk.
 
 # Framework for PERC
 
 The purpose for this framework is to define a means through which media privacy can be ensured when communicating within a conferencing environment consisting of one or more MDDs that only switch, hence not terminate, media.  It does not otherwise attempt to hide the fact that a conference between endpoints is taking place.
 
-This framework reuses several specified RTP security technologies, including SRTP [@!RFC3711], PERC EKT [@!I-D.jennings-perc-srtp-ekt-diet], and DTLS-SRTP [@!RFC5764].
+This framework reuses several specified RTP security technologies, including SRTP [@!RFC3711], PERC EKT [@!I-D.ietf-perc-srtp-ekt-diet], and DTLS-SRTP [@!RFC5764].
 
 ## End-to-End and Hop-by-Hop Authenticated Encryption
 
@@ -168,13 +168,13 @@ To enable all of the above, this framework defines the use of two security conte
 ~~~
 Figure: E2E and HBH Keys Used for Authenticated Encryption
 
-The PERC Double draft specification [@!I-D.jennings-perc-double] uses standard SRTP keying material and recommended cryptographic transform(s) to first form the inner, end-to-end SRTP cryptographic context.  That end-to-end SRTP cryptographic context **MAY** be used to encrypt some RTP header extensions along with RTP media content.  The output of this is treated like an RTP packet and encrypted again using the outer hop-by-hop cryptographic context.  The endpoint executes the entire Double operation while the MDD just performs the outer, hop-by-hop operation.
+The PERC Double draft specification [@!I-D.ietf-perc-double] uses standard SRTP keying material and recommended cryptographic transform(s) to first form the inner, end-to-end SRTP cryptographic context.  That end-to-end SRTP cryptographic context **MAY** be used to encrypt some RTP header extensions along with RTP media content.  The output of this is treated like an RTP packet and encrypted again using the outer hop-by-hop cryptographic context.  The endpoint executes the entire Double operation while the MDD just performs the outer, hop-by-hop operation.
 
 RTCP can only be encrypted hop-by-hop, not end-to-end.  This framework introduces no additional step for RTCP authenticated encryption, so the procedures needed are specified in [@!RFC3711] and use the same outer, hop-by-hop cryptographic context chosen in the Double operation described above.
 
 ## E2E Key Confidentiality
 
-To ensure the confidentiality of E2E keys shared between endpoints, endpoints will make use of a common Key Encryption Key (KEK) that is known only by the trusted entities in a conference.  That KEK, defined in the PERC EKT [@!I-D.jennings-perc-srtp-ekt-diet] as the EKT Key, will be used to subsequently encrypt SRTP master keys used for E2E authenticated encryption (E2E Key(i); i={a given endpoint}) of media sent by a given endpoint.
+To ensure the confidentiality of E2E keys shared between endpoints, endpoints will make use of a common Key Encryption Key (KEK) that is known only by the trusted entities in a conference.  That KEK, defined in the PERC EKT [@!I-D.ietf-perc-srtp-ekt-diet] as the EKT Key, will be used to subsequently encrypt SRTP master keys used for E2E authenticated encryption (E2E Key(i); i={a given endpoint}) of media sent by a given endpoint.
 
 {#fig-who-has-what-key align="center"}
 ~~~
@@ -196,21 +196,21 @@ Figure: Keys per Entity
 
 Any given RTP media flow can be identified by its SSRC, and endpoints might send more than one at a time and change the mix of media flows transmitted during the life of a conference.
 
-Thus, endpoints **MUST** maintain a list of SSRCs from received RTP flows and each SSRC's associated E2E Key(i) information.  Following a change of the KEK (i.e., EKT Key), prior E2E Key(i) information **SHOULD** be retained just long enough to ensure that late-arriving or out-of-order packets can be successfully decrypted and rendered. [NOTE: Perhaps a separate best practices document can recommend durations after some real world testing?]  The endpoint **SHOULD** discard the E2E Key(i) and KEK information when it leaves the conference.
+Thus, endpoints **MUST** maintain a list of SSRCs from received RTP flows and each SSRC's associated E2E Key(i) information.  Following a change of the KEK (i.e., EKT Key), prior E2E Key(i) information **SHOULD** be retained for a period long enough to ensure that late-arriving or out-of-order packets from other endpoints can be successfully decrypted. The endpoint **MUST** discard the E2E Key(i) and KEK information no later than when it leaves the conference.
 
-If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions with E2E encryption.  [TO DO: Add a list to this doc of RTP Header Extensions that are off limits to - the MUST NOTs - be E2E encrypted.]
+If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions encrypted with E2E keys. See (#dolist) for a related item in the To Do list.
 
 ## HBH Keys and Hop Operations
 
 To ensure the integrity of transmitted media packets, this framework requires that every packet be authenticated hop-by-hop (HBH) between an endpoint and an MDD, as well between MDDs.  The authentication key used for hop-by-hop authentication is derived from an SRTP master key shared only on the respective hop (HBH Key(j); j={a given hop}).  Each HBH Key(j) is distinct per hop and no two hops ever intentionally use the same SRTP master key.
 
-Using hop-by-hop authentication gives the MDD the ability to change certain RTP header values.  Which values the MDD can change in the RTP header are defined in [@!I-D.jennings-perc-double].  RTCP can only be encrtpted, giving the MDD the flexibility to forward RTCP content unchanged, transmit compound RTCP packets or to initiate RTCP packets for reporting statistics or conveying other information.  Performing hop-by-hop authentication for all RTP and RTCP packets also helps provide replay protection (see (#attacks)).
+Using hop-by-hop authentication gives the MDD the ability to change certain RTP header values.  Which values the MDD can change in the RTP header are defined in [@!I-D.ietf-perc-double].  RTCP can only be encrtpted, giving the MDD the flexibility to forward RTCP content unchanged, transmit compound RTCP packets or to initiate RTCP packets for reporting statistics or conveying other information.  Performing hop-by-hop authentication for all RTP and RTCP packets also helps provide replay protection (see (#attacks)).
 
 If there is a need to encrypt one or more RTP header extensions hop-by-hop, an encryption key is derived from the hop-by-hop SRTP master key to encrypt header extensions as per [@!RFC6904].  This will still give the switching MDD visibility into header extensions, such as the one used to determine audio level [@RFC6464] of conference participants.  Note that when RTP header extensions are encrypted, all hops - in the untrusted domain at least - will need to decrypt and re-encrypt these encrypted header extensions.
 
 ## Key Exchange
 
-To facilitate key exchange required to establish or generate an E2E key and a HBH key for an endpoint and the same HBH key for the MDD, this framework utilizes a DTLS-SRTP [@!RFC5764] association between an endpoint and the KMF.  To establish this association, an endpoint will send DTLS-SRTP messages to the MDD which will then forward them to the MDD as defined in DTLS Tunnel for PERC [@!I-D.jones-perc-dtls-tunnel].  The KEK (i.e., EKT Key) is also conveyed by the KMF over the DTLS association to endpoints via procedures defined in PERC EKT [I-D.jennings-perc-srtp-ekt-diet].
+To facilitate key exchange required to establish or generate an E2E key and a HBH key for an endpoint and the same HBH key for the MDD, this framework utilizes a DTLS-SRTP [@!RFC5764] association between an endpoint and the KMF.  To establish this association, an endpoint will send DTLS-SRTP messages to the MDD which will then forward them to the MDD as defined in the DTLS Tunnel for PERC [@!I-D.jones-perc-dtls-tunnel].  The Key Encryption Key (KEK) (i.e., EKT Key) is also conveyed by the KMF over the DTLS association to endpoints via procedures defined in PERC EKT [I-D.ietf-perc-srtp-ekt-diet].
 
 MDDs use DTLS-SRTP [@!RFC5764] directly with a peer MDD to establish HBH keys for transmitting RTP and RTCP packets that peer MDD.  The KMF does not facilitate establishing HBH keys for use between MDDs.
 
@@ -244,7 +244,7 @@ Following the initial key information exchange with the KMF, endpoints will be a
 
 The KEK (i.e., EKT Key) may need to change from time-to-time during the life of a conference, such as when a new participant joins or leaves a conference.  Dictating if, when or how often a conference is to be re-keyed is outside the scope of this document, but this framework does accommodate re-keying during the life of a conference.
 
-When a KMF decides to rekey a conference, it transmits a specific message defined in PERC EKT [I-D.jennings-perc-srtp-ekt-diet] to each of the conference participants.  The endpoint **MUST** create a new SRTP master key and prepare to send that key inside a Full EKT Field using the new EKT Key. Since it may take some time for all of the endpoints in conference to finish re-keying, senders **SHOULD** delay a short period of time before sending media encrypted with the new master key, but it **MUST** be prepared to make use of the information from a new inbound EKT Key immediately. [TO DO: Either need to pick a short delay period for endpoints to use per above, defer to a future best practices document or consider having the KMF manage the delay period given it knows the size of a given conference.]
+When a KMF decides to rekey a conference, it transmits a specific message defined in PERC EKT [I-D.ietf-perc-srtp-ekt-diet] to each of the conference participants.  The endpoint **MUST** create a new SRTP master key and prepare to send that key inside a Full EKT Field using the new EKT Key. Since it may take some time for all of the endpoints in conference to finish re-keying, senders **MUST** delay a short period of time before sending media encrypted with the new master key, but it **MUST** be prepared to make use of the information from a new inbound EKT Key immediately. See Section 2.2.2 of [@!I-D.ietf-perc-srtp-ekt-diet].
 
 # Entity Trust
 
@@ -254,7 +254,7 @@ Two possible approaches to solve this are Identity Assertions and Certificate Fi
 
 ## Identity Assertions
 
-WebRTC (EDIT: add reference) Identity assertion can be used to bind the identity of the user of the endpoint to the fingerprint of the DTLS-SRTP certificate used for the call.  This certificate is unique for a given call and a conference.  This allows the KMF to ensure that only authorized users participate in the conference. Similarly the KMF can create a WeBRTC Identity assertion bound the fingerprint of the unique certificate used by the KMF for this conference so that the endpoint can validate it is talking to the correct KMF.
+WebRTC Identity assertion (EDITOR NOTE: add I-D reference) can be used to bind the identity of the user of the endpoint to the fingerprint of the DTLS-SRTP certificate used for the call.  This certificate is unique for a given call and a conference.  This allows the KMF to ensure that only authorized users participate in the conference. Similarly the KMF can create a WeBRTC Identity assertion bound the fingerprint of the unique certificate used by the KMF for this conference so that the endpoint can validate it is talking to the correct KMF.
 
 ## Certificate Fingerprints in Session Signaling
 
@@ -276,7 +276,9 @@ On-path attacks are mitigated by HBH integrity protection and encryption.  The i
 
 Off-path attackers may try connecting to different PERC entities and send specifically crafted packets.  A successful attacker might be able to get the MDD to forward such packets.  If not making use of HBH authentication on the MDD, such an attack could only be detected in the receiving endpoints where the forged packets would finally be dropped.
 
-Another potential attack is a third party claiming to be an MDD, fooling endpoints in to sending packets to the false MDD instead of the correct one.  The deceived sending endpoints could incorrectly assuming their packets have been delivered to endpoints when they in fact have not.  Further, the false MDD may cascade to another legitimate MDD creating a false version of the real conference.  This attack is mitigated since false MDD would not be authenticated by the KMF and be able tunnel the DTLS-SRTP signaling to/from the KMF.  Since it cannot tunnel the DTLS-SRTP signaling, endpoints will not get the KEK and the conference will not go on.  [TO DO: Include the exchange valid MDD certificates with the KMF in this doc or not?]
+Another potential attack is a third party claiming to be an MDD, fooling endpoints in to sending packets to the false MDD instead of the correct one.  The deceived sending endpoints could incorrectly assuming their packets have been delivered to endpoints when they in fact have not.  Further, the false MDD may cascade to another legitimate MDD creating a false version of the real conference.  
+
+This attack can be mitigated by the false MDD not being authenticated by the KMF during PERC Tunnel establishment. Without the tunnel in place, endpoints will not establish secure associations with the KMF and receive the KEK, causing the conference to not proceed.  
 
 ##   MDD Attacks
 
@@ -308,15 +310,17 @@ Within the window from last packet forwarded to the receiver and the latest rece
 
 The splicing attack is an attack where an MDD receiving multiple media sources splices one media stream into the other.  If the MDD is able to change the SSRC without the receiver having any method for verifying the original source ID, then the MDD could first deliver stream A and then later forward stream B under the same SSRC as stream A was previously using.  Not allowing the MDD to change the SSRC mitigates this attack.
 
-# To-Do List
+# To-Do List {#dolist}
 
-## What is Needed to Realize this Framework
+- The mapping of endpoints-to-conference identifiers may need to be conveyed in the framework.  Need Revisit this text after a design choice is made between alternatives.
 
-- Endpoints and KMF must securely convey their respective certificate information directly or indirectly via some other means or identity service provider.
+- Consider adding a list of RTP header extensions that shoould/must not be E2E encrypted.
 
-- If as in "Double" draft, the ROC value is no longer in the clear and associated with the "outer" protection scheme, we may need to require that the MDD maintain a separate ROC value for each SSRC sent to each separate endpoint.  This ROC value should start at 0 regardless of the sequence number in that first packet sent to an endpoint.  [EDIT: Do we document this in this framework or in Double draft?]
+- Endpoints, KMF and MDD provider must securely convey their respective certificate information directly or indirectly via some means, such as via an identity service provider.
 
-- Investigate adding ability to enable the transmission of one-way media from a non-trusted device (e.g., announcements). One possible solution is to have the KMF send an "ekt_key" message that is explicitly labeled for receive-only and giving that to announcement servers.  As opposed to modifying the EKT spec for this PERC-specific need, we could say in the framework that EKT Keys with a SPI > 32000, say, are intended for this purpose and trusted endpoints should only use those EKT Keys to decrypt Full EKT Fields received from such transmitters.  Thus, trusted endpoints would never send media with EKT Keys having those SPI values.
+- If as in "Double" draft, the ROC value is no longer in the clear and associated with the "outer" protection scheme, we may need to require that the MDD maintain a separate ROC value for each SSRC sent to each endpoint.  This ROC value should start at 0 regardless of the sequence number in that first packet sent to an endpoint.  
+
+- Investigate adding ability to enable the transmission of one-way media from a non-trusted device (e.g., announcements). One possible solution is to have the KMF send an "ekt_key" message that is explicitly labeled for receive-only and giving that to announcement servers.  A possible approach would be to define EKT Keys with a SPI > 32000, for example, for this purpose and endpoints should only use those EKT Keys to decrypt Full EKT Fields received from such transmitters.  Endpoints would never send media with EKT Keys with those SPI values.
 
 # IANA Considerations
 
@@ -330,7 +334,7 @@ There are no IANA considerations for this document.
 
 The authors would like to thank Mo Zanaty and Christian Oien for invaluable input on this document.  Also, we would like to acknowledge Nermeen Ismail for serving on the initial versions of this document as a co-author.
 
-<reference anchor='I-D.jennings-perc-srtp-ekt-diet'>
+<reference anchor='I-D.ietf-perc-srtp-ekt-diet'>
   <front>
     <title>Encrypted Key Transport for Secure RTP</title>
     <author initials='J' surname='Mattsson' fullname='John Mattsson'/>
