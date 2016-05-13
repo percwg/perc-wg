@@ -8,7 +8,7 @@
     Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-jones-perc-private-media-framework-02"
+    docName = "draft-ietf-perc-private-media-framework-02"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "Private Media Framework", "conferencing"]
@@ -55,7 +55,7 @@ Switched conferencing is an increasingly popular model for multimedia conference
 
 An advantage of switched conferencing is that media distribution devices can be more easily deployed on general-purpose computing hardware, including virtualized environments in private and public clouds.  Deploying conference resources in a public cloud environment might introduce a higher security risk.  Whereas traditional conference resources were usually deployed in private networks that were protected, cloud-based conference resources might be viewed as less secure since they are not always physically controlled by those who use them.  Additionally, there are usually several ports open to the public in cloud deployments, such as for remote administration, and so on.
 
-This document defines a solution framework wherein media privacy is ensured by making it impossible for an media distribution device to gain access to keys needed to decrypt or authenticate the actual media content sent between conference participants.  At the same time, the framework allows for the media distribution device to modify certain RTP headers; add, remove, encrypt, or decrypt RTP header extensions; and encrypt and decrypt RTCP packets.  The framework also prevents replay attacks by authenticating each packet transmitted between a given participant and the media distribution device using a key that is independent from the media encryption and authentication key(s) and is unique to each participating endpoint.
+This document defines a solution framework wherein media privacy is ensured by making it impossible for an media distribution device to gain access to keys needed to decrypt or authenticate the actual media content sent between conference participants. At the same time, the framework allows for the media distribution device to modify certain RTP headers; add, remove, encrypt, or decrypt RTP header extensions; and encrypt and decrypt RTCP packets.  The framework also prevents replay attacks by authenticating each packet transmitted between a given participant and the media distribution device using a key that is independent from the media encryption and authentication key(s) and is unique to each participating endpoint.
 
 A goal of this document is to define a framework for enhanced privacy in RTP-based conferencing environments while utilizing existing security procedures defined for RTP with minimal enhancements.
 
@@ -142,7 +142,7 @@ An endpoint is considered trusted and will have access to E2E key information.  
 
 The KMF, which may be collocated with an endpoint or exist standalone, is responsible for providing key information to endpoints for both end-to-end and hop-by-hop security and for providing key information to MDDs for the hop-by-hop security.
 
-Interaction between the KMF and the call processing function may be necessary to for proper conference-to-endpoint mappings, which may or may not be satisfied by getting information directly from the endpoints or via some other means. See (#dolist) for an item in the To Do list.
+Interaction between the KMF and the call processing function may be necessary to for proper conference-to-endpoint mappings, which may or may not be satisfied by getting information directly from the endpoints or via some other means. See (#dolist) for a related item in the To Do list.
 
 The KMF needs to be secured and managed in a way to prevent exploitation by an adversary, as any kind of compromise of the KMF puts the security of the conference at risk.
 
@@ -168,7 +168,7 @@ To enable all of the above, this framework defines the use of two security conte
 ~~~
 Figure: E2E and HBH Keys Used for Authenticated Encryption
 
-The PERC Double draft specification [@!I-D.jennings-perc-double] uses standard SRTP keying material and recommended cryptographic transform(s) to first form the inner, end-to-end SRTP cryptographic context.  That end-to-end SRTP cryptographic context **MAY** be used to encrypt some RTP header extensions along with RTP media content.  The output of this is treated like an RTP packet and encrypted again using the outer hop-by-hop cryptographic context.  The endpoint executes the entire Double operation while the MDD just performs the outer, hop-by-hop operation.
+The PERC Double draft specification [@!I-D.ietf-perc-double] uses standard SRTP keying material and recommended cryptographic transform(s) to first form the inner, end-to-end SRTP cryptographic context.  That end-to-end SRTP cryptographic context **MAY** be used to encrypt some RTP header extensions along with RTP media content.  The output of this is treated like an RTP packet and encrypted again using the outer hop-by-hop cryptographic context.  The endpoint executes the entire Double operation while the MDD just performs the outer, hop-by-hop operation.
 
 RTCP can only be encrypted hop-by-hop, not end-to-end.  This framework introduces no additional step for RTCP authenticated encryption, so the procedures needed are specified in [@!RFC3711] and use the same outer, hop-by-hop cryptographic context chosen in the Double operation described above.
 
@@ -198,7 +198,7 @@ Any given RTP media flow can be identified by its SSRC, and endpoints might send
 
 Thus, endpoints **MUST** maintain a list of SSRCs from received RTP flows and each SSRC's associated E2E Key(i) information.  Following a change of the KEK (i.e., EKT Key), prior E2E Key(i) information **SHOULD** be retained for a period long enough to ensure that late-arriving or out-of-order packets from other endpoints can be successfully decrypted. The endpoint **MUST** discard the E2E Key(i) and KEK information no later than when it leaves the conference.
 
-If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions encrypted with E2E keys. See (#dolist) for an item in the To Do list.
+If there is a need to encrypt one or more RTP header extensions end-to-end, an encryption key is derived from the end-to-end SRTP master key to encrypt header extensions as per [@!RFC6904].  The MDD will not be able use the information contained in those header extensions encrypted with E2E keys. See (#dolist) for a related item in the To Do list.
 
 ## HBH Keys and Hop Operations
 
@@ -334,7 +334,7 @@ There are no IANA considerations for this document.
 
 The authors would like to thank Mo Zanaty and Christian Oien for invaluable input on this document.  Also, we would like to acknowledge Nermeen Ismail for serving on the initial versions of this document as a co-author.
 
-<reference anchor='I-D.jennings-perc-srtp-ekt-diet'>
+<reference anchor='I-D.ietf-perc-srtp-ekt-diet'>
   <front>
     <title>Encrypted Key Transport for Secure RTP</title>
     <author initials='J' surname='Mattsson' fullname='John Mattsson'/>
