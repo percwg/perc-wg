@@ -6,7 +6,7 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 #  mmark (https://github.com/miekg/mmark)
 mmark ?= mmark
 
-DRAFT = draft-jones-perc-private-media-framework
+DRAFT = draft-ietf-perc-private-media-framework
 VERSION = 00
 
 .PHONY: all clean diff
