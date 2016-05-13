@@ -310,6 +310,8 @@ The splicing attack is an attack where an MDD receiving multiple media sources s
 
 # To-Do List {#dolist}
 
+- Consider adding a list of RTP header extensions that shoould/must not be E2E encrypted.
+
 - Endpoints and KMF must securely convey their respective certificate information directly or indirectly via some other means or identity service provider.
 
 - If as in "Double" draft, the ROC value is no longer in the clear and associated with the "outer" protection scheme, we may need to require that the MDD maintain a separate ROC value for each SSRC sent to each separate endpoint.  This ROC value should start at 0 regardless of the sequence number in that first packet sent to an endpoint.  [EDIT: Do we document this in this framework or in Double draft?]
