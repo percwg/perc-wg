@@ -49,7 +49,7 @@
     #   02 - The protection profile was inadvertently left out of the Key
     #        Info message.
     #   03 - Modified the protocol to reduce the message sizes.
-    #        Added text related to MTU size considerations
+    #        Added text related to PMTU size considerations
     #
 
 %%%
@@ -487,7 +487,7 @@ SWSMS Length: The length of the "Server Write SRTP Master Salt" field.
 Server Write SRTP Master Salt: The value of the SRTP master salt used by
 the server (MDD).
 
-# MTU Considerations
+# PMTU Considerations
 
 Tunneling DTLS messages received by an endpoint inside the DTLS tunnel
 between the MDD and KMF does introduce a small risk of message
@@ -506,7 +506,7 @@ protection profiles advertised by the MDD.
 
 Thus, each DTLS message carried via the tunnel will impose several dozen
 octets of overhead.  Therefore, it is **RECOMMENDED** that endpoints
-and the KMF reduce the assumed MTU size used for DTLS messages by
+and the KMF reduce the assumed PMTU size used for DTLS messages by
 96 octets in order to avoid IP-level packet fragmentation of DTLS messages
 relayed through the tunnel.
 
