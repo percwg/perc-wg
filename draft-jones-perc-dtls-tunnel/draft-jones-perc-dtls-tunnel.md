@@ -490,30 +490,19 @@ the server (MDD).
 # PMTU Considerations
 
 Tunneling DTLS messages received by an endpoint inside the DTLS tunnel
-between the MDD and KMF does introduce a small risk of message
-fragmentation, particularly with the handshake messages carrying client
-and  server certificates.
+between the MDD and KMF introduces only a small risk of message
+fragmentation, particularly with the initial handshake messages carrying
+client and  server certificates.
 
-When sending application data, the DTLS records have a 13 octet header
-and generally a small authentication tag (typically, 16 to 32 octets),
-an Initialization Vector of for block ciphers (e.g., 16 octets of AES-CBC)
-and a small amount of padding when block ciphers are utilized (e.g. up to
-15 octets for AES-CBC).  The Tunnel message introduces six (6) octets of
-overhead to contain the association identifier and length of the tunneled
-message.  The Profiles part of the Tunnel + Profiles message adds at least
-4 additional octets, but may be longer depending on the number of
-protection profiles advertised by the MDD.
-
-Thus, each DTLS message carried via the tunnel will impose several dozen
-octets of overhead.  Therefore, it is **RECOMMENDED** that endpoints
-and the KMF reduce the assumed PMTU size used for DTLS messages by
-96 octets in order to avoid IP-level packet fragmentation of DTLS messages
-relayed through the tunnel.
-
-While the Tunnel + Key Info message is larger than Tunnel + Profiles, the
-DTLS message(s) transmitted in that flight (ChangeCipherSpec and Finished)
-are very small and do not impose a risk introducing packet fragmentation
-for all present-day ciphers.
+The additional overhead required for the tunnel is calculated to be
+approximately 50 octets for messages transmitted from the MDD to the KMF.
+Messages from the KMF would generally have slightly less overhead since
+they do not carry a list of protection profiles.  The one exception is
+the Tunnel + Key Info message, which is slightly larger as it contains key
+and salt information for the MDD.  While the Tunnel + Key Info message is
+larger than Tunnel + Profiles, the DTLS message(s) transmitted in that
+flight (ChangeCipherSpec and Finished) are very small and so the overhead
+does not impose a risk of introducing packet fragmentation.
 
 # To-Do List
 
