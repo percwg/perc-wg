@@ -282,9 +282,8 @@
 ]]></artwork>
         </figure>
 
-
- <t> TODO: move following syntax to ABNF. Move name of Short to Empty.  Move
- name of Full to EncryptedKey. Drop extra EKT. </t>
+        <t> TODO: move following syntax to ABNF. Move name of Short to Empty.
+        Move name of Full to EncryptedKey. Drop extra EKT. </t>
         
         <figure anchor="tag_formats"
                 title="EKT data formats">
@@ -305,7 +304,6 @@ Short_EKT_Field = '00000000'
 ]]></artwork>
         </figure>
 
-       
         <t>
           <!-- Here || denotes concatenation, and '1' and '0' denote single one and
                zero bits, respectively. -->
