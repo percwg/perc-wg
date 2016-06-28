@@ -247,7 +247,7 @@ scope of this document.  Further, how the trust relationships are
 established between the KMF and MDD are also outside the scope of this
 document.
 
-A tunnel **MUST* be a mutually authenticated DTLS association.  It is
+A tunnel **MUST** be a mutually authenticated DTLS association.  It is
 used to relay DTLS messages between any number of endpoints and the KMF.
 
 The MDD or KMF **MUST** establish a tunnel in advance of, or no later
