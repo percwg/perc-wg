@@ -124,20 +124,17 @@ as depicted in (#fig-tunnel):
 
 {#fig-tunnel align="center"}
 ~~~
-                        +------------------------------+
-+-----+                 |        Switching MDD         |
-|     |                 |                              |
-| KMF |<===============>|<============+ (Tunnels DTLS) |
-|     |     DTLS        |             v                |
-+-----+     Tunnel      +------------------------------+
-                                      ^
-                                      |
-                                      | DLTS-SRTP
-                                      |
-                                      v
-                                 +----------+
-                                 | Endpoint |
-                                 +----------+
+                     +---------+
+                     |   KMF   |
+                     +---------+
+                       | ^ ^ |
+                       | | | | <-- DTLS Tunnel
+                       | | | |
++----------+         +---------+         +----------+
+|          |   DTLS  |         |  DTLS   |          |
+| Endpoint |<--------|   MDD   |-------->| Endpoint |
+|          |  to KMF |         | to KMF  |          |
++----------+         +---------+         +----------+
 ~~~
 Figure: DTLS Tunnel to KMF
 
@@ -492,7 +489,9 @@ the server (MDD).
 Tunneling DTLS messages received by an endpoint inside the DTLS tunnel
 between the MDD and KMF introduces only a small risk of message
 fragmentation, particularly with the initial handshake messages carrying
-client and  server certificates.
+client and  server certificates.  The small risk of fragmentation is
+considered acceptable given that DTLS specifies how to recover from loss
+of handshake messages.
 
 The additional overhead required for the tunnel is calculated to be
 approximately 50 octets for messages transmitted from the MDD to the KMF.
