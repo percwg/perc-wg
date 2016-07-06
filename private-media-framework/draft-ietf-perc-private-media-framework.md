@@ -40,6 +40,16 @@
       region = "California"
       code = "95134"
       country = "USA"
+    [[author]]
+    initials="C."
+    surname="Groves"
+    fullname="Christian Groves"
+    organization = "Huawei"
+      [author.address]
+      email = "Christian.Groves@nteczone.com"
+      [author.address.postal]
+      city = "Melbourne"
+      country = "Australia"
 
 %%%
 
