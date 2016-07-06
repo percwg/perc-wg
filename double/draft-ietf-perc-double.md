@@ -374,7 +374,11 @@ OHB will consume up to 4 additional octets.
 Open Issue: For an audio confernce using opus in a narrowband configuration at
 TBD kbps with 20 ms packetizaton, the total bandwidth of the RTP would change
 from TBD to TBD. Do we want to consider having some AES-GCM transfroms with
-reduced length authentication tags?
+reduced length authentication tags for the HBH. SInce the actual
+authentication is provided by the E2E check, and tampering with the
+the HBH can only result in the wrong packet being selected as the
+loudest speaker, it might be desirable to have 64 bits or even less of
+securiyt for the HBH portion of the authentication. 
 
 
 # Security Considerations
