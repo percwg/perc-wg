@@ -387,7 +387,8 @@ Short_EKT_Field = '00000000'
             SHOULD use even values until all the even code points are consumed
             to avoid conflicts with pre standards version of EKT that have been
             deployed.  Values less than 64 are mandatory to understand the whole
-            EKT field SHOULD be discarded if it contains value message type that
+            EKT field SHOULD be discarded if it contains message
+	    type value that
             is less than 64 and not implemented.  </t>
 
             <t> TODO - add IANA registry for
