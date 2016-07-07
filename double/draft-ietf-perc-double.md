@@ -63,28 +63,28 @@ properties.
 # Introduction
 
 Cloud conferencing systems that are based on switched conferencing have a
-central media distribution device (MDD) that receives media from endpoints and
+central Media Distributor device that receives media from endpoints and
 distributes it to other endpoints, but does not need to interpret or change the
 media content.  For these systems, it is desirable to have one cryptographic
 context from the sending endpoint to the receiving endpoint that can encrypt and
 authenticate the media end-to-end while still allowing certain RTP header
-information to be changed by the MDD.  At the same time, a separate
+information to be changed by the Media Distributor.  At the same time, a separate
 cryptographic context provides integrity and optional confidentiality for the
-media flowing between the MDD and the endpoints.  See the framework document
+media flowing between the Media Distributor and the endpoints.  See the framework document
 that describes this concept in more detail in more detail in
 [@I-D.jones-perc-private-media-framework].
 
 This specification RECOMMENDS the SRTP AES-GCM transform [@!RFC7714] to encrypt
 an RTP packet for the end-to-end cryptographic context.  The output of this is
 treated as an RTP packet and again encrypted with an SRTP transform used in the
-hop-by-hop cryptographic context between the endpoint and the MDD.  The MDD
-decrypts and checks integrity of the hop-by-hop security.  The MDD MAY change
+hop-by-hop cryptographic context between the endpoint and the Media Distributor.  The Media Distributor
+decrypts and checks integrity of the hop-by-hop security.  The Media Distributor MAY change
 some of the RTP header information that would impact the end-to-end integrity.
 The original value of any RTP header field that is changed is included in a new
 RTP header extension called the Original Header Block.  The new RTP packet is
 encrypted with the hop-by-hop cryptographic transform before it is sent.  The
 receiving endpoint decrypts and checks integrity using the hop-by-hop
-cryptographic transform and then replaces any parameters the MDD changed using
+cryptographic transform and then replaces any parameters the Media Distributor changed using
 the information in the Original Header Block before decrypting and checking the
 end-to-end integrity.
 
@@ -97,16 +97,16 @@ interpreted as described in [@!RFC2119].
 
 Terms used throughout this document include:
 
-* MDD: media distribution device that routes media from one endpoint to other
+* Media Distributor: media distribution device that routes media from one endpoint to other
 endpoints
 
-* E2E: end-to-end, meaning the link from one endpoint through one or more MDDs
+* E2E: end-to-end, meaning the link from one endpoint through one or more Media Distributors
 to the endpoint at the other end.
 
-* HBH: hop-by-hop, meaning the link from the endpoint to or from the MDD.
+* HBH: hop-by-hop, meaning the link from the endpoint to or from the Media Distributor.
 
 * OHB: Original Header Block is an RTP header extension that contains the
-original values from the RTP header that might have been changed by an MDD.
+original values from the RTP header that might have been changed by an Media Distributor.
 
 
 # Cryptographic Contexts
@@ -114,8 +114,8 @@ original values from the RTP header that might have been changed by an MDD.
 This specification uses two cryptographic contexts: an inner ("end-to-end")
 context that is used by endpoints that originate and consume media to ensure the
 integrity of media end-to-end, and an outer ("hop-by-hop") context that is used
-between endpoints and MDDs to ensure the integrity of media over a single hop
-and to enable an MDD to modify certain RTP header fields.  RTCP is also
+between endpoints and Media Distributors to ensure the integrity of media over a single hop
+and to enable an Media Distributor to modify certain RTP header fields.  RTCP is also
 encrypted using the hop-by-hop cryptographic context.  The RECOMMENDED cipher
 for the hop-by-hop and end-to-end contexts is AES-GCM.  Other combinations of
 SRTP ciphers that support the procedures in this document can be added to the
@@ -130,9 +130,9 @@ The keys and salt for these contexts are generated with the following steps:
 
 * Assign the key and salt values for the outer (hop-by-hop) transform.
   
-Obviously, if the MDD is to be able to modify header fields but not decrypt the
+Obviously, if the Media Distributor is to be able to modify header fields but not decrypt the
 payload, then it must have cryptographic context for the outer transform, but
-not the inner transform.  This document does not define how the MDD should be
+not the inner transform.  This document does not define how the Media Distributor should be
 provisioned with this information.  One possible way to provide keying material
 for the outer ("hop-by-hop") transform is to use [@I-D.jones-perc-dtls-tunnel].
 
@@ -152,7 +152,7 @@ does this by copying the original values from the OHB and then removing the OHB
 extension and any other RTP header extensions that appear after the OHB
 extension.
 
-The MDD is only permitted to modify the extension (X) bit, payload type (PT)
+The Media Distributor is only permitted to modify the extension (X) bit, payload type (PT)
 field, and the RTP sequence number field.
 
 The OHB extension is either one octet in length, two octets in length, or three
@@ -198,13 +198,13 @@ value and RTP packet sequence number.  In this case, the OHB has this form:
 +---------------+-------------------------------+
 ~~~~~
 
-If an MDD modifies an original RTP header value, the MDD MUST include the OHB
+If an Media Distributor modifies an original RTP header value, the Media Distributor MUST include the OHB
 extension to reflect the changed value, setting the X bit in the RTP header to 1
-if no header extensions were originally present.  If another MDD along the media
+if no header extensions were originally present.  If another Media Distributor along the media
 path
 makes additional changes to the RTP header and any original value is not already
-present in the OHB, the MDD must extend the OHB by adding the changed value to
-the OHB.  To properly preserve original RTP header values, an MDD MUST NOT
+present in the OHB, the Media Distributor must extend the OHB by adding the changed value to
+the OHB.  To properly preserve original RTP header values, an Media Distributor MUST NOT
 change a value already present in the OHB extension.
 
 # RTP Operations
@@ -224,8 +224,8 @@ The processes is as follows:
   the RTP packet using the inner cryptographic context.
   
 * If the endpoint wishes to insert header extensions that can be modified by an
-  MDD, it MUST insert an OHB header extension at the end of any header
-  extensions protected end-to-end (if any), then add any MDD-modifiable header
+  Media Distributor, it MUST insert an OHB header extension at the end of any header
+  extensions protected end-to-end (if any), then add any Media Distributor-modifiable header
   extensions.  The OHB MUST replicate the information found in the RTP header
   following the application of the inner cryptographic transform.  If not
   already set, the endpoint MUST set the X bit in the
@@ -238,12 +238,12 @@ The processes is as follows:
 
 ## Modifying a Packet
 
-The MDD does not have a notion of outer or inner cryptographic contexts.
-Rather, the MDD has a single cryptographic context.  The cryptographic transform
+The Media Distributor does not have a notion of outer or inner cryptographic contexts.
+Rather, the Media Distributor has a single cryptographic context.  The cryptographic transform
 and key used to decrypt a packet and any encrypted RTP header extensions would
 be the same as those used in the endpoint's outer cryptographic context.
 
-In order to modify a packet, the MDD decrypts the packet, modifies the packet,
+In order to modify a packet, the Media Distributor decrypts the packet, modifies the packet,
 updates the OHB with any modifications not already present in the OHB, and
 re-encrypts the packet using the cryptographic context used for next hop.
 
@@ -253,31 +253,31 @@ re-encrypts the packet using the cryptographic context used for next hop.
 * Change any required parameters
 
 * If a changed RTP header field is not already in the OHB, add it with its
-  original value to the OHB.  An MDD can add information to the OHB, but
+  original value to the OHB.  An Media Distributor can add information to the OHB, but
   MUST NOT change existing information in the OHB.
 
-* If the MDD resets a parameter to its original value, it MAY drop it from the
+* If the Media Distributor resets a parameter to its original value, it MAY drop it from the
   OHB as long as there are no other header extensions following the OHB. Note
   that this might result in a decrease in the size of the OHB.  It is
-  also possible for the MDD to remove the OHB entirely if all parameters
+  also possible for the Media Distributor to remove the OHB entirely if all parameters
   in the RTP header are reset to their original values and no other header
   extensions follow the OHB.  If the OHB is removed and no other extension
   is present, the X bit in the RTP header MUST be set to 0.
 
-* The MDD MUST NOT delete any header extensions before the OHB, but MAY add,
+* The Media Distributor MUST NOT delete any header extensions before the OHB, but MAY add,
   delete, or modify any that follow the OHB.
 
-    * If the MDD adds any header extensions, it must append them and it must
+    * If the Media Distributor adds any header extensions, it must append them and it must
       maintain the order of the original header extensions in the [@!RFC5285]
       block.
     
-    * If the MDD appends header extensions, then it MUST add the OHB header
+    * If the Media Distributor appends header extensions, then it MUST add the OHB header
       extension (if not present), even if the OHB merely replicates the original
       header field values, and append the new extensions following the OHB.  The
       OHB serves as a demarcation point between original RTP header extensions
-      introduced by the endpoint and those introduced by an MDD.
+      introduced by the endpoint and those introduced by an Media Distributor.
     
-* The MDD MAY modify any header extension appearing after the OHB, but MUST NOT
+* The Media Distributor MAY modify any header extension appearing after the OHB, but MUST NOT
   modify header extensions that are present before the OHB.
 
 * Apply the cryptographic transform to the packet. If the RTP Sequence Number
@@ -312,7 +312,7 @@ which it decrypts and verifies with the inner cryptographic context.
   * Payload is the original encrypted payload.
 
 * Apply the inner cryptographic transform to this synthetic SRTP packet.  Note
-  if the RTP Sequence Number was changed by the MDD, the syntetic packet has the
+  if the RTP Sequence Number was changed by the Media Distributor, the syntetic packet has the
   original Sequence Number. If the integrity check does not pass, discard the
   packet.  If decrypting RTP header extensions end-to-end, then [@!RFC6904] MUST
   be used when decrypting the RTP packet using the inner cryptographic context.
@@ -386,13 +386,13 @@ securiyt for the HBH portion of the authentication.
 To summarize what is encrypted and authenticated, we will refer to all the RTP
 fields and headers created by the sender and before the pay load as the initial
 envelope and the RTP payload information with the media as the payload. Any
-additional headers added by the MDD are referred to as the extra envelope. The
+additional headers added by the Media Distributor are referred to as the extra envelope. The
 sender uses the E2E key to encrypts the payload and authenticate the payload +
 initial envelope which using an AEAD cipher results in a slight longer new
 payload.  Then the sender uses the HBH key to encrypt the new payload and
 authenticate the initial envelope and new payload.
 
-The MDD has the HBH key so it can check the authentication of the received
+The Media Distributor has the HBH key so it can check the authentication of the received
 packet across the initial envelope and payload data but it can't decrypt the
 payload as it does not have the E2E key. It can add extra envelope
 information. It then authenticates the initial plus extra envelope information
@@ -406,7 +406,7 @@ that it is identical and then decrypt the original payload.
 
 The end result is that if the authentications succeed, the receiver knows
 exactly what the original sender sent, as well as exactly which modifications
-were made by the MDD.
+were made by the Media Distributor.
 
 It is obviously critical that the intermediary have only the outer transform
 parameters and not the inner transform parameters.  We rely on an external key
