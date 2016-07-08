@@ -136,7 +136,7 @@ constraints defined by the PERC system, which includes, but not limited
 to, having no access to RTP media unencrypted and having limits on what
 RTP header field it can alter.
 
-Key Distributor (KM): An entity that is a logical function
+Key Distributor (KD): An entity that is a logical function
 which passes keying material and related information to endpoints and
 Media Distributor(s) that is appropriate for each.  The Key Distributor might
 be co-resident with another entity trusted with E2E keying material.
@@ -203,10 +203,9 @@ A Media Distributor (MD) forwards RTP flows between endpoints
 in the conference while performing per-hop authentication of each RTP
 packet.  The Media Distributor may need access to one or more RTP headers or header
 extensions, potentially adding or modifying a certain subset.  The Media Distributor
-will also relay secured messaging between the endpoints and the key
-management function and will acquire per-hop key information from the
-KMF.  The actual media content **MUST NOT** not be decryptable by an
-MDD, so it is untrusted to have access to the E2E media encryption keys,
+will also relay secured messaging between the endpoints and the Key Distributor and will acquire per-hop key information from the
+Key Distributor.  The actual media content **MUST NOT** not be decryptable by an
+Media Distributor, so it is untrusted to have access to the E2E media encryption keys,
 which this framework's key exchange mechanisms will prevent.
 
 An endpoint's ability to join a conference hosted by a Media Distributor **MUST NOT**
