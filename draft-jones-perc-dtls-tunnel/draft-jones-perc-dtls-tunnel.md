@@ -8,7 +8,7 @@
     #   xml2rfc (http://xml2rfc.ietf.org/)
     #
 
-    Title = "DTLS Tunnel between Media Distributor and Key Distributor to Facilitate Key Exchange"
+    Title = "A DTLS Tunnel between Media Distributor and Key Distributor to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
     docName = "draft-jones-perc-dtls-tunnel-03"
@@ -381,6 +381,7 @@ Tunneled DTLS messages are transported via the "Tunnel" message as
 application data between the media distributor and the key distributor.
 The "Tunnel" Message has the following format:
 
+{#fig-tunnel-message align="center"}
 ~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -394,6 +395,7 @@ The "Tunnel" Message has the following format:
 :                                                               :
 +---------------------------------------------------------------+
 ~~~
+Figure: The "Tunnel" Message
 
 Association Identifier: This is the association identifier used
 to uniquely identify each endpoint in a conference (32-bits).
@@ -411,6 +413,7 @@ Each Tunnel message transmitted by the media distributor contains an
 array of SRTP protection profiles at the end of the message.  The format
 of the message is shown below:
 
+{#fig-tunnel-profiles align="center"}
 ~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -428,6 +431,7 @@ of the message is shown below:
 :                      Protection Profiles                      :
 +---------------------------------------------------------------+
 ~~~
+Figure: The "Tunnel + Profiles" Message
 
 Beyond the fields included in the Tunnel message, this message
 introduces the following additional fields.
@@ -448,6 +452,7 @@ When the key distributor has HBH cipher and key information to share
 with the media distributor, the key distributor will send a Tunnel
 message with the Key Info appended as shown below:
 
+{#fig-tunnel-key-info align="center"}
 ~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
@@ -481,6 +486,7 @@ message with the Key Info appended as shown below:
 :                 Server Write SRTP Master Salt                 :
 +---------------------------------------------------------------+
 ~~~
+Figure: The "Tunnel + Key Info" Message
 
 Beyond the fields included in the Tunnel message, this message
 introduces the following additional fields.
