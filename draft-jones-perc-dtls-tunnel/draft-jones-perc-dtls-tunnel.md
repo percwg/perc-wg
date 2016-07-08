@@ -22,7 +22,7 @@
     [[author]]
     initials = "P."
     surname = "Jones"
-    fullname = "Paul Jones"
+    fullname = "Paul E. Jones"
     organization = "Cisco Systems"
       [author.address]
       email = "paulej@packetizer.com"
