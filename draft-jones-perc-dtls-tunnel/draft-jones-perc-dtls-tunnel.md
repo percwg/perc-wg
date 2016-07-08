@@ -133,12 +133,12 @@ between the endpoint and key distributor, as depicted in (#fig-tunnel):
 {#fig-tunnel align="center"}
 ~~~
                          +-------------+
-                         |    Key      |
+                         |     Key     |
                          | Distributor |
                          +-------------+
-                             | ^ ^ |
-                             | | | | <-- DTLS Tunnel
-                             | | | |
+                             # ^ ^ #
+                             # | | # <-- DTLS Tunnel
+                             # | | #
 +----------+             +-------------+             +----------+
 |          |     DTLS    |             |    DTLS     |          |
 | Endpoint |<------------|    Media    |------------>| Endpoint |
