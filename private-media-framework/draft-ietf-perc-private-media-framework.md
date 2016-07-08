@@ -8,7 +8,7 @@
     Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-ietf-perc-private-media-framework-00"
+    docName = "draft-ietf-perc-private-media-framework-01"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "Private Media Framework", "conferencing"]
@@ -16,7 +16,7 @@
     [[author]]
     initials="P."
     surname="Jones"
-    fullname="Paul Jones"
+    fullname="Paul E. Jones"
     organization = "Cisco"
       [author.address]
       email = "paulej@packetizer.com"
