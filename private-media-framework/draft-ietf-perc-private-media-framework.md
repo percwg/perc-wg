@@ -204,7 +204,7 @@ in the conference while performing per-hop authentication of each RTP
 packet.  The Media Distributor may need access to one or more RTP headers or header
 extensions, potentially adding or modifying a certain subset.  The Media Distributor
 will also relay secured messaging between the endpoints and the Key Distributor and will acquire per-hop key information from the
-Key Distributor.  The actual media content **MUST NOT** not be decryptable by an
+Key Distributor.  The actual media content **MUST NOT** not be decryptable by a
 Media Distributor, so it is untrusted to have access to the E2E media encryption keys,
 which this framework's key exchange mechanisms will prevent.
 
@@ -290,7 +290,7 @@ and DTLS-SRTP [@!RFC5764].
 
 This solution framework focuses on the end-to-end privacy and integrity
 of the participant's media by limiting access to end-to-end key
-information to trusted entities.  However, this framework does give an
+information to trusted entities.  However, this framework does give a
 Media Distributor access to RTP headers and all or most header extensions, as well as
 the ability to modify a certain subset of those headers and to add
 header extensions.  Packets received by a Media Distributor or an endpoint are
