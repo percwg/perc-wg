@@ -136,7 +136,7 @@ constraints defined by the PERC system, which includes, but not limited
 to, having no access to RTP media unencrypted and having limits on what
 RTP header field it can alter.
 
-Key Distributor (KD): An entity that is a logical function
+Key Distributor: An entity that is a logical function
 which passes keying material and related information to endpoints and
 Media Distributor(s) that is appropriate for each.  The Key Distributor might
 be co-resident with another entity trusted with E2E keying material.
@@ -199,7 +199,7 @@ conference.
 
 ### Media Distributor
 
-A Media Distributor (MD) forwards RTP flows between endpoints
+A Media Distributor forwards RTP flows between endpoints
 in the conference while performing per-hop authentication of each RTP
 packet.  The Media Distributor may need access to one or more RTP headers or header
 extensions, potentially adding or modifying a certain subset.  The Media Distributor
@@ -259,7 +259,7 @@ endpoints, to a level equal to or better than traditional conference
 
 ### Key Distributor
 
-The Key Distributor (KD), which may be collocated with an endpoint or exist standalone,
+The Key Distributor, which may be collocated with an endpoint or exist standalone,
 is responsible for providing key information to endpoints for both
 end-to-end and hop-by-hop security and for providing key information to
 Media Distributors for the hop-by-hop security.
@@ -291,7 +291,7 @@ and DTLS-SRTP [@!RFC5764].
 This solution framework focuses on the end-to-end privacy and integrity
 of the participant's media by limiting access to end-to-end key
 information to trusted entities.  However, this framework does give an
-MDD access to RTP headers and all or most header extensions, as well as
+Media Distributor access to RTP headers and all or most header extensions, as well as
 the ability to modify a certain subset of those headers and to add
 header extensions.  Packets received by a Media Distributor or an endpoint are
 authenticated hop-by-hop.
@@ -382,7 +382,7 @@ KEK information no later than when it leaves the conference.
 
 If there is a need to encrypt one or more RTP header extensions
 end-to-end, an encryption key is derived from the end-to-end SRTP master
-key to encrypt header extensions as per [@!RFC6904].  The MDD will not
+key to encrypt header extensions as per [@!RFC6904].  The Media Distributor will not
 be able use the information contained in those header extensions
 encrypted with E2E keys. See (#dolist) for a related item in the To Do
 list.
@@ -428,16 +428,16 @@ association to endpoints via procedures defined in PERC EKT
 [I-D.ietf-perc-srtp-ekt-diet].
 
 Media Distributors use DTLS-SRTP [@!RFC5764] directly with a peer Media Distributor to establish HBH
-keys for transmitting RTP and RTCP packets that peer Media Distributor.  The KMF does
+keys for transmitting RTP and RTCP packets that peer Media Distributor.  The Key Distributor does
 not facilitate establishing HBH keys for use between Media Distributors.
 
-### Initial Key Exchange and KMF
+### Initial Key Exchange and Key Distributor
 
 The procedures defined in DTLS Tunnel for PERC
 [@!I-D.jones-perc-dtls-tunnel] establish one or more DTLS tunnels
 between the Media Distributor and Key Distributor, making it is possible for the Media Distributor to facilitate
 the establishment of a secure DTLS association between each endpoint and
-the KMF as shown the following figure.  The DTLS association between
+the Key Distributor as shown the following figure.  The DTLS association between
 endpoints and the Key Distributor will enable each endpoint to receive E2E key
 information, Key Encryption Key (KEK) information (i.e., EKT Key), and
 HBH key information.  At the same time, the Key Distributor can securely provide the
@@ -448,18 +448,18 @@ cryptographic transform.
 {#fig-initial-key-exchange align="center"}
 ~~~
 
-                      +-----------+ 
-             KEK info | Key       | HBH Key info to
-         to endpoints |Distributor| endpoints & Media Distributor
-                      +-----------+
-                         # ^ ^ #
-                         # | | #-DTLS Tunnel
-                         # | | #
-+-----------+         +-----------+         +-----------+
-| Endpoint  |  DTLS   | Media     |  DTLS   | Endpoint  |
-|    KEK    |<--------|Distributor|-------->|    KEK    |
-| HBH Key(j)| to KD   | HBH Keys  | to KD   | HBH Key(j)|
-+-----------+         +-----------+         +-----------+
+                          +-----------+ 
+                 KEK info |    Key    | HBH Key info to
+             to Endpoints |Distributor| Endpoints & Media Distributor
+                          +-----------+
+                             # ^ ^ #
+                             # | | #-DTLS Tunnel
+                             # | | #
++-----------+             +-----------+             +-----------+
+| Endpoint  |   DTLS      |   Media   |   DTLS      | Endpoint  |
+|    KEK    |<------------|Distributor|------------>|    KEK    |
+| HBH Key(j)| to Key Dist | HBH Keys  | to Key Dist | HBH Key(j)|
++-----------+             +-----------+             +-----------+
 
 ~~~
 Figure: Exchanging Key Information Between Entities
@@ -503,11 +503,11 @@ EKT Key immediately. See Section 2.2.2 of
 # Entity Trust
 
 It is important to this solution framework that the entities can trust
-and validate the authenticity of other entities, especially the KMF and
+and validate the authenticity of other entities, especially the Key Distributor and
 endpoints.  The details of this are outside the scope of specification
 but a few possibilities are discussed in the following sections.  The
 key requirements is that endpoints can verify they are connected to the
-correct KMF for the conference and the KMF can verify the endpoints are
+correct Key Distributor for the conference and the Key Distributor can verify the endpoints are
 the correct endpoints for the conference.
 
 Two possible approaches to solve this are Identity Assertions and
