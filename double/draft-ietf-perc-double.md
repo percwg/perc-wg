@@ -106,7 +106,7 @@ to the endpoint at the other end.
 * HBH: hop-by-hop, meaning the link from the endpoint to or from the Media Distributor.
 
 * OHB: Original Header Block is an RTP header extension that contains the
-original values from the RTP header that might have been changed by an Media Distributor.
+original values from the RTP header that might have been changed by a Media Distributor.
 
 
 # Cryptographic Contexts
@@ -115,7 +115,7 @@ This specification uses two cryptographic contexts: an inner ("end-to-end")
 context that is used by endpoints that originate and consume media to ensure the
 integrity of media end-to-end, and an outer ("hop-by-hop") context that is used
 between endpoints and Media Distributors to ensure the integrity of media over a single hop
-and to enable an Media Distributor to modify certain RTP header fields.  RTCP is also
+and to enable a Media Distributor to modify certain RTP header fields.  RTCP is also
 encrypted using the hop-by-hop cryptographic context.  The RECOMMENDED cipher
 for the hop-by-hop and end-to-end contexts is AES-GCM.  Other combinations of
 SRTP ciphers that support the procedures in this document can be added to the
@@ -198,13 +198,13 @@ value and RTP packet sequence number.  In this case, the OHB has this form:
 +---------------+-------------------------------+
 ~~~~~
 
-If an Media Distributor modifies an original RTP header value, the Media Distributor MUST include the OHB
+If a Media Distributor modifies an original RTP header value, the Media Distributor MUST include the OHB
 extension to reflect the changed value, setting the X bit in the RTP header to 1
 if no header extensions were originally present.  If another Media Distributor along the media
 path
 makes additional changes to the RTP header and any original value is not already
 present in the OHB, the Media Distributor must extend the OHB by adding the changed value to
-the OHB.  To properly preserve original RTP header values, an Media Distributor MUST NOT
+the OHB.  To properly preserve original RTP header values, a Media Distributor MUST NOT
 change a value already present in the OHB extension.
 
 # RTP Operations
@@ -253,7 +253,7 @@ re-encrypts the packet using the cryptographic context used for next hop.
 * Change any required parameters
 
 * If a changed RTP header field is not already in the OHB, add it with its
-  original value to the OHB.  An Media Distributor can add information to the OHB, but
+  original value to the OHB.  A Media Distributor can add information to the OHB, but
   MUST NOT change existing information in the OHB.
 
 * If the Media Distributor resets a parameter to its original value, it MAY drop it from the
@@ -275,7 +275,7 @@ re-encrypts the packet using the cryptographic context used for next hop.
       extension (if not present), even if the OHB merely replicates the original
       header field values, and append the new extensions following the OHB.  The
       OHB serves as a demarcation point between original RTP header extensions
-      introduced by the endpoint and those introduced by an Media Distributor.
+      introduced by the endpoint and those introduced by a Media Distributor.
     
 * The Media Distributor MAY modify any header extension appearing after the OHB, but MUST NOT
   modify header extensions that are present before the OHB.
@@ -374,7 +374,7 @@ OHB will consume up to 4 additional octets.
 Open Issue: For an audio confernce using opus in a narrowband configuration at
 TBD kbps with 20 ms packetizaton, the total bandwidth of the RTP would change
 from TBD to TBD. Do we want to consider having some AES-GCM transfroms with
-reduced length authentication tags for the HBH. SInce the actual
+reduced length authentication tags for the HBH. Since the actual
 authentication is provided by the E2E check, and tampering with the
 the HBH can only result in the wrong packet being selected as the
 loudest speaker, it might be desirable to have 64 bits or even less of

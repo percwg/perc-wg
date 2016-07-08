@@ -353,7 +353,7 @@ Short_EKT_Field = '00000000'
             <t hangText="Security Parameter Index (SPI):">This field indicates
             the appropriate EKT Key and other parameters for the receiver to use
             when processing the packet. Each time a different EKT Key is
-            received, it will have a larger SPI than the previos key
+            received, it will have a larger SPI than the previous key
 	    (after taking rollover into account). The length
             of this field is 16 bits.  The parameters identified by this field
             are:
