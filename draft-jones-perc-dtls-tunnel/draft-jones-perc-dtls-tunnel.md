@@ -354,7 +354,7 @@ handling of the messages and certificates is exactly the same as normal
 DTLS-SRTP procedures between endpoints.
 
 The key distributor **MUST** send a DTLS Finished message to the endpoint
-at the point the the DTLS handshake completes using the Tunnel + Key Info
+at the point the DTLS handshake completes using the Tunnel + Key Info
 message.  The Key Info includes the selected cipher (i.e. protection
 profile), MKI [@!RFC3711] value (if any), SRTP master keys, and SRTP
 master salt values.
