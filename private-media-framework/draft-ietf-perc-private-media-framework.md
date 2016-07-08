@@ -172,8 +172,7 @@ focused by only using the the simple, most general deployment scenario.
                        |
                        |
 +----------------+     |       +--------------------+
-| Key Management |     |       | Media Distribution |
-|    Function    |     |       |       Device       |
+| Key Distributor|     |       | Media Distributor  |
 +----------------+     |       +--------------------+
                        |
      Trusted           |             Untrusted
@@ -307,12 +306,23 @@ for the hop between an endpoint and an MDD or between MDDs.  Reference
 the following figure.
 
 ~~~
-+--------+    HBH      +-----+   HBH   +-----+    HBH      +--------+
-|        |=============|     |=========|     |=============|        |
-|Endpoint|-E2E Key(A)->| MDD |-------->| MDD |------------>|Endpoint|
-|    A   |<------------|  X  |<--------|  Y  |<-E2E Key(B)-|    B   |
-|        |=============|     |=========|     |=============|        |
-+--------+   Key(AX)   +-----+ Key(XY) +-----+   Key(YB)   +--------+
++-------------+                                +-------------+
+|             |################################|             |
+|    Media    |------------------------------->|    Media    |
+| Distributor |<-------------------------------| Distributor |
+|      X      |################################|      Y      |
+|             |          HBH Key (XY)          |             |
++-------------+                                +-------------+
+   #  ^ |  #                                      #  ^ |  #
+   #  | |  #       HBH                  HBH       #  | |  #
+   #  | |  # <== Key(AX)              Key(YB) ==> #  | |  #
+   #  | |  #                                      #  | |  #
+   #  |<+--#---- E2E Key (A)       E2E Key (B) ---#->| |  #
+   #  | |  #                                      #  | |  #
+   #  | v  #                                      #  | v  #
++-------------+                                +-------------+
+| Endpoint A  |                                | Endpoint B  |
++-------------+                                +-------------+
 ~~~
 Figure: E2E and HBH Keys Used for Authenticated Encryption
 
@@ -345,15 +355,15 @@ endpoint.
 {#fig-who-has-what-key align="center"}
 ~~~
 +---------------------+------------+-------+-------+------------+
-| Key     /    Entity | Endpoint A | MDD X | MDD Y | Endpoint B |
+| Key     /    Entity | Endpoint A |  MD X |  MD Y | Endpoint B |
 +---------------------+------------+---------------+------------+
 | KEK                 |    Yes     |  No   |  No   |     Yes    |
 +---------------------+------------+---------------+------------+
 | E2E Key (i)         |    Yes     |  No   |  No   |     Yes    |
 +---------------------+------------+---------------+------------+
-| HBH Key (A<=>MDD X) |    Yes     |  Yes  |  No   |     No     |
+| HBH Key (A<=>MD X)  |    Yes     |  Yes  |  No   |     No     |
 +---------------------+------------+---------------+------------+
-| HBH Key (B<=>MDD Y) |    No      |  No   |  Yes  |     Yes    |
+| HBH Key (B<=>MD Y)  |    No      |  No   |  Yes  |     Yes    |
 +---------------------+------------+---------------+------------+
 ~~~
 Figure: Keys per Entity
@@ -440,17 +450,18 @@ cryptographic transform.
 {#fig-initial-key-exchange align="center"}
 ~~~
 
-             KEK info +---------+ HBH Key info
-         to endpoints |   KMF   | to endpoints & MDD
-                      +---------+
-                        | ^ ^ |
-                        | | | |-DTLS Tunnel
-                        | | | |
-+-----------+         +---------+         +-----------+
-| Endpoint  |  DTLS   |   MDD   |  DTLS   | Endpoint  |
-|    KEK    |<--------|         |-------->|    KEK    |
-| HBH Key(j)| to KMF  | HBH Keys| to KMF  | HBH Key(j)|
-+-----------+         +---------+         +-----------+
+                      +-----------+ 
+             KEK info | Key       | HBH Key info to
+         to endpoints |Distributor| endpoints & Media Distributor
+                      +-----------+
+                         # ^ ^ #
+                         # | | #-DTLS Tunnel
+                         # | | #
++-----------+         +-----------+         +-----------+
+| Endpoint  |  DTLS   | Media     |  DTLS   | Endpoint  |
+|    KEK    |<--------|Distributor|-------->|    KEK    |
+| HBH Key(j)| to KD   | HBH Keys  | to KD   | HBH Key(j)|
++-----------+         +-----------+         +-----------+
 
 ~~~
 Figure: Exchanging Key Information Between Entities
