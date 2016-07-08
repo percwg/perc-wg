@@ -555,14 +555,15 @@ design choice in the context of all the alternatives.
 
 This document establishes a new registry to contain "data type" values
 used in the DTLS Tunnel protocol.  These data type values are a single
-octet in length.  This document defines the following values, leaving the
-balance of possible values reserved for future specifications:
+octet in length.  This document defines the values shown in (#data_types)
+below, leaving the balance of possible values reserved for future
+specifications:
 
 Data Type | Description
 ----------|:----------------------------------------
 0x01      | Supported SRTP Protection Profiles
 0x02      | Key Information
-Table: Data Type Values for the DTLS Tunnel Protocol
+Table: Data Type Values for the DTLS Tunnel Protocol {#data_types}
 
 The name for this registry is "Datagram Transport Layer Security
 (DTLS) Tunnel Protocol Data Types for Privacy Enhanced Conferencing."
