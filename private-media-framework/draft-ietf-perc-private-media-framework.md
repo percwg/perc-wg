@@ -436,13 +436,13 @@ not facilitate establishing HBH keys for use between Media Distributors.
 
 The procedures defined in DTLS Tunnel for PERC
 [@!I-D.jones-perc-dtls-tunnel] establish one or more DTLS tunnels
-between the MDD and KMF, making it is possible for the MDD to facilitate
+between the Media Distributor and Key Distributor, making it is possible for the Media Distributor to facilitate
 the establishment of a secure DTLS association between each endpoint and
 the KMF as shown the following figure.  The DTLS association between
-endpoints and the KMF will enable each endpoint to receive E2E key
+endpoints and the Key Distributor will enable each endpoint to receive E2E key
 information, Key Encryption Key (KEK) information (i.e., EKT Key), and
-HBH key information.  At the same time, the KMF can securely provide the
-HBH key information to the MDD.  The key information summarized here may
+HBH key information.  At the same time, the Key Distributor can securely provide the
+HBH key information to the Media Distributor.  The key information summarized here may
 include the SRTP master key, SRTP master salt, and the negotiated
 cryptographic transform.
 
@@ -466,21 +466,21 @@ cryptographic transform.
 Figure: Exchanging Key Information Between Entities
 
 Endpoints will establish a DTLS-SRTP association over the RTP session's
-media ports for the purposes of key information exchange with the KMF.
-The MDD will not terminate the DTLS signaling, but will instead forward
-DTLS packets received from an endpoint on to the KMF (and vice versa)
-via a tunnel established between MDD and the KMF.  This tunnel used to
-encapsulate the DTLS-SRTP signaling between the KMF and endpoints will
-also be used to convey HBH key information from the KMF to the MDD, so
+media ports for the purposes of key information exchange with the Key Distributor.
+The Media Distributor will not terminate the DTLS signaling, but will instead forward
+DTLS packets received from an endpoint on to the Key Distributor (and vice versa)
+via a tunnel established between Media Distributor and the Key Distributor.  This tunnel used to
+encapsulate the DTLS-SRTP signaling between the Key Distributor and endpoints will
+also be used to convey HBH key information from the Key Distributor to the Media Distributor, so
 no additional protocol or interface is required.
 
 ### Key Exchange during a Conference
 
-Following the initial key information exchange with the KMF, endpoints
+Following the initial key information exchange with the Key Distributor, endpoints
 will be able to encrypt media end-to-end with their E2E Key(i), sending
 that E2E Key(i) to other endpoints encrypted with KEK, and will be able
 to encrypt and authenticate RTP packets using local HBH Key(j).  The
-procedures defined do not allow the MDD to gain access to the KEK
+procedures defined do not allow the Media Distributor to gain access to the KEK
 information, preventing it from gaining access to any endpoint's E2E key
 and subsequently decrypting media.
 
@@ -490,7 +490,7 @@ conference.  Dictating if, when or how often a conference is to be
 re-keyed is outside the scope of this document, but this framework does
 accommodate re-keying during the life of a conference.
 
-When a KMF decides to rekey a conference, it transmits a specific
+When a Key Distributor decides to rekey a conference, it transmits a specific
 message defined in PERC EKT [I-D.ietf-perc-srtp-ekt-diet] to each of the
 conference participants.  The endpoint **MUST** create a new SRTP master
 key and prepare to send that key inside a Full EKT Field using the new
@@ -519,11 +519,11 @@ Certificate Fingerprints.
 WebRTC Identity assertion (EDITOR NOTE: add I-D reference) can be used
 to bind the identity of the user of the endpoint to the fingerprint of
 the DTLS-SRTP certificate used for the call.  This certificate is unique
-for a given call and a conference.  This allows the KMF to ensure that
-only authorized users participate in the conference. Similarly the KMF
+for a given call and a conference.  This allows the Key Distributor to ensure that
+only authorized users participate in the conference. Similarly the Key Distributor
 can create a WeBRTC Identity assertion bound the fingerprint of the
-unique certificate used by the KMF for this conference so that the
-endpoint can validate it is talking to the correct KMF.
+unique certificate used by the Key Distributor for this conference so that the
+endpoint can validate it is talking to the correct Key Distributor.
 
 ## Certificate Fingerprints in Session Signaling
 
@@ -545,9 +545,9 @@ connection and check that is the authorized entity.
 
 Ultimately, if using session signaling, an endpoint's certificate
 fingerprint would need to be securely mapped to a user and conveyed to
-the KMF so that it can check that that user is authorized.  Similarly,
-the KMF's certificate fingerprint can be conveyed to endpoint in a
-manner that can be authenticated as being an authorized KMF for this
+the Key Distributor so that it can check that that user is authorized.  Similarly,
+the Key Distributor's certificate fingerprint can be conveyed to endpoint in a
+manner that can be authenticated as being an authorized Key Distributor for this
 conference.
 
 # Attacks on Privacy Enhanced RTP Conferencing {#attacks}
@@ -570,25 +570,25 @@ impossible.
 
 Off-path attackers may try connecting to different PERC entities and
 send specifically crafted packets.  A successful attacker might be able
-to get the MDD to forward such packets.  If not making use of HBH
-authentication on the MDD, such an attack could only be detected in the
+to get the Media Distributor to forward such packets.  If not making use of HBH
+authentication on the Media Distributor, such an attack could only be detected in the
 receiving endpoints where the forged packets would finally be dropped.
 
-Another potential attack is a third party claiming to be an MDD, fooling
-endpoints in to sending packets to the false MDD instead of the correct
+Another potential attack is a third party claiming to be an Media Distributor, fooling
+endpoints in to sending packets to the false Media Distributor instead of the correct
 one.  The deceived sending endpoints could incorrectly assuming their
 packets have been delivered to endpoints when they in fact have not.
-Further, the false MDD may cascade to another legitimate MDD creating a
+Further, the false Media Distributor may cascade to another legitimate Media Distributor creating a
 false version of the real conference.  
 
-This attack can be mitigated by the false MDD not being authenticated by
-the KMF during PERC Tunnel establishment. Without the tunnel in place,
-endpoints will not establish secure associations with the KMF and
+This attack can be mitigated by the false Media Distributor not being authenticated by
+the Key Distributor during PERC Tunnel establishment. Without the tunnel in place,
+endpoints will not establish secure associations with the Key Distributor and
 receive the KEK, causing the conference to not proceed.  
 
-##   MDD Attacks
+##   Media Distributor Attacks
 
-The MDD can attack the session in a number of possible ways.
+The Media Distributor can attack the session in a number of possible ways.
 
 ###   Denial of service
 
@@ -596,14 +596,14 @@ Any modification of the end-to-end authenticated data will result in the
 receiving endpoint getting an integrity failure when performing
 authentication on the received packet.
 
-The MDD can also attempt to perform resource consumption attacks on the
+The Media Distributor can also attempt to perform resource consumption attacks on the
 receiving endpoint.  One such attack would be to insert random SSRC/CSRC
 values in any RTP packet with an inband key-distribution message
 attached (i.e., Full EKT Field).  Since such a message would trigger the
-receiver to form a new cryptographic context, the MDD can attempt to
+receiver to form a new cryptographic context, the Media Distributor can attempt to
 consume the receiving endpoints resources.
 
-Another denial of service attack is where the MDD rewrites the PT field
+Another denial of service attack is where the Media Distributor rewrites the PT field
 to indicate a different codec.  The effect of this attack is that any
 payload packetized and encoded according to one RTP payload format is
 then processed using another payload format and codec.  Assuming that
@@ -618,7 +618,7 @@ audio and/or can be damaging to hearing and playout equipment.
 
 Replay attack is when an already received packets from a previous point
 in the RTP stream is replayed as new packet.  This could, for example,
-allow an MDD to transmit a sequence of packets identified as a user
+allow an Media Distributor to transmit a sequence of packets identified as a user
 saying "yes", instead of the "no" the user actually said.
 
 The mitigation for a replay attack is to prevent old packets beyond a
@@ -630,14 +630,14 @@ whole duration of the conference.
 
 The delayed playout attack is a variant of the replay attack.  This
 attack is possible even if E2E replay protection is in place.   However,
-due to fact that the MDD is allowed to select a sub-set of streams and
+due to fact that the Media Distributor is allowed to select a sub-set of streams and
 not forward the rest to a receiver, such as in forwarding only the most
 active speakers, the receiver has to accept gaps in the E2E packet
-sequence.  The issue with this is that an MDD can select to not deliver
+sequence.  The issue with this is that an Media Distributor can select to not deliver
 a particular stream for a while.
 
 Within the window from last packet forwarded to the receiver and the
-latest received by the MDD, the MDD can select an arbitrary starting
+latest received by the Media Distributor, the Media Distributor can select an arbitrary starting
 point when resuming forwarding packets.  Thus what the media source said
 can be substantially delayed at the receiver with the receiver believing
 that it is what was said just now, and only delayed due to transport
@@ -645,12 +645,12 @@ delay.
 
 ###  Splicing Attack
 
-The splicing attack is an attack where an MDD receiving multiple media
-sources splices one media stream into the other.  If the MDD is able to
+The splicing attack is an attack where an Media Distributor receiving multiple media
+sources splices one media stream into the other.  If the Media Distributor is able to
 change the SSRC without the receiver having any method for verifying the
-original source ID, then the MDD could first deliver stream A and then
+original source ID, then the Media Distributor could first deliver stream A and then
 later forward stream B under the same SSRC as stream A was previously
-using.  Not allowing the MDD to change the SSRC mitigates this attack.
+using.  Not allowing the Media Distributor to change the SSRC mitigates this attack.
 
 # To-Do List {#dolist}
 
@@ -661,19 +661,19 @@ using.  Not allowing the MDD to change the SSRC mitigates this attack.
 - Consider adding a list of RTP header extensions that should/must not
   be E2E encrypted.
 
-- Endpoints, KMF and MDD provider must securely convey their respective
+- Endpoints, Key Distributor and Media Distributor provider must securely convey their respective
   certificate information directly or indirectly via some means, such as
   via an identity service provider.
 
 - If as in "Double" draft, the ROC value is no longer in the clear and
   associated with the "outer" protection scheme, we may need to require
-  that the MDD maintain a separate ROC value for each SSRC sent to each
+  that the Media Distributor maintain a separate ROC value for each SSRC sent to each
   endpoint.  This ROC value should start at 0 regardless of the sequence
   number in that first packet sent to an endpoint.  
 
 - Investigate adding ability to enable the transmission of one-way media
   from a non-trusted device (e.g., announcements). One possible solution
-  is to have the KMF send an "ekt_key" message that is explicitly
+  is to have the Key Distributor send an "ekt_key" message that is explicitly
   labeled for receive-only and giving that to announcement servers.  A
   possible approach would be to define EKT Keys with a SPI > 32000, for
   example, for this purpose and endpoints should only use those EKT Keys
