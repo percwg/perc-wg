@@ -90,7 +90,7 @@ Additionally, there are usually several ports open to the public in
 cloud deployments, such as for remote administration, and so on.
 
 This document defines a solution framework wherein media privacy is
-ensured by making it impossible for an media distribution device to gain
+ensured by making it impossible for a media distribution device to gain
 access to keys needed to decrypt or authenticate the actual media
 content sent between conference participants. At the same time, the
 framework allows for the Media Distributors to modify certain RTP
@@ -120,7 +120,7 @@ terms and acronyms:
 End-to-End (E2E): Communications from one endpoint through one or more
 Media Distribution Devices to the endpoint at the other end.
 
-Hop-by-Hop (HBH): Communications between an endpoint and an Media
+Hop-by-Hop (HBH): Communications between an endpoint and a Media
 Distribution Device or between Media Distribution Devices.
 
 Endpoint: An RTP flow terminating entity that has possession of E2E
@@ -209,17 +209,17 @@ KMF.  The actual media content **MUST NOT** not be decryptable by an
 MDD, so it is untrusted to have access to the E2E media encryption keys,
 which this framework's key exchange mechanisms will prevent.
 
-An endpoint's ability to join a conference hosted by an Media Distributor **MUST NOT**
+An endpoint's ability to join a conference hosted by a Media Distributor **MUST NOT**
 alone be interpreted as being authorized to have access to the E2E media
 encryption keys, as the Media Distributor does not have the ability to determine
 whether an endpoint is authorized.
 
-An Media Distributor **MUST** perform its role in properly forwarding media packets
+A Media Distributor **MUST** perform its role in properly forwarding media packets
 while taking measures to mitigate the adverse effects of denial of
 service attacks (refer to (#attacks)), etc, to a level equal to or
 better than traditional conferencing (i.e. pre-PERC) deployments.
 
-An Media Distributor or associated conferencing infrastructure may also initiate or
+A Media Distributor or associated conferencing infrastructure may also initiate or
 terminate various conference control related messaging, which is outside
 the scope of this framework document.
 
@@ -294,7 +294,7 @@ of the participant's media by limiting access to end-to-end key
 information to trusted entities.  However, this framework does give an
 MDD access to RTP headers and all or most header extensions, as well as
 the ability to modify a certain subset of those headers and to add
-header extensions.  Packets received by an Media Distributor or an endpoint are
+header extensions.  Packets received by a Media Distributor or an endpoint are
 authenticated hop-by-hop.
 
 To enable all of the above, this framework defines the use of two
@@ -574,7 +574,7 @@ to get the Media Distributor to forward such packets.  If not making use of HBH
 authentication on the Media Distributor, such an attack could only be detected in the
 receiving endpoints where the forged packets would finally be dropped.
 
-Another potential attack is a third party claiming to be an Media Distributor, fooling
+Another potential attack is a third party claiming to be a Media Distributor, fooling
 endpoints in to sending packets to the false Media Distributor instead of the correct
 one.  The deceived sending endpoints could incorrectly assuming their
 packets have been delivered to endpoints when they in fact have not.
@@ -618,7 +618,7 @@ audio and/or can be damaging to hearing and playout equipment.
 
 Replay attack is when an already received packets from a previous point
 in the RTP stream is replayed as new packet.  This could, for example,
-allow an Media Distributor to transmit a sequence of packets identified as a user
+allow a Media Distributor to transmit a sequence of packets identified as a user
 saying "yes", instead of the "no" the user actually said.
 
 The mitigation for a replay attack is to prevent old packets beyond a
@@ -633,7 +633,7 @@ attack is possible even if E2E replay protection is in place.   However,
 due to fact that the Media Distributor is allowed to select a sub-set of streams and
 not forward the rest to a receiver, such as in forwarding only the most
 active speakers, the receiver has to accept gaps in the E2E packet
-sequence.  The issue with this is that an Media Distributor can select to not deliver
+sequence.  The issue with this is that a Media Distributor can select to not deliver
 a particular stream for a while.
 
 Within the window from last packet forwarded to the receiver and the
@@ -645,7 +645,7 @@ delay.
 
 ###  Splicing Attack
 
-The splicing attack is an attack where an Media Distributor receiving multiple media
+The splicing attack is an attack where a Media Distributor receiving multiple media
 sources splices one media stream into the other.  If the Media Distributor is able to
 change the SSRC without the receiver having any method for verifying the
 original source ID, then the Media Distributor could first deliver stream A and then
