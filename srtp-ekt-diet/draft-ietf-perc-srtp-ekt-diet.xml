@@ -36,7 +36,7 @@
 <?rfc sortrefs="yes"?>
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
-<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-00" ipr="trust200902">
+<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-01" ipr="trust200902">
 
   <front>
     <title abbrev="EKT SRTP">Encrypted Key Transport for Secure RTP</title>
@@ -146,7 +146,7 @@
       </address>
     </author>
 
-      <date month="May" day="9" year="2016"/>
+      <date month="July" day="8" year="2016"/>
 
 
     <area>ART</area>

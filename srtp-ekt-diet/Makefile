@@ -2,7 +2,7 @@
 
 SRC  := $(wildcard draft-*.xml)
 
-VERSION = 00
+VERSION = 01
 
 HTML := $(patsubst %.xml,%-$(VERSION).html,$(SRC))
 TXT  := $(patsubst %.xml,%-$(VERSION).txt,$(SRC))
