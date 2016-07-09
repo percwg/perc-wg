@@ -8,10 +8,10 @@
     #   xml2rfc (http://xml2rfc.ietf.org/)
     #
 
-    Title = "A DTLS Tunnel between Media Distributor and Key Distributor to Facilitate Key Exchange"
+    Title = "DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
-    docName = "draft-jones-perc-dtls-tunnel-03"
+    docName = "draft-jones-perc-dtls-tunnel-04"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
@@ -52,6 +52,7 @@
     #        Added text related to PMTU size considerations.
     #        Added instructions for an IANA registry.
     #        Changed KMF and MDD to Key Distributor and Media Distributor.
+    #   04 - Minor title change
     #
 
 %%%

@@ -7,7 +7,7 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 mmark ?= mmark
 
 DRAFT = draft-jones-perc-dtls-tunnel
-VERSION = 03
+VERSION = 04
 
 .PHONY: all clean diff
 .PRECIOUS: %.xml
