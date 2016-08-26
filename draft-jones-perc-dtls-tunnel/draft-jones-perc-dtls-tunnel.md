@@ -188,7 +188,7 @@ process, the media distributor shares its supported SRTP protection
 profile information (see [@!RFC5764]) and the key distributor shares HBH
 keying material and selected cipher with the media distributor.  The
 message used to tunnel the DTLS messages is named "Tunnel" and can
-include Profiles, Key Info data, or endpoint disconnection notifications.
+include Profiles, Media Keys data, or endpoint disconnection notifications.
 
 {#fig-message-flow align="center"}
 ~~~
@@ -208,7 +208,7 @@ Endpoint              media distributor          key distributor
     | DTLS handshake message  | Tunnel + Profiles       |
     |                         |                         |
     |<------------------------|<========================|
-    |  DTLS handshake message |       Tunnel + Key Info |
+    |  DTLS handshake message |     Tunnel + Media Keys |
     |    (including Finished) |                         |
     |                         |                         |
 ~~~
@@ -231,7 +231,7 @@ performed.
 Further, the key distributor will provide the SRTP [@!RFC3711] keying
 material to the media distributor for HBH operations at the time it
 sends a DTLS Finished message to the endpoint via the tunnel.  The
-media distributor would extract this Key Info when received and use
+media distributor would extract this Media Keys when received and use
 it for hop-by-hop encryption and authentication.  The delivery of the
 keying information along with the completion of the DTLS handshake
 ensures the delivery of the keying information is fate shared with
@@ -324,7 +324,7 @@ The media distributor **MUST** support the same list of protection
 profiles for the life of a given endpoint's DTLS association, which is
 represented by the association identifier.
 
-When a message from the key distributor includes "Key Info," the media
+When a message from the key distributor includes "Media Keys," the media
 distributor **MUST** extract the cipher and keying material conveyed in
 order to subsequently perform HBH encryption and authentication
 operations for RTP and RTCP packets sent between it and an endpoint.
@@ -340,8 +340,11 @@ communication between those two entities.
 When the media distributor detects an endpoint has disconnected, the
 media distributors **SHOULD** send a Endpoint Disconnect message with
 the association identifier assigned to the endpoint. The media
-distributor **SHOULD** use RTCP behavior to detect disconnected
-endpoints. The particulars of how RTCP is to be used to detect endpoint , such as timeout period, is not specified.
+distributor **SHOULD** use RTP and RTCP behavior to detect
+disconnected endpoints. The particulars of how RTCP is to be used to
+detect endpoint , such as timeout period, is not specified. The media
+distributor **MAY** use additional indicators to determine when an
+endpoint has disconnected.
 
 ## Key Distributor Tunneling Procedures
 
@@ -369,8 +372,8 @@ handling of the messages and certificates is exactly the same as normal
 DTLS-SRTP procedures between endpoints.
 
 The key distributor **MUST** send a DTLS Finished message to the endpoint
-at the point the DTLS handshake completes using the Tunnel + Key Info
-message.  The Key Info includes the selected cipher (i.e. protection
+at the point the DTLS handshake completes using the Tunnel + Media Keys
+message.  The Media Keys includes the selected cipher (i.e. protection
 profile), MKI [@!RFC3711] value (if any), SRTP master keys, and SRTP
 master salt values.
 
@@ -406,7 +409,7 @@ struct {
     case supported_profiles: SupportedProfiles;
     case media_keys:         MediaKeys;
     case tunneled_dtls:      TunneledDtls;
-	case endpoint_disconnect: EndpointDisconnect;
+    case endpoint_disconnect: EndpointDisconnect;
   } body;
 } TunnelMessage;
 ```
@@ -471,7 +474,7 @@ design choice in the context of all the alternatives.
 # IANA Considerations
 
 This document establishes a new registry to contain "data type" values
-used in the DTLS Tunnel protocol.  These data type values are a single
+used in the TLS Tunnel protocol.  These data type values are a single
 octet in length.  This document defines the values shown in (#data_types)
 below, leaving the balance of possible values reserved for future
 specifications:
@@ -479,11 +482,13 @@ specifications:
 Data Type | Description
 ----------|:----------------------------------------
 0x01      | Supported SRTP Protection Profiles
-0x02      | Key Information
+0x02      | Media Keys
+0x03      | Tunneled DTLS
+0x04      | Endpoint Disconnect
 Table: Data Type Values for the DTLS Tunnel Protocol {#data_types}
 
-The name for this registry is "Datagram Transport Layer Security
-(DTLS) Tunnel Protocol Data Types for Privacy Enhanced Conferencing."
+The name for this registry is "Transport Layer Security
+(TLS) Tunnel Protocol Data Types for Privacy Enhanced Conferencing."
 
 # Security Considerations
 
