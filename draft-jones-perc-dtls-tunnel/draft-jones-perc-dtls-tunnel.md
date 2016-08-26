@@ -413,6 +413,7 @@ struct {
 
 version indicates the version of this protocol.
 >Editor's Note: Do we start with version 0 or version 1?
+
 MsgType is represented by a single octet value.
 
 The four possible message types are defined as following.
