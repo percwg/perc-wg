@@ -68,7 +68,7 @@
 
 .# Abstract
 
-This document defines a DTLS tunneling protocol for use in multimedia
+This document defines a TLS tunneling protocol for use in multimedia
 conferences that enables a Media Distributor to facilitate
 key exchange between an endpoint in a conference and the Key Distributor.
 The protocol is designed to ensure that the keying material used for
@@ -94,7 +94,7 @@ the key distributor, thus allowing an endpoint to use DTLS-SRTP
 key distributor.
 
 The tunnel established between the media distributor and key distributor
-is a DTLS association that is established before any messages are
+is a TLS association that is established before any messages are
 forwarded by the media distributor on behalf of the endpoint.  DTLS packets
 received from the endpoint are encapsulated by the media distributor inside
 this tunnel as data to be sent to the key distributor.  Likewise, when the
@@ -117,7 +117,7 @@ and authentication.  The key distributor will transmit keying material
 to the endpoint for E2E operations, but will not share that information
 with the media distributor.
 
-By establishing this DTLS tunnel between the media distributor and key
+By establishing this TLS tunnel between the media distributor and key
 distributor and implementing the protocol defined in this document, it
 is possible for the media distributor to facilitate the establishment of
 a secure DTLS association between an endpoint and the key distributor in
@@ -136,7 +136,7 @@ absent their normative meanings.
 
 # Tunneling Concept
 
-A DTLS association (tunnel) is established between the media distributor
+A TLS association (tunnel) is established between the media distributor
 and the key distributor.  This tunnel is used to relay DTLS messages
 between the endpoint and key distributor, as depicted in (#fig-tunnel):
 
@@ -147,7 +147,7 @@ between the endpoint and key distributor, as depicted in (#fig-tunnel):
                          | Distributor |
                          +-------------+
                              # ^ ^ #
-                             # | | # <-- DTLS Tunnel
+                             # | | # <-- TLS Tunnel
                              # | | #
 +----------+             +-------------+             +----------+
 |          |     DTLS    |             |    DTLS     |          |
@@ -156,7 +156,7 @@ between the endpoint and key distributor, as depicted in (#fig-tunnel):
 |          | Distributor |             | Distributor |          |
 +----------+             +-------------+             +----------+
 ~~~
-Figure: DTLS Tunnel to Key Distributor
+Figure: TLS Tunnel to Key Distributor
 
 The three entities involved in this communication flow are the endpoint,
 the media distributor, and the key distributor.  The behavior of each
@@ -175,8 +175,8 @@ procedures defined in this document.
 This section provides an example message flow to help clarify the
 procedures described later in this document. It is necessary
 that the key distributor and media distributor establish a mutually
-authenticated DTLS association for the purpose of sending tunneled
-messages, though the complete DTLS handshake for the tunnel is not
+authenticated TLS association for the purpose of sending tunneled
+messages, though the complete TLS handshake for the tunnel is not
 shown in (#fig-message-flow) since there is nothing new this document
 introduces with regard to those procedures.
 
@@ -188,14 +188,14 @@ process, the media distributor shares its supported SRTP protection
 profile information (see [@!RFC5764]) and the key distributor shares HBH
 keying material and selected cipher with the media distributor.  The
 message used to tunnel the DTLS messages is named "Tunnel" and can
-include Profiles or Key Info data.
+include Profiles, Key Info data, or endpoint disconnection notifications.
 
 {#fig-message-flow align="center"}
 ~~~
 Endpoint              media distributor          key distributor
     |                         |                         |
     |                         |<========================|
-    |                         |   DTLS Association Made |
+    |                         |   TLS Association Made  |
     |                         |                         |
     |------------------------>|========================>|
     | DTLS handshake message  | Tunnel + Profiles       |
@@ -220,14 +220,13 @@ Each of these tunneled messages on the right-hand side of
 information:
 
 * Protocol version
-* Association ID
-* DTLS message being tunneled
+* Message type
 
-All messages sent by the media distributor will contain SRTP
-protection profiles supported by the media distributor at the end of
-the Tunnel message.  The key distributor will select a common profile
-supported by both the endpoint and the media distributor to ensure
-that hop-by-hop operations can be successfully performed.
+SRTP protection profiles supported by the media distributor will be
+sent in a supported profiles message.  The key distributor will select
+a common profile supported by both the endpoint and the media
+distributor to ensure that hop-by-hop operations can be successfully
+performed.
 
 Further, the key distributor will provide the SRTP [@!RFC3711] keying
 material to the media distributor for HBH operations at the time it
@@ -248,7 +247,7 @@ the endpoint, the media distributor, and the key distributor.
 It is important to note that the tunneling protocol described in this
 document is not an extension to TLS [@!RFC5246] or DTLS [@!RFC6347].
 Rather, it is a protocol that transports DTLS messages generated by an
-endpoint or key distributor as data inside of the DTLS association
+endpoint or key distributor as data inside of the TLS association
 established between the media distributor and key distributor.
 
 ## Endpoint Procedures
@@ -263,13 +262,13 @@ media distributor are being tunneled to the key distributor.
 ## Tunnel Establishment Procedures
 
 Either the media distributor or key distributor initiates the
-establishment of a DTLS tunnel.  Which entity acts as the DTLS client
+establishment of a TLS tunnel.  Which entity acts as the TLS client
 when establishing the tunnel and what event triggers the establishment
 of the tunnel are outside the scope of this document.  Further, how the
 trust relationships are established between the key distributor and
 media distributor are also outside the scope of this document.
 
-A tunnel **MUST** be a mutually authenticated DTLS association.  It is
+A tunnel **MUST** be a mutually authenticated TLS association.  It is
 used to relay DTLS messages between any number of endpoints and the key
 distributor.
 
@@ -401,6 +400,7 @@ enum {
 } MsgType;
 
 struct {
+  uint8 version;
   MsgType msg_type;
   select (MsgType) {
     case supported_profiles: SupportedProfiles;
@@ -411,6 +411,8 @@ struct {
 } TunnelMessage;
 ```
 
+version indicates the version of this protocol.
+>Editor's Note: Do we start with version 0 or version 1?
 MsgType is represented by a single octet value.
 
 The four possible message types are defined as following.
