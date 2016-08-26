@@ -440,7 +440,7 @@ struct {
 } TunneledDtls;
 
 struct {
-  uin32 associationID;
+  uint32 associationID;
 } EndpointDisconnect;
 ```
 The fields are described as follows:
