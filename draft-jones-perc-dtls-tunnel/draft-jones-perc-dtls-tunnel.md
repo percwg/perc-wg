@@ -34,6 +34,15 @@
       code = "27709"
       country = "USA"
 
+    [[author]]
+    initials = "P."
+    surname = "Ellenbogen"
+    fullname = "Paul M. Ellenbogen"
+    organization = "Princeton University"
+      [author.address]
+      email = "pe5@cs.princeton.edu"
+      phone = "+1 206 851 2069"
+
     #
     # Revision History
     #   00 - Initial draft.
@@ -59,7 +68,7 @@
 
 .# Abstract
 
-This document defines a DTLS tunneling protocol for use in multimedia
+This document defines a TLS tunneling protocol for use in multimedia
 conferences that enables a Media Distributor to facilitate
 key exchange between an endpoint in a conference and the Key Distributor.
 The protocol is designed to ensure that the keying material used for
@@ -85,7 +94,7 @@ the key distributor, thus allowing an endpoint to use DTLS-SRTP
 key distributor.
 
 The tunnel established between the media distributor and key distributor
-is a DTLS association that is established before any messages are
+is a TLS association that is established before any messages are
 forwarded by the media distributor on behalf of the endpoint.  DTLS packets
 received from the endpoint are encapsulated by the media distributor inside
 this tunnel as data to be sent to the key distributor.  Likewise, when the
@@ -108,7 +117,7 @@ and authentication.  The key distributor will transmit keying material
 to the endpoint for E2E operations, but will not share that information
 with the media distributor.
 
-By establishing this DTLS tunnel between the media distributor and key
+By establishing this TLS tunnel between the media distributor and key
 distributor and implementing the protocol defined in this document, it
 is possible for the media distributor to facilitate the establishment of
 a secure DTLS association between an endpoint and the key distributor in
@@ -127,7 +136,7 @@ absent their normative meanings.
 
 # Tunneling Concept
 
-A DTLS association (tunnel) is established between the media distributor
+A TLS association (tunnel) is established between the media distributor
 and the key distributor.  This tunnel is used to relay DTLS messages
 between the endpoint and key distributor, as depicted in (#fig-tunnel):
 
@@ -138,7 +147,7 @@ between the endpoint and key distributor, as depicted in (#fig-tunnel):
                          | Distributor |
                          +-------------+
                              # ^ ^ #
-                             # | | # <-- DTLS Tunnel
+                             # | | # <-- TLS Tunnel
                              # | | #
 +----------+             +-------------+             +----------+
 |          |     DTLS    |             |    DTLS     |          |
@@ -147,7 +156,7 @@ between the endpoint and key distributor, as depicted in (#fig-tunnel):
 |          | Distributor |             | Distributor |          |
 +----------+             +-------------+             +----------+
 ~~~
-Figure: DTLS Tunnel to Key Distributor
+Figure: TLS Tunnel to Key Distributor
 
 The three entities involved in this communication flow are the endpoint,
 the media distributor, and the key distributor.  The behavior of each
@@ -166,8 +175,8 @@ procedures defined in this document.
 This section provides an example message flow to help clarify the
 procedures described later in this document. It is necessary
 that the key distributor and media distributor establish a mutually
-authenticated DTLS association for the purpose of sending tunneled
-messages, though the complete DTLS handshake for the tunnel is not
+authenticated TLS association for the purpose of sending tunneled
+messages, though the complete TLS handshake for the tunnel is not
 shown in (#fig-message-flow) since there is nothing new this document
 introduces with regard to those procedures.
 
@@ -179,14 +188,14 @@ process, the media distributor shares its supported SRTP protection
 profile information (see [@!RFC5764]) and the key distributor shares HBH
 keying material and selected cipher with the media distributor.  The
 message used to tunnel the DTLS messages is named "Tunnel" and can
-include Profiles or Key Info data.
+include Profiles, Media Keys data, or endpoint disconnection notifications.
 
 {#fig-message-flow align="center"}
 ~~~
 Endpoint              media distributor          key distributor
     |                         |                         |
     |                         |<========================|
-    |                         |   DTLS Association Made |
+    |                         |   TLS Association Made  |
     |                         |                         |
     |------------------------>|========================>|
     | DTLS handshake message  | Tunnel + Profiles       |
@@ -199,7 +208,7 @@ Endpoint              media distributor          key distributor
     | DTLS handshake message  | Tunnel + Profiles       |
     |                         |                         |
     |<------------------------|<========================|
-    |  DTLS handshake message |       Tunnel + Key Info |
+    |  DTLS handshake message |     Tunnel + Media Keys |
     |    (including Finished) |                         |
     |                         |                         |
 ~~~
@@ -211,19 +220,18 @@ Each of these tunneled messages on the right-hand side of
 information:
 
 * Protocol version
-* Association ID
-* DTLS message being tunneled
+* Message type
 
-All messages sent by the media distributor will contain SRTP
-protection profiles supported by the media distributor at the end of
-the Tunnel message.  The key distributor will select a common profile
-supported by both the endpoint and the media distributor to ensure
-that hop-by-hop operations can be successfully performed.
+SRTP protection profiles supported by the media distributor will be
+sent in a supported profiles message.  The key distributor will select
+a common profile supported by both the endpoint and the media
+distributor to ensure that hop-by-hop operations can be successfully
+performed.
 
 Further, the key distributor will provide the SRTP [@!RFC3711] keying
 material to the media distributor for HBH operations at the time it
 sends a DTLS Finished message to the endpoint via the tunnel.  The
-media distributor would extract this Key Info when received and use
+media distributor would extract this Media Keys when received and use
 it for hop-by-hop encryption and authentication.  The delivery of the
 keying information along with the completion of the DTLS handshake
 ensures the delivery of the keying information is fate shared with
@@ -239,7 +247,7 @@ the endpoint, the media distributor, and the key distributor.
 It is important to note that the tunneling protocol described in this
 document is not an extension to TLS [@!RFC5246] or DTLS [@!RFC6347].
 Rather, it is a protocol that transports DTLS messages generated by an
-endpoint or key distributor as data inside of the DTLS association
+endpoint or key distributor as data inside of the TLS association
 established between the media distributor and key distributor.
 
 ## Endpoint Procedures
@@ -254,13 +262,13 @@ media distributor are being tunneled to the key distributor.
 ## Tunnel Establishment Procedures
 
 Either the media distributor or key distributor initiates the
-establishment of a DTLS tunnel.  Which entity acts as the DTLS client
+establishment of a TLS tunnel.  Which entity acts as the TLS client
 when establishing the tunnel and what event triggers the establishment
 of the tunnel are outside the scope of this document.  Further, how the
 trust relationships are established between the key distributor and
 media distributor are also outside the scope of this document.
 
-A tunnel **MUST** be a mutually authenticated DTLS association.  It is
+A tunnel **MUST** be a mutually authenticated TLS association.  It is
 used to relay DTLS messages between any number of endpoints and the key
 distributor.
 
@@ -316,7 +324,7 @@ The media distributor **MUST** support the same list of protection
 profiles for the life of a given endpoint's DTLS association, which is
 represented by the association identifier.
 
-When a message from the key distributor includes "Key Info," the media
+When a message from the key distributor includes "Media Keys," the media
 distributor **MUST** extract the cipher and keying material conveyed in
 order to subsequently perform HBH encryption and authentication
 operations for RTP and RTCP packets sent between it and an endpoint.
@@ -328,6 +336,15 @@ correct endpoint.
 The media distributor **MUST** forward all messages received from
 either the endpoint or the key distributor to ensure proper
 communication between those two entities.
+
+When the media distributor detects an endpoint has disconnected, the
+media distributors **SHOULD** send a Endpoint Disconnect message with
+the association identifier assigned to the endpoint. The media
+distributor **SHOULD** use RTP and RTCP behavior to detect
+disconnected endpoints. The particulars of how RTCP is to be used to
+detect endpoint , such as timeout period, is not specified. The media
+distributor **MAY** use additional indicators to determine when an
+endpoint has disconnected.
 
 ## Key Distributor Tunneling Procedures
 
@@ -355,8 +372,8 @@ handling of the messages and certificates is exactly the same as normal
 DTLS-SRTP procedures between endpoints.
 
 The key distributor **MUST** send a DTLS Finished message to the endpoint
-at the point the DTLS handshake completes using the Tunnel + Key Info
-message.  The Key Info includes the selected cipher (i.e. protection
+at the point the DTLS handshake completes using the Tunnel + Media Keys
+message.  The Media Keys includes the selected cipher (i.e. protection
 profile), MKI [@!RFC3711] value (if any), SRTP master keys, and SRTP
 master salt values.
 
@@ -365,182 +382,78 @@ endpoint and the media distributor to ensure proper HBH operations.
 
 # Tunneling Protocol
 
-The tunneling protocol is transmitted over the DTLS association
-established between the media distributor and key distributor as
-application data.  The basic message is referred to as the Tunnel
-message.  The media distributor will append supported SRTP protection
-profiles to all Tunnel messages it sends, forming the Tunnel + Profiles
-message.  The key distributor will append information necessary for the
-media distributor to perform HBH encryption and authentication as it
-transmits the DTLS Finished message to the endpoint, forming the Tunnel
-+ Key Info message.  The Tunnel, Tunnel + Profiles, and Tunnel + Key
-Info messages are detailed in the following sub-sections.
+Tunneled messages are transported via the TLS tunnel as application
+data between the media distributor and the key distributor. Tunnel
+messages are specified using the format described in [@!rfc5246]
+section 4. As in [@!rfc5246], all values are stored in network byte
+(big-endian) order; the uint32 represented by the hex bytes 01 02 03 04 is equivalent to the decimal value 16909060.
 
-## Tunnel Message
+## Tunnel Message Format
 
-Tunneled DTLS messages are transported via the "Tunnel" message as
-application data between the media distributor and the key distributor.
-The "Tunnel" Message has the following format:
+`TunnelMessage` is the only message sent, and there are four message types, defined by the `MsgType` enum.
 
-{#fig-tunnel-message align="center"}
-~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------------------------------------------------------+
-|                     Association Identifier                    |
-+-------------------------------+-------------------------------+
-|  DTLS Message Length          |                               :
-+-------------------------------+                               :
-:                                                               :
-:                     Tunneled DTLS Message                     :
-:                                                               :
-+---------------------------------------------------------------+
-~~~
-Figure: The "Tunnel" Message
+```
+enum {
+  invalid(0),
+  supported_profiles(1),
+  media_keys(2),
+  tunneled_dtls(3),
+  endpoint_disconnect(4),
+  (255)
+} MsgType;
 
-Association Identifier: This is the association identifier used
-to uniquely identify each endpoint in a conference (32-bits).
+struct {
+  uint8 version;
+  MsgType msg_type;
+  select (MsgType) {
+    case supported_profiles: SupportedProfiles;
+    case media_keys:         MediaKeys;
+    case tunneled_dtls:      TunneledDtls;
+    case endpoint_disconnect: EndpointDisconnect;
+  } body;
+} TunnelMessage;
+```
 
-DTLS Message Length: Length in octets of following Tunneled DTLS
-Message (16-bits).
+version indicates the version of this protocol.
+>Editor's Note: Do we start with version 0 or version 1?
 
-Tunneled DTLS Message: This is the DTLS message exchanged between the
-endpoint and key distributor.  The length varies based on the value
-specified in the previous field.
+MsgType is represented by a single octet value.
 
-## Tunnel Message + Profiles
+The four possible message types are defined as following.
+```
+uint8 SRTPProtectionProfile[2]; // from RFC5764
 
-Each Tunnel message transmitted by the media distributor contains an
-array of SRTP protection profiles at the end of the message.  The format
-of the message is shown below:
+struct {
+  SRTPProtectionProfile suites<0..2^16-1>;
+} SupportedProfiles;
 
-{#fig-tunnel-profiles align="center"}
-~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------------------------------------------------------+
-|                     Association Identifier                    |
-+-------------------------------+-------------------------------+
-|  DTLS Message Length          |                               :
-+-------------------------------+                               :
-:                                                               :
-:                     Tunneled DTLS Message                     :
-:                                                               :
-+---------------+---------------+-------------------------------+
-| Data Type     | Length        |                               :
-+---------------+---------------+                               :
-:                      Protection Profiles                      :
-+---------------------------------------------------------------+
-~~~
-Figure: The "Tunnel + Profiles" Message
+struct {
+  uint32 associationID;
+  SRTPProtectionProfile profile;
+  opaque mki<0..255>;
+  opaque clientWriteKey<0..255>;
+  opaque serverWriteKey<0..255>;
+  opaque clientWriteSalt<0..255>;
+  opaque serverWriteSalt<0..255>;
+} MediaKeys;
 
-Beyond the fields included in the Tunnel message, this message
-introduces the following additional fields.
+struct {
+  uint32 associationID;
+  opaque dtlsMessage<0..2^16-1>;
+} TunneledDtls;
 
-Data Type: Indicates the type of data that follows.  The value is 0x01
-for SRTP protection profiles supported by the media distributor.
-
-Length: This is the length in octets of the protection profiles.  This
-length must be greater than or equal to 2.
-
-Protection Profiles: This is an array of two-octet SRTP protection
-profile values as per [@!RFC5764], with each value represented in
-network byte order.
-
-## Tunnel Message + Key Info
-
-When the key distributor has HBH cipher and key information to share
-with the media distributor, the key distributor will send a Tunnel
-message with the Key Info appended as shown below:
-
-{#fig-tunnel-key-info align="center"}
-~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-+---------------------------------------------------------------+
-|                     Association Identifier                    |
-+-------------------------------+-------------------------------+
-|  DTLS Message Length          |                               :
-+-------------------------------+                               :
-:                                                               :
-:                     Tunneled DTLS Message                     :
-:                                                               :
-+---------------+-------------------------------+---------------+
-| Data Type     |      Protection Profile       | MKI Length    |
-+---------------+-------------------------------+---------------+
-~                 Master Key Identifier (MKI)                   ~
-+---------------+---------------+-------------------------------+
-| CWSMK Length                  |                               :
-+-------------------------------+                               :
-:                 Client Write SRTP Master Key                  :
-+-------------------------------+-------------------------------+
-| SWSMK Length                  |                               :
-+-------------------------------+                               :
-:                 Server Write SRTP Master Key                  :
-+-------------------------------+-------------------------------+
-| CWSMS Length                  |                               :
-+-------------------------------+                               :
-:                 Client Write SRTP Master Salt                 :
-+-------------------------------+-------------------------------+
-| SWSMS Length                  |                               :
-+-------------------------------+                               :
-:                 Server Write SRTP Master Salt                 :
-+---------------------------------------------------------------+
-~~~
-Figure: The "Tunnel + Key Info" Message
-
-Beyond the fields included in the Tunnel message, this message
-introduces the following additional fields.
-
-Data Type: Indicates the type of data that follows.  This value is 0x02
-for key information.
-
-Protection Profile: This is the SRTP protection profile (see
-[@!RFC5764]) the media distributor MUST use to encrypt and decrypt
-packets sent and received between itself and the endpoint.
-
-MKI Length: This is the length in octets of the MKI field.  A value of
-zero indicates that the MKI field is absent.
-
-CWSMK Length: The length of the "Client Write SRTP Master Key" field.
-
-Client Write SRTP Master Key: The value of the SRTP master key used by
-the client (endpoint).
-
-SWSMK Length: The length of the "Server Write SRTP Master Key" field.
-
-Server Write SRTP Master Key: The value of the SRTP master key used by
-the server (media distributor).
-
-CWSMS Length: The length of the "Client Write SRTP Master Salt" field.
-
-Client Write SRTP Master Salt: The value of the SRTP master salt used by
-the client (endpoint).
-
-SWSMS Length: The length of the "Server Write SRTP Master Salt" field.
-
-Server Write SRTP Master Salt: The value of the SRTP master salt used by
-the server (media distributor).
-
-# PMTU Considerations
-
-Tunneling DTLS messages received by an endpoint inside the DTLS tunnel
-between the media distributor and key distributor introduces only a small
-risk of message fragmentation, particularly with the initial handshake
-messages carrying client and  server certificates.  The small risk of
-fragmentation is considered acceptable given that DTLS specifies how to
-recover from loss of handshake messages.
-
-The additional overhead required for the tunnel is calculated to be
-approximately 50 octets for messages transmitted from the media
-distributor to the key distributor.  Messages from the key distributor
-would generally have slightly less overhead since they do not carry a
-list of protection profiles.  The one exception is the Tunnel + Key Info
-message, which is slightly larger as it contains key and salt information
-for the media distributor.  While the Tunnel + Key Info message is larger
-than Tunnel + Profiles, the DTLS message(s) transmitted in that flight
-(ChangeCipherSpec and Finished) are very small and so the overhead does
-not impose a risk of introducing packet fragmentation.
+struct {
+  uint32 associationID;
+} EndpointDisconnect;
+```
+The fields are described as follows:
+*  associationID: The value of the association identifier used to uniquely identify each endpoint in a conference
+* SRTPProtectionProfile: The value of the two-octet SRTP protection profile value as per [@!RFC5764].
+* mki: Master key identifier [@!RFC3711].
+* clientWriteKey: The value of the SRTP master key used by the client (endpoint).
+* serverWriteKey: The value of the SRTP master key used by the server (media distributor).
+* clientWriteSalt: The value of the SRTP master salt used by the client (endpoint).
+* serverWriteSalt: The value of the SRTP master salt used by the server (media distributor).
 
 # To-Do List
 
@@ -561,7 +474,7 @@ design choice in the context of all the alternatives.
 # IANA Considerations
 
 This document establishes a new registry to contain "data type" values
-used in the DTLS Tunnel protocol.  These data type values are a single
+used in the TLS Tunnel protocol.  These data type values are a single
 octet in length.  This document defines the values shown in (#data_types)
 below, leaving the balance of possible values reserved for future
 specifications:
@@ -569,11 +482,13 @@ specifications:
 Data Type | Description
 ----------|:----------------------------------------
 0x01      | Supported SRTP Protection Profiles
-0x02      | Key Information
+0x02      | Media Keys
+0x03      | Tunneled DTLS
+0x04      | Endpoint Disconnect
 Table: Data Type Values for the DTLS Tunnel Protocol {#data_types}
 
-The name for this registry is "Datagram Transport Layer Security
-(DTLS) Tunnel Protocol Data Types for Privacy Enhanced Conferencing."
+The name for this registry is "Transport Layer Security
+(TLS) Tunnel Protocol Data Types for Privacy Enhanced Conferencing."
 
 # Security Considerations
 
