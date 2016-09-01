@@ -281,18 +281,24 @@ given conference is outside the scope of this document.
 
 All messages for an established tunnel **MUST** utilize the same
 version value.  If the version of any subsequent message differs
-from that of the initial message, such a message **MUST** be
-discarded.
+from that of the initial message, that message **MUST** be
+discarded and the tunnel connection closed.
 
 Since the media distributor sends the first message over the tunnel,
 it effectively establishes the version of the protocol to be used.
-If that version is not acceptable to the key distributor, it
-**MUST** discard the message and close the TLS connection.
+If that version is not supported by the key distributor, it
+**MUST** discard the message, transmit an "UnsupportedVersion" message,
+and close the TLS connection.
 
-> Editor's Note: we can probably do better.  For example, we could
-specify that the server return a message of type "unsupported_version"
-and indicate the highest version supported, for example.  (That
-message type does not exist in the current protocol.)
+The media distributor **MUST** take note of the version received in an
+UnsupportedVersion message and use that version when attempting to
+re-establish a failed tunnel connection.  Note that it is not necessary
+for the MDD to understand the newer version of the protocol to
+understand that the first message received is "UnsupportedVersion".
+The media distributor can determine from the first two octets received
+what the version number is and that the message is "UnsupportedVersion".
+The rest of the data received, if any, would be discarded and the
+connection closed (if not already closed).
 
 ## Media Distributor Tunneling Procedures
 
@@ -319,12 +325,11 @@ messages forwarded to the key distributor.  The key distributor will
 subsequently include this identifier in all messages it sends so
 that the media distributor can map messages received via a tunnel and
 forward those messages to the correct endpoint.  The association
-identifier **SHOULD** be randomly assigned and values not be re-used for a
-period of time sufficient to ensure no late-arriving messages might be
-delivered to the wrong endpoint.  An association identifier **SHOULD NOT**
-be re-used for at least 24 hours.
-
->Editor's Note: do we want to recommend a re-use time and how much time?
+identifier **SHOULD** be randomly assigned and values not be re-used
+for a short period of time (e.g., five minutes) to ensure any residual
+state in the key distributor is clear and to ensure any packets already
+transmitted from the key distributor are not directed to the wrong
+endpoint.
 
 The tunnel protocol enables the key distributor to separately provide
 HBH keying material to the media distributor for each of the individual
@@ -352,14 +357,16 @@ The media distributor **MUST** forward all DTLS messages received
 from either the endpoint or the key distributor (via the "TunneledDTLS"
 message) to ensure proper communication between those two entities.
 
-When the media distributor detects an endpoint has disconnected, the
-media distributors **SHOULD** send an "EndpointDisconnect" message with
-the association identifier assigned to the endpoint.  The media
-distributor **SHOULD** take a loss of all RTP and RTCP packets as an
-indicator that the endpoint has disconnected.  The particulars of how
-RTP and RTCP are to be used to detect an endpoint disconnect, such as
-timeout period, is not specified.  The media distributor **MAY** use
-additional indicators to determine when an endpoint has disconnected.
+When the media distributor detects an endpoint has disconnected or
+when it receives conference control messages indicating the endpoint
+is to be disconnected, the media distributors **MUST** send an
+"EndpointDisconnect" message with the association identifier assigned to
+the endpoint to the key distributor.  The media distributor **SHOULD**
+take a loss of all RTP and RTCP packets as an indicator that the endpoint
+has disconnected.  The particulars of how RTP and RTCP are to be used to
+detect an endpoint disconnect, such as timeout period, is not specified.
+The media distributor **MAY** use additional indicators to determine when
+an endpoint has disconnected.
 
 ## Key Distributor Tunneling Procedures
 
@@ -424,10 +431,11 @@ the specific type of message contained within "TunnelMessage".
 {align="left"}
 ```
 enum {
-    supported_profiles(1),
-    media_keys(2),
-    tunneled_dtls(3),
-    endpoint_disconnect(4),
+    unsupported_version(1),
+    supported_profiles(2),
+    media_keys(3),
+    tunneled_dtls(4),
+    endpoint_disconnect(5),
     (255)
 } MsgType;
 
@@ -435,6 +443,7 @@ struct {
     uint8 version;
     MsgType msg_type;
     select (MsgType) {
+        case unsupported_version: UnsupportedVersion;
         case supported_profiles:  SupportedProfiles;
         case media_keys:          MediaKeys;
         case tunneled_dtls:       TunneledDtls;
@@ -447,6 +456,15 @@ The elements of "TunnelMessage" include:
 
 * version: indicates the version of this protocol (0x00).
 * msg_type: the type of message contained within the structure "body".
+
+The "UnsupportedVersion" message is defined as follows:
+
+{align="left"}
+```
+struct { } UnsupportedVersion;
+```
+
+The "UnsupportedVersion" message does not convey any additional information in the body.
 
 The "SupportedProfiles" message is defined as:
 
@@ -564,10 +582,11 @@ specifications:
 
 MsgType | Description
 --------|:----------------------------------------
-0x01    | Supported SRTP Protection Profiles
-0x02    | Media Keys
-0x03    | Tunneled DTLS
-0x04    | Endpoint Disconnect
+0x01    | Unsupported Version
+0x02    | Supported SRTP Protection Profiles
+0x03    | Media Keys
+0x04    | Tunneled DTLS
+0x05    | Endpoint Disconnect
 Table: Data Type Values for the DTLS Tunnel Protocol {#data_types}
 
 The value 0x00 and all values in the range 0x05 to 0xFF are reserved.
