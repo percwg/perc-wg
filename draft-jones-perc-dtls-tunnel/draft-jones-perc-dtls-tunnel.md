@@ -44,6 +44,15 @@
       email = "pe5@cs.princeton.edu"
       phone = "+1 206 851 2069"
 
+    [[author]]
+    initials = "N."
+    surname = "Ohlmeier"
+    fullname = "Nils H. Ohlmeier"
+    organization = "Mozilla"
+      [author.address]
+      email = "nils@ohlmeier.org"
+      phone = "+1 408 659 6457"
+
     #
     # Revision History
     #   00 - Initial draft.
@@ -169,7 +178,7 @@ The key distributor is a logical function that might might be co-resident
 with a key management server operated by an enterprise, reside in one of
 the endpoints participating in the conference, or elsewhere that is
 trusted with E2E keying material.  This document does not preclude any
-location, only requiring that the key distributor not allow the media
+location, only requiring that the key distributor does not allow the media
 distributor to gain access to the E2E keying material by following the
 procedures defined in this document.
 
@@ -195,7 +204,7 @@ keying material and selected cipher with the media distributor.
 ~~~
 Endpoint              media distributor          key distributor
     |                         |                         |
-    |                         |<========================|
+    |                         |<=======================>|
     |                         |    TLS Connection Made  |
     |                         |                         |
     |                         |========================>|
@@ -215,9 +224,9 @@ Endpoint              media distributor          key distributor
 ~~~
 Figure: Sample DTLS-SRTP Exchange via the Tunnel
 
-Each of the messages on the right-hand side of (#fig-message-flow)
-is a tunneling protocol message as defined in
-Section (#tunneling-protocol).
+After the initial TLS connection has been established each of the messages
+on the right-hand side of (#fig-message-flow) is a tunneling protocol
+message as defined in Section (#tunneling-protocol).
 
 SRTP protection profiles supported by the media distributor will be
 sent in a "SupportedProfiles" message when the TLS tunnel is initially
@@ -228,7 +237,7 @@ performed.
 
 Further, the key distributor will provide the SRTP [@!RFC3711] keying
 material to the media distributor for HBH operations via the `MediaKeys`
-message.  The media distributor would extract this keying material
+message.  The media distributor will extract this keying material
 from the MediaKeys message when received and use it for hop-by-hop
 encryption and authentication.
 
@@ -293,7 +302,7 @@ and close the TLS connection.
 The media distributor **MUST** take note of the version received in an
 UnsupportedVersion message and use that version when attempting to
 re-establish a failed tunnel connection.  Note that it is not necessary
-for the MDD to understand the newer version of the protocol to
+for the media distributor to understand the newer version of the protocol to
 understand that the first message received is "UnsupportedVersion".
 The media distributor can determine from the first two octets received
 what the version number is and that the message is "UnsupportedVersion".
@@ -317,7 +326,8 @@ than one tunnel has been established between it and a key distributor.
 prefer to allow the media distributor to send messages over more
 than one tunnel to more than one key distributor?  The latter would
 provide for higher availability, but at the cost of key distributor
-complexity.
+complexity. The former would allow the usage of a load distributor in
+front of the key distributor.
 
 The media distributor **MUST** assign a unique association identifier
 for each endpoint-initiated DTLS association and include it in all
@@ -389,7 +399,7 @@ to the correct endpoint.
 The key distributor extracts tunneled DTLS messages from an endpoint and
 acts on those messages as if that endpoint had established the DTLS
 association directly with the key distributor.  The key distributor is
-acting as the server and the endpoint is acting as the client.  The
+acting as the DTLS server and the endpoint is acting as the DTLS client.  The
 handling of the messages and certificates is exactly the same as normal
 DTLS-SRTP procedures between endpoints.
 
@@ -397,7 +407,9 @@ The key distributor **MUST** send a "MediaKeys" message to the media
 distributor as soon as the HBH encryption key is computed and before it
 sends a DTLS Finished message to the endpoint.  The MediaKeys message
 includes the selected cipher (i.e. protection profile), MKI [@!RFC3711]
-value (if any), SRTP master keys, and SRTP master salt values.
+value (if any), SRTP master keys, and SRTP master salt values. The key
+distributor **MUST** use the same association identifier in the MediaKeys
+message as is used in the TunneledDtls messages for the given endpoint.
 
 The key distributor **MUST** select a cipher that is supported by both the
 endpoint and the media distributor to ensure proper HBH operations.
@@ -496,7 +508,7 @@ struct {
 ```
 
 The fields are described as follows:
-* association_id: The value of the association identifier used to uniquely identify each endpoint in a conference
+* association_id: The value of the association identifier used to uniquely identify each endpoint connected to the media distributor
 * protection_profiles: The value of the two-octet SRTP protection profile value as per [@!RFC5764] used for this DTLS association.
 * mki: Master key identifier [@!RFC3711].
 * client_write_key: The value of the SRTP master key used by the client (endpoint).
@@ -515,7 +527,7 @@ struct {
 ```
 
 The fields are described as follows:
-* association_id: The value of the association identifier used to uniquely identify each endpoint in a conference
+* association_id: The value of the association identifier used to uniquely identify each endpoint connected to the media distributor
 * dtls_message: the content of the DTLS message received by the endpoint or to be sent to the endpoint
 
 The "EndpointDisconect" message is defined as:
@@ -559,7 +571,7 @@ would be this stream of octets:
 # To-Do List
 
 Given what is presently defined in this draft, it is not possible for
-the key distributor to determine which conference to which a given
+the key distributor to determine to which conference a given
 DTLS-SRTP association belongs, making it impossible for the key
 distributor to ensure it is providing the endpoint with the correct
 conference key.  The client certificate might be insufficient
@@ -589,7 +601,7 @@ MsgType | Description
 0x05    | Endpoint Disconnect
 Table: Data Type Values for the DTLS Tunnel Protocol {#data_types}
 
-The value 0x00 and all values in the range 0x05 to 0xFF are reserved.
+The value 0x00 and all values in the range 0x06 to 0xFF are reserved.
 
 The name for this registry is "Datagram Transport Layer Security
 (DTLS) Tunnel Protocol Data Types for Privacy Enhanced Conferencing".
