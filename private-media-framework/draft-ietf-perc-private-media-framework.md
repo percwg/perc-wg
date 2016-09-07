@@ -422,7 +422,7 @@ and a HBH key for an endpoint and the same HBH key for the Media Distributor, th
 framework utilizes a DTLS-SRTP [@!RFC5764] association between an
 endpoint and the Key  Distributor.  To establish this association, an endpoint will
 send DTLS-SRTP messages to the Media Distributor which will then forward them to the
-Media Distributor as defined in [@!I-D.jones-perc-dtls-tunnel].  The Key Encryption
+Key Distributor as defined in [@!I-D.jones-perc-dtls-tunnel].  The Key Encryption
 Key (KEK) (i.e., EKT Key) is also conveyed by the Key Distributor over the DTLS
 association to endpoints via procedures defined in PERC EKT
 [I-D.ietf-perc-srtp-ekt-diet].
