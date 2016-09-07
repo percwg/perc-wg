@@ -177,10 +177,7 @@ entity is described in (#tunneling-procedures).
 The key distributor is a logical function that might might be co-resident
 with a key management server operated by an enterprise, reside in one of
 the endpoints participating in the conference, or elsewhere that is
-trusted with E2E keying material.  This document does not preclude any
-location, only requiring that the key distributor does not allow the media
-distributor to gain access to the E2E keying material by following the
-procedures defined in this document.
+trusted with E2E keying material.
 
 # Example Message Flows
 
@@ -571,7 +568,7 @@ would be this stream of octets:
 # To-Do List
 
 Given what is presently defined in this draft, it is not possible for
-the key distributor to determine to which conference a given
+the key distributor to determine the conference to which a given
 DTLS-SRTP association belongs, making it impossible for the key
 distributor to ensure it is providing the endpoint with the correct
 conference key.  The client certificate might be insufficient
