@@ -505,7 +505,7 @@ struct {
 ```
 
 The fields are described as follows:
-* association_id: The value of the association identifier used to uniquely identify each endpoint connected to the media distributor
+* association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
 * protection_profiles: The value of the two-octet SRTP protection profile value as per [@!RFC5764] used for this DTLS association.
 * mki: Master key identifier [@!RFC3711].
 * client_write_key: The value of the SRTP master key used by the client (endpoint).
@@ -524,8 +524,8 @@ struct {
 ```
 
 The fields are described as follows:
-* association_id: The value of the association identifier used to uniquely identify each endpoint connected to the media distributor
-* dtls_message: the content of the DTLS message received by the endpoint or to be sent to the endpoint
+* association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
+* dtls_message: the content of the DTLS message received by the endpoint or to be sent to the endpoint.
 
 The "EndpointDisconect" message is defined as:
 
@@ -537,7 +537,7 @@ struct {
 ```
 
 The fields are described as follows:
-*  association_id: The value of the association identifier used to uniquely identify each endpoint in a conference
+* association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
 
 # Example Binary Encoding
 
