@@ -422,19 +422,19 @@ and a HBH key for an endpoint and the same HBH key for the Media Distributor, th
 framework utilizes a DTLS-SRTP [@!RFC5764] association between an
 endpoint and the Key  Distributor.  To establish this association, an endpoint will
 send DTLS-SRTP messages to the Media Distributor which will then forward them to the
-Media Distributor as defined in [@!I-D.jones-perc-dtls-tunnel].  The Key Encryption
+Key Distributor as defined in [@!I-D.jones-perc-dtls-tunnel].  The Key Encryption
 Key (KEK) (i.e., EKT Key) is also conveyed by the Key Distributor over the DTLS
 association to endpoints via procedures defined in PERC EKT
 [I-D.ietf-perc-srtp-ekt-diet].
 
 Media Distributors use DTLS-SRTP [@!RFC5764] directly with a peer Media Distributor to establish HBH
-keys for transmitting RTP and RTCP packets that peer Media Distributor.  The Key Distributor does
+keys for transmitting RTP and RTCP packets to that peer Media Distributor.  The Key Distributor does
 not facilitate establishing HBH keys for use between Media Distributors.
 
 ### Initial Key Exchange and Key Distributor
 
 The procedures defined in DTLS Tunnel for PERC
-[@!I-D.jones-perc-dtls-tunnel] establish one or more DTLS tunnels
+[@!I-D.jones-perc-dtls-tunnel] establish one or more TLS tunnels
 between the Media Distributor and Key Distributor, making it is possible for the Media Distributor to facilitate
 the establishment of a secure DTLS association between each endpoint and
 the Key Distributor as shown the following figure.  The DTLS association between
@@ -453,7 +453,7 @@ cryptographic transform.
              to Endpoints |Distributor| Endpoints & Media Distributor
                           +-----------+
                              # ^ ^ #
-                             # | | #-DTLS Tunnel
+                             # | | #-TLS Tunnel
                              # | | #
 +-----------+             +-----------+             +-----------+
 | Endpoint  |   DTLS      |   Media   |   DTLS      | Endpoint  |
@@ -468,7 +468,8 @@ Endpoints will establish a DTLS-SRTP association over the RTP session's
 media ports for the purposes of key information exchange with the Key Distributor.
 The Media Distributor will not terminate the DTLS signaling, but will instead forward
 DTLS packets received from an endpoint on to the Key Distributor (and vice versa)
-via a tunnel established between Media Distributor and the Key Distributor.  This tunnel used to
+via a tunnel established between Media Distributor and the Key Distributor.
+This tunnel is used to
 encapsulate the DTLS-SRTP signaling between the Key Distributor and endpoints will
 also be used to convey HBH key information from the Key Distributor to the Media Distributor, so
 no additional protocol or interface is required.
@@ -520,7 +521,7 @@ to bind the identity of the user of the endpoint to the fingerprint of
 the DTLS-SRTP certificate used for the call.  This certificate is unique
 for a given call and a conference.  This allows the Key Distributor to ensure that
 only authorized users participate in the conference. Similarly the Key Distributor
-can create a WeBRTC Identity assertion bound the fingerprint of the
+can create a WebRTC Identity assertion to bind the fingerprint of the
 unique certificate used by the Key Distributor for this conference so that the
 endpoint can validate it is talking to the correct Key Distributor.
 
