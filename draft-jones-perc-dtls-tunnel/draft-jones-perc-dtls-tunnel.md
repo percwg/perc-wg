@@ -210,13 +210,13 @@ Endpoint              media distributor          key distributor
     |------------------------>|========================>|
     | DTLS handshake message  | TunneledDtls            |
     |                         |                         |
-    |<------------------------|<========================|
-    | DTLS handshake message  |            TunneledDtls |
+    |                         |<========================|
+    |                         |               MediaKeys |
     |                         |                         |
          .... may be multiple handshake messages ...
     |                         |                         |
-    |                         |<========================|
-    |                         |               MediaKeys |
+    |<------------------------|<========================|
+    | DTLS handshake message  |            TunneledDtls |
     |                         |                         |
 ~~~
 Figure: Sample DTLS-SRTP Exchange via the Tunnel
@@ -226,16 +226,22 @@ on the right-hand side of (#fig-message-flow) is a tunneling protocol
 message as defined in Section (#tunneling-protocol).
 
 SRTP protection profiles supported by the media distributor will be
-sent in a "SupportedProfiles" message when the TLS tunnel is initially
+sent in a `SupportedProfiles` message when the TLS tunnel is initially
 established.  The key distributor will use that information to select
 a common profile supported by both the endpoint and the media
 distributor to ensure that hop-by-hop operations can be successfully
 performed.
 
-Further, the key distributor will provide the SRTP [@!RFC3711] keying
+As DTLS messages are received from the endpoint by the media distributor,
+they are forwarded to the key distributor encapsulated inside abbrev
+`TunneledDtls` message.  Likewise, as `TunneledDtls` messages are received
+by the media distributor from the key distributor, the encapsulated
+DTLS packet is forwarded to the endpoint.
+
+The key distributor will provide the SRTP [@!RFC3711] keying
 material to the media distributor for HBH operations via the `MediaKeys`
 message.  The media distributor will extract this keying material
-from the MediaKeys message when received and use it for hop-by-hop
+from the `MediaKeys` message when received and use it for hop-by-hop
 encryption and authentication.
 
 # Tunneling Procedures
@@ -293,23 +299,23 @@ discarded and the tunnel connection closed.
 Since the media distributor sends the first message over the tunnel,
 it effectively establishes the version of the protocol to be used.
 If that version is not supported by the key distributor, it
-**MUST** discard the message, transmit an "UnsupportedVersion" message,
+**MUST** discard the message, transmit an `UnsupportedVersion` message,
 and close the TLS connection.
 
 The media distributor **MUST** take note of the version received in an
-UnsupportedVersion message and use that version when attempting to
+`UnsupportedVersion` message and use that version when attempting to
 re-establish a failed tunnel connection.  Note that it is not necessary
 for the media distributor to understand the newer version of the protocol to
-understand that the first message received is "UnsupportedVersion".
+understand that the first message received is `UnsupportedVersion`.
 The media distributor can determine from the first two octets received
-what the version number is and that the message is "UnsupportedVersion".
+what the version number is and that the message is `UnsupportedVersion`.
 The rest of the data received, if any, would be discarded and the
 connection closed (if not already closed).
 
 ## Media Distributor Tunneling Procedures
 
 The first message transmitted over the tunnel is the
-"SupportedProfiles" (see (#tunneling-protocol)).  This message
+`SupportedProfiles` (see (#tunneling-protocol)).  This message
 informs the key distributor about which DTLS-SRTP profiles the media
 distributor supports.  This message **MUST** be sent each time a new
 tunnel connection is established or, in the case of connection loss,
@@ -345,13 +351,13 @@ messages between the key distributor and endpoints.
 
 When a DTLS message is received by the media distributor from an
 endpoint, it forwards the UDP payload portion of that message to the key
-distributor encapsulated in a "TuneledDtls" message.
+distributor encapsulated in a `TuneledDtls` message.
 
 The media distributor **MUST** support the same list of protection
 profiles for the life of a given endpoint's DTLS association, which is
 represented by the association identifier.
 
-When a "MediaKeys" message is received, the media
+When a `MediaKeys` message is received, the media
 distributor **MUST** extract the cipher and keying material conveyed in
 order to subsequently perform HBH encryption and authentication
 operations for RTP and RTCP packets sent between it and an endpoint.
@@ -361,13 +367,13 @@ distributor to ensure that the HBH keying material is used with the
 correct endpoint.
 
 The media distributor **MUST** forward all DTLS messages received
-from either the endpoint or the key distributor (via the "TunneledDTLS"
+from either the endpoint or the key distributor (via the `TunneledDtls`
 message) to ensure proper communication between those two entities.
 
 When the media distributor detects an endpoint has disconnected or
 when it receives conference control messages indicating the endpoint
 is to be disconnected, the media distributors **MUST** send an
-"EndpointDisconnect" message with the association identifier assigned to
+`EndpointDisconnect` message with the association identifier assigned to
 the endpoint to the key distributor.  The media distributor **SHOULD**
 take a loss of all RTP and RTCP packets as an indicator that the endpoint
 has disconnected.  The particulars of how RTP and RTCP are to be used to
@@ -385,7 +391,7 @@ distributor identifies each distinct endpoint-originated DTLS
 association by the association identifier.
 
 The key distributor **MUST** encapsulate any DTLS message it sends to
-an endpoint inside a "TunneledDtls" message (see
+an endpoint inside a `TunneledDtls` message (see
 (#tunneling-protocol)).
 
 The key distributor **MUST** use the same association identifier in
@@ -400,13 +406,13 @@ acting as the DTLS server and the endpoint is acting as the DTLS client.  The
 handling of the messages and certificates is exactly the same as normal
 DTLS-SRTP procedures between endpoints.
 
-The key distributor **MUST** send a "MediaKeys" message to the media
+The key distributor **MUST** send a `MediaKeys` message to the media
 distributor as soon as the HBH encryption key is computed and before it
-sends a DTLS Finished message to the endpoint.  The MediaKeys message
+sends a DTLS `Finished` message to the endpoint.  The `MediaKeys` message
 includes the selected cipher (i.e. protection profile), MKI [@!RFC3711]
 value (if any), SRTP master keys, and SRTP master salt values. The key
-distributor **MUST** use the same association identifier in the MediaKeys
-message as is used in the TunneledDtls messages for the given endpoint.
+distributor **MUST** use the same association identifier in the `MediaKeys`
+message as is used in the `TunneledDtls` messages for the given endpoint.
 
 The key distributor **MUST** select a cipher that is supported by both the
 endpoint and the media distributor to ensure proper HBH operations.
@@ -427,15 +433,15 @@ containing the the following information:
 * Message type identifier
 * The message body
 
-Each of these messages is a "TunnelMessage" in the syntax, with
+Each of these messages is a `TunnelMessage` in the syntax, with
 a message type indicating the actual content of the message body.
 
 ## Tunnel Message Format
 
-The syntax of the protocol is defined below.  "TunnelMessage"
+The syntax of the protocol is defined below.  `TunnelMessage`
 defines the structure of all messages sent via the tunnel protocol.
-That structure includes a field called "msg_type" that identifies
-the specific type of message contained within "TunnelMessage".
+That structure includes a field called `msg_type` that identifies
+the specific type of message contained within `TunnelMessage`.
 
 {align="left"}
 ```
@@ -461,21 +467,21 @@ struct {
 } TunnelMessage;
 ```
 
-The elements of "TunnelMessage" include:
+The elements of `TunnelMessage` include:
 
 * version: indicates the version of this protocol (0x00).
-* msg_type: the type of message contained within the structure "body".
+* msg_type: the type of message contained within the structure `body`.
 
-The "UnsupportedVersion" message is defined as follows:
+The `UnsupportedVersion` message is defined as follows:
 
 {align="left"}
 ```
 struct { } UnsupportedVersion;
 ```
 
-The "UnsupportedVersion" message does not convey any additional information in the body.
+The `UnsupportedVersion` message does not convey any additional information in the body.
 
-The "SupportedProfiles" message is defined as:
+The `SupportedProfiles` message is defined as:
 
 {align="left"}
 ```
@@ -489,7 +495,7 @@ struct {
 This message contains this single element:
 * protection_profiles: The list of two-octet SRTP protection profile values as per [@!RFC5764] supported by the media distributor.
 
-The "MediaKeys" message is defined as:
+The `MediaKeys` message is defined as:
 
 {align="left"}
 ```
@@ -513,7 +519,7 @@ The fields are described as follows:
 * client_write_salt: The value of the SRTP master salt used by the client (endpoint).
 * server_write_salt: The value of the SRTP master salt used by the server (media distributor).
 
-The "TunneledDtls" message is defined as:
+The `TunneledDtls` message is defined as:
 
 {align="left"}
 ```
@@ -527,7 +533,7 @@ The fields are described as follows:
 * association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
 * dtls_message: the content of the DTLS message received by the endpoint or to be sent to the endpoint.
 
-The "EndpointDisconect" message is defined as:
+The `EndpointDisconect` message is defined as:
 
 {align="left"}
 ```
@@ -541,9 +547,9 @@ The fields are described as follows:
 
 # Example Binary Encoding
 
-The "TunnelMessage" is encoded in binary following the procedures
+The `TunnelMessage` is encoded in binary following the procedures
 specified in [!@RFC5246].  This section provides an example of what
-the bits on the wire would look like for the "SupportedProfiles" message
+the bits on the wire would look like for the `SupportedProfiles` message
 that advertises support for both SRTP_AEAD_AES_128_GCM and
 SRTP_AEAD_AES_256_GCM [@RFC7714].
 
@@ -583,7 +589,7 @@ design choice in the context of all the alternatives.
 
 # IANA Considerations
 
-This document establishes a new registry to contain "message type" values
+This document establishes a new registry to contain message type values
 used in the DTLS Tunnel protocol.  These data type values are a single
 octet in length.  This document defines the values shown in (#data_types)
 below, leaving the balance of possible values reserved for future
