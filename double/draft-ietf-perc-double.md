@@ -202,7 +202,7 @@ If a Media Distributor modifies an original RTP header value, the Media Distribu
 extension to reflect the changed value, setting the X bit in the RTP header to 1
 if no header extensions were originally present.  If another Media Distributor along the media
 path
-makes additional changes to the RTP header and any original value is not already
+makes additional changes to the RTP header and any original value is already
 present in the OHB, the Media Distributor must extend the OHB by adding the changed value to
 the OHB.  To properly preserve original RTP header values, a Media Distributor MUST NOT
 change a value already present in the OHB extension.
@@ -236,7 +236,7 @@ The processes is as follows:
   the RTP packet using the outer cryptographic context.
 
 
-## Modifying a Packet
+## Relaying a Packet
 
 The Media Distributor does not have a notion of outer or inner cryptographic contexts.
 Rather, the Media Distributor has a single cryptographic context.  The cryptographic transform
@@ -281,7 +281,7 @@ re-encrypts the packet using the cryptographic context used for next hop.
   modify header extensions that are present before the OHB.
 
 * Apply the cryptographic transform to the packet. If the RTP Sequence Number
-  has been modified, SRTP processing happens as defined in SRTP and which will
+  has been modified, SRTP processing happens as defined in SRTP and will
   end up using the new Sequence Number. If encrypting RTP header extensions
   hop-by-hop, then [@!RFC6904] MUST be used.
 
@@ -309,7 +309,7 @@ which it decrypts and verifies with the inner cryptographic context.
     extensions MUST be padded to the first 32-bit boundary and the overall
     length of the header extensions adjusted accordingly.
 
-  * Payload is the original encrypted payload.
+  * Payload is the encrypted payload from the outer SRTP packet.
 
 * Apply the inner cryptographic transform to this synthetic SRTP packet.  Note
   if the RTP Sequence Number was changed by the Media Distributor, the syntetic packet has the
@@ -317,7 +317,7 @@ which it decrypts and verifies with the inner cryptographic context.
   packet.  If decrypting RTP header extensions end-to-end, then [@!RFC6904] MUST
   be used when decrypting the RTP packet using the inner cryptographic context.
 
-Once the packet has successfully decrypted, the application needs to be careful
+Once the packet has been successfully decrypted, the application needs to be careful
 about which information it uses to get the correct behavior.  The application
 MUST use only the information found in the synthetic SRTP packet and MUST NOT
 use the other data that was in the outer SRTP packet with the following
@@ -400,7 +400,7 @@ plus payload with a HBH key. This HBH for the outgoing packet is typically
 different than the HBH key for the incoming packet.
 
 The receiver can check the authentication of the initial and extra envelope
-information.  This, along with the OBH, i used to construct a synthetic packet
+information.  This, along with the OBH, is used to construct a synthetic packet
 that is should be identital to one the sender created and the receiver can check
 that it is identical and then decrypt the original payload.
 
@@ -408,7 +408,7 @@ The end result is that if the authentications succeed, the receiver knows
 exactly what the original sender sent, as well as exactly which modifications
 were made by the Media Distributor.
 
-It is obviously critical that the intermediary have only the outer transform
+It is obviously critical that the intermediary has only the outer transform
 parameters and not the inner transform parameters.  We rely on an external key
 management protocol to assure this property.
 
