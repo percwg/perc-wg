@@ -920,28 +920,7 @@ SRTP packets                 <------->      SRTP packets
         
       </section>
 
-       <section anchor="open-issues" title="Open Issues">
-        
-         <t> What length should the SPI be?  </t>
-
-        <t> Should we limit the number of saved SPI for a given SSRC?  Or limit
-        the lifetime of old ones after a new one is received? At some level this
-        may not matter because even if the a SRTP packet is injected with an old
-        value, it will be discards by the RTP stack for being old. It is more
-        important that new things are encrypted with the most recent EKT Key.
-        </t>
-
-        <t> How many bits to differentiate different types of packets and allow
-        for extensibility? </t>
-
-        <t> Given the amount of old EKT deployed, should the Full EKT use a a
-        different code point than the "1" at the end? </t>
-
-        <t> Do we need AES-192? </t>
-        
-       </section>
-       
-      <section anchor="iana" title="IANA Considerations">
+       <section anchor="iana" title="IANA Considerations">
         
         <t> No IANA actions are required. </t>
         
