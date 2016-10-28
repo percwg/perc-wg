@@ -939,7 +939,8 @@ SRTP packets                 <------->      SRTP packets
         Michael Peck,
         Nermeen Ismail,
         Paul Jones,
-        Rob Raymond, and
+        Rob Raymond,
+        Russ Housley,  and
         Yi Cheng
         for fruitful discussions, comments, and contributions to this
         document.</t>
