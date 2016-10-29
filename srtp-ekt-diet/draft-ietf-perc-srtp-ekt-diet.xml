@@ -176,7 +176,7 @@
   <middle>
     <section title="Introduction">
       
-      <t>Real-time Transport Protcol (RTP) is designed to allow 
+      <t>Real-time Transport Protocol (RTP) is designed to allow 
       decentralized groups with minimal control to
       establish sessions, such as for multimedia conferences.  Unfortunately,
       Secure RTP (<xref target="RFC3711">SRTP</xref>) cannot be used in many
@@ -521,10 +521,10 @@ Short_EKT_Field = '00000000' ; 8 bits
 
            <t> The resulting EKT Plaintext is parsed as described in <xref
            target="EKT"/>, to recover the SRTP Master Key, SSRC, and ROC
-           fields. The Master Salt that is assocted with the EKT Keys used to do
-           the decription is also retreived. </t>
+           fields. The Master Salt that is associated with the EKT Keys used to do
+           the description is also retrieved. </t>
                   
-           <t> The SRTP Master Key, ROC, and SRTP Master Salt from the prevous step
+           <t> The SRTP Master Key, ROC, and SRTP Master Salt from the previous step
            are saved in a map indexed by the SSRC found in the EKT Plaintext and
            can be used for any future crypto operations for inbound or outbound
            packets with the that SSRC. Outbound packets SHOULD continue to use
@@ -536,27 +536,29 @@ Short_EKT_Field = '00000000' ; 8 bits
             <t>At this point, EKT processing has successfully completed, and the
             normal SRTP or SRTCP processing takes place including replay
             protection.
-
-           <!-- ADD THIS BACK LATER
-               <list style="empty">
-               <t>Implementation note: the value of the EKT Ciphertext
-               field is identical in successive packets protected by
-               the same EKT parameter set and the same SRTP master key,
-               and ROC.  This ciphertext value MAY be cached by an SRTP
-               receiver to minimize computational effort by noting when
-               the SRTP master key is unchanged and avoiding repeating
-               the above steps.</t>
-                 </list>  -->
            
            </t>
           </list>
         </t>
 
-       <t> Implementation note: the receiver may want to have a sliding window
-       to retain old SRTP master keys (and related context) for some brief
-       period of time, so that out of order packets can be processed as well as
-       packets sent during the time keys are changing. </t>
-       
+        <section anchor="inbound_impl_notes"
+                 title="Implementation Notes for Inbound Processing" >
+
+          <t>The value of the EKT Ciphertext field is identical in
+          successive packets protected by the same EKT parameter set
+          and the same SRTP master key, and ROC.  This ciphertext
+          value MAY be cached by an SRTP receiver to minimize
+          computational effort by noting when the SRTP master key is
+          unchanged and avoiding repeating the above steps.</t>
+
+          <t> The receiver may want to have a sliding window to retain
+          old SRTP master keys (and related context) for some brief
+          period of time, so that out of order packets can be
+          processed as well as packets sent during the time keys are
+          changing. </t>
+          
+        </section>
+        
       </section>
     </section>
 
@@ -605,19 +607,16 @@ Short_EKT_Field = '00000000' ; 8 bits
         encryption of plaintext with the key K).
              </t>
           
-           <!--   <t>
-               These functions have the property that D(K, E(K, P)) = P for all
-               values of K and P.  Each cipher also has a limit T on the number
-               of times that it can be used with any fixed key value.  For each
-               key, the encryption function MUST NOT be invoked on more than T
-               distinct values of P, and the decryption function MUST NOT be
-             invoked on more than T distinct values of C.</t>  --> 
-
-             <t> The EKT Key MUST NOT be used more times than is
-             appropriate for the cipher it is using.
-             <!-- Advice on how many
-             times a given ciphers can be used can be found in
-             TODO. --> </t>
+             <t> These functions have the property that D(K, E(K, P))
+             = P for all values of K and P.  Each cipher also has a
+             limit T on the number of times that it can be used with
+             any fixed key value. <!-- For each key, the encryption
+             function MUST NOT be invoked on more than T distinct
+             values of P, and the decryption function MUST NOT be
+             invoked on more than T distinct values of C. --> The EKT
+             Key MUST NOT be used more that T times.  <!-- Advice on
+             how many times a given ciphers can be used can be found
+             in TODO. --> </t>
 
              <t>Security requirements for EKT ciphers are discussed in <xref
              target="sec"/>. </t>
@@ -667,8 +666,8 @@ AES-256    AESKW_256        42          56            58
           
           <section title="Other EKT Ciphers">
             
-            <t>Other specifications may extend this one by defining other EKT
-            ciphers per <xref target="iana"></xref>. This section defines how
+            <t>Other specifications may extend this specification by defining other EKT
+            ciphers as described in <xref target="iana"></xref>. This section defines how
             those ciphers interact with this specification.</t>
 
             <t>An EKT cipher determines how the EKT Ciphertext field is written,
@@ -677,7 +676,7 @@ AES-256    AESKW_256        42          56            58
             field in any way, but they SHOULD NOT use other EKT or SRTP fields
             as an input.  The values of the parameters L, M, N, and T MUST be
             defined by each EKT cipher, and those values MUST be inferable from
-            the EKT parameter set.</t>
+            the EKT parameter set. <!-- TODO does this make sense --> </t>
             
           </section>
         </section>
@@ -838,7 +837,7 @@ struct {
             server using the DTLS-SRTP Key Transport extension. </t>
 
             <figure anchor="tls_handshake_message_flow"
-                    title="Handshake Message Flow">
+                    title="DTLS/SRTP Message Flow">
               <preamble></preamble>
 <artwork align="center"><![CDATA[
 Client                                               Server
@@ -883,7 +882,7 @@ SRTP packets                 <------->      SRTP packets
 
       <section title="Sending the DTLS EKT_Key Reliably">
 
-       <t> The DTLS ekt_key is sent using the retransmiions specified
+       <t> The DTLS ekt_key is sent using the retransmissions specified
        in Section 4.2.4. of <xref target="RFC6347">DTLS</xref>. </t>
              
       </section>
@@ -916,7 +915,10 @@ SRTP packets                 <------->      SRTP packets
         <t>An attacker could send packets containing a Full EKT Field, in an
         attempt to consume additional CPU resources of the receiving system by
         causing the receiving system will decrypt the EKT ciphertext and detect
-        an authentication failure </t>
+        an authentication failure.
+        In some cases, caching the previos values of the Ciphertext as
+        described in <xref target="inbound_impl_notes"></xref> helps
+        mitigate this issue. </t>
 
         <t>EKT can rekey an SRTP stream until the SRTP rollover counter (ROC)
         needs to roll over.  EKT does not extend SRTP's rollover counter (ROC),
@@ -928,7 +930,8 @@ SRTP packets                 <------->      SRTP packets
         expected to be a burden.</t>
 
         <t>The confidentiality, integrity, and authentication of the EKT cipher
-        MUST be at least as strong as the SRTP cipher.</t>
+        MUST be at least as strong as the SRTP cipher and at least as
+        strong as the DTLS-SRTP ciphers. </t>
         
         <t> Part of the EKT_Plaintext is known, or easily guessable to an
         attacker.  Thus, the EKT Cipher MUST resist known plaintext attacks.  In
