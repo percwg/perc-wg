@@ -838,7 +838,7 @@ struct {
               seconds, that this ekt_key_value can be used. The
               ekt_key_value in this message MUST NOT be used for
               encrypting or decrypting information after the TTL
-              expires.  TODO: discuss in security section. </t>
+              expires.  </t>
 
             </list>
             </t>
