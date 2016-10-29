@@ -29,6 +29,8 @@
 <!ENTITY rfc5764 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5764.xml">
 <!ENTITY rfc4566 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4566.xml">
 <!ENTITY rfc4086 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4086.xml">
+<!ENTITY rfc4366 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4366.xml">
+<!ENTITY rfc5246 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5246.xml">
 ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc toc="yes" ?>
@@ -778,12 +780,16 @@ AES-256    AESKW_256        42          56            58
         <section anchor="dtls-srtp-extensions"
                  title="SRTP EKT Key Transport Extensions to DTLS-SRTP">
           
-          <t>This document adds a new TLS negotiated extension called "srtp_ekt_key_trans".
-          This adds a new TLS content type, EKT, and a new negotiated extension
-          EKT. The DTLS server includes "srtp_ekt_key_trans" in its TLS ServerHello message. If
-          a DTLS client includes "srtp_ekt_key_trans" in its ClientHello, but does not receive
-          "srtp_ekt_key_trans" in the ServerHello, the DTLS client MUST NOT send DTLS packets
-          with the "ekt" content-type.</t>
+          <t>This document defines a new TLS negotiated extension
+          called "srtp_ekt_key_transport"and a new TLS content type
+          called EKTMessage. If a DTLS client includes
+          "srtp_ekt_key_transport" in its ClientHello, then a DTLS
+          server that supports this extensions will includes
+          "srtp_ekt_key_transport" in its ServerHello message. If a
+          DTLS client includes "srtp_ekt_key_transport" in its
+          ClientHello, but does not receive "srtp_ekt_key_transport"
+          in the ServerHello, the DTLS client MUST NOT send DTLS
+          EKTMessage messages.</t>
 
             <figure anchor="tls_datastructure"
                     title="Additional TLS Data Structures">
@@ -796,29 +802,33 @@ AES-256    AESKW_256        42          56            58
               
 <artwork align="center"><![CDATA[
 enum {
+ reserved(0),  
+ aeskw_128(1),  
+ aeskw_256(3),  
+} EKTCipherType;  
+  
+struct {
+  EKTCipherType ekt_cipher; 
+  uint ekt_key_value<1..256>;  
+  uint srtp_master_salt<1..256>;  
+  uint16 ekt_spi;  
+} EKTkey;  
+
+enum {
   ekt_key(0),
   ekt_key_ack(1),
   ekt_key_error(254),
   (255)
-} SRTPKeyTransportType;
+} EKTMessageType;
 
 struct {
-  SRTPKeyTransportType keytrans_type;
-  uint24 length;
-  uint16 message_seq;
-  uint24 fragment_offset;
-  uint24 fragment_length;
-  select (SRTPKeyTransportType) {
+  EKTMessageType ekt_message_type;
+  select (EKTMessage.ekt_message_type) {
      case ekt_key:
-        EKTkey;
-   };
-} KeyTransport;
+        EKTKey;
+   } message;
+}  EKTMessage;
 
-enum {
- RESERVED(0),
- AESKW_128(1),
- AESKW_256(3),
-} ektcipher;
 
 struct {
   ektcipher EKT_Cipher; 
@@ -827,11 +837,12 @@ struct {
   uint16 EKT_SPI;
   uint24 EKT_TTL; 
 } EKTkey;
-]]></artwork>
 
+]]></artwork>
 			</figure>
 
-            <t> 
+
+          <!--- TODO DEAL WITH   <t> 
              <list style="hanging">
             <t hangText="EKT_TTL:">The maximum amount of time, in
             seconds, that this  EKT_Key_Value can be used. The  EKT_Key_Value in this
@@ -840,7 +851,23 @@ struct {
             TODO: discuss in security section.
             </t>
              </list>
-            </t>
+            </t> -->
+
+            <t> The figure above defines the contents for a new TLS
+            content type called EKTMessage  which is registered in <xref
+            target="iana-tls-content"/>. The EKTMessage above is used
+            as the opaque fragment in the TLSPlaintext structure
+            defined in Section 6.2.1 of <xref target="RFC5246"></xref>
+            and the "srtp_ekt_message" as the content type. The
+            "srtp_ekt_message" content type is defined and registered
+            in <xref target="iana-tls-ext"/>. </t>
+
+            <t> When the Server wishes to provide a new EKT Key, it can
+            send EKTMessage containing an EKTKey with the new key
+            information. The client MUST respond with an EKTMessage or
+            type ekt_key_ack if the EKTKey was successfully processed
+            and stored or ekt_key_error otherwise. </t>
+
             
             <t>The diagram below shows a message flow of DTLS client and DTLS
             server using the DTLS-SRTP Key Transport extension. </t>
@@ -968,6 +995,37 @@ SRTP packets                 <------->      SRTP packets
          <t>  TODO IANA registry for Message Type </t>
          
          <t>  TODO IANA registry EKT ciphers.</t>
+
+         <section anchor="iana-tls-ext" title="TLS Extensions">
+
+           <t> IANA is requested to add "srtp_ekt_key_transport" as an
+           new extension name to the "ExtensionType Values" table of
+           the "Transport Layer Security (TLS) Extensions" registry
+           with a reference to this specification and allocate a value
+           of TBD to for this. Note to RFC Editor: TBD will be
+           allocated by IANA. </t>
+
+           <t> Considerations for this type of extension are described
+           in Section 5 of <xref target="RFC4366"></xref> and requires
+           "IETF Consensus". </t>
+           
+         </section>
+
+         <section anchor="iana-tls-content" title="TLS Content Type">
+
+           <t> IANA is requested to add "srtp_ekt_message" as an new
+           descriptions name to the "TLS ContentType Registry" table
+           of the "Transport Layer Security (TLS) Extensions" registry
+           with a reference to this specification, a DTLS-OK value of
+           "Y", and allocate a value of TBD to for this content
+           type. Note to RFC Editor: TBD will be allocated by
+           IANA. </t>
+
+           <t> This registry was defined in Section 12 of <xref
+           target="RFC5246"></xref> and requires "Standards
+           Action". </t>
+           
+         </section>
         
       </section>
 
@@ -1007,13 +1065,15 @@ SRTP packets                 <------->      SRTP packets
         &rfc5649;
         &rfc5764;
         &rfc6347; 
+        &rfc5246; 
         
       </references>
 
       <references title="Informative References">
         
         &rfc3264;
-
+        &rfc4366;
+        
       </references>
 
 
