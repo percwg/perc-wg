@@ -434,27 +434,19 @@ Short_EKT_Field = '00000000' ; 8 bits
           encrypting the EKT_Plaintext with the EKT cipher, using the EKT Key as
           the encryption key. The encryption process is detailed in <xref
           target="cipher"></xref>.
-         <!-- ADD BACK LATER Implementations MAY cache the value of this
-          field to avoid recomputing it for each packet that is sent. -->
          </t>
 
 
          <t> Then the Full EKT Field is formed using the EKT Ciphertext and the
          SPI associated with the EKT Key used above.
-         <!-- ADD BACK LATER
+        
               <list style="empty"> <t> Note: the value of
               the EKT Ciphertext field is identical in successive packets protected
               by the same KEK and SRTP master key.  This value MAY be cached by an
               SRTP sender to minimize computational effort.  </t></list>
-         -->
+       
          The computed value of the Full EKT Field is written into the packet.
          </t>
-         
-         <!-- ADD BACK LATER
-          <t>Implementation note: Because of the format of the Full EKT Field, a
-          packet containing the Full EKT Field MUST be sent when the ROC changes
-          (i.e., every 2^16 packets).</t>
-         -->
          
          </list></t>
 
@@ -584,7 +576,7 @@ Short_EKT_Field = '00000000' ; 8 bits
              <t>Security requirements for EKT ciphers are discussed in <xref
              target="sec"/>. </t>
 
-          <section anchor="DefaultCipher" title="The Default Cipher">
+          <section anchor="DefaultCipher" title=" Ciphers">
             
             <t> The default EKT Cipher is the Advanced Encryption
             Standard (AES) Key Wrap with Padding <xref
@@ -612,7 +604,7 @@ Short_EKT_Field = '00000000' ; 8 bits
               
           </section>
 
-          <section title="Other EKT Ciphers">
+          <section title="Defining New EKT Ciphers">
             
             <t>Other specifications may extend this document by defining other EKT
             ciphers as described in <xref target="iana"></xref>. This section defines how
