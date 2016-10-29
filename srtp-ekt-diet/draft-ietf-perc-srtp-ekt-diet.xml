@@ -355,9 +355,7 @@ Short_EKT_Field = '00000000' ; 8 bits
 
             <t hangText="Security Parameter Index (SPI):">This field indicates
             the appropriate EKT Key and other parameters for the receiver to use
-            when processing the packet. Each time a different EKT Key is
-            received, it will have a larger SPI than the previous key
-	    (after taking rollover into account). The length
+            when processing the packet. The length
             of this field is 16 bits.  The parameters identified by this field
             are:
 
@@ -374,8 +372,8 @@ Short_EKT_Field = '00000000' ; 8 bits
             </list>
           
             Together, these data elements are called an EKT parameter set.
-            Within each SRTP session, each distinct EKT parameter set that may
-            be used MUST be associated with a distinct SPI value, to avoid
+            Each distinct EKT parameter set that is
+            used MUST be associated with a distinct SPI value to avoid
             ambiguity.
            </t>
 
@@ -441,7 +439,7 @@ Short_EKT_Field = '00000000' ; 8 bits
 
           <t><list style="numbers">
            
-          <t>The Security Parameter Index field is set to the value of the
+          <t>The Security Parameter Index (SPI) field is set to the value of the
           Security Parameter Index that is associated with the outbound
           parameter set. </t>
 
@@ -501,11 +499,12 @@ Short_EKT_Field = '00000000' ; 8 bits
            processing occurs.  If the packet contains a Full EKT Field, then
            processing continues as described below.</t>
 
-           <t>The combination of the SSRC and the Security Parameter Index (SPI)
+           <t>The Security Parameter Index (SPI)
            field is used to find which EKT parameter set should be used when
            processing the packet.  If there is no matching SPI, then the
            verification function MUST return an indication of authentication
-           failure, and the steps described below are not performed. EKT
+           failure, and the steps described below are not performed.
+           The EKT
            parameter set contains the EKT Key, EKT Cipher, and SRTP Master
            Salt. </t>
 
@@ -520,11 +519,12 @@ Short_EKT_Field = '00000000' ; 8 bits
            fields. The Master Salt that is associated with the EKT Keys used to do
            the description is also retrieved. </t>
                   
-           <t> The SRTP Master Key, ROC, and SRTP Master Salt from the previous step
+           <t> 
+           The SRTP Master Key, ROC, and SRTP Master Salt from the previous step
            are saved in a map indexed by the SSRC found in the EKT Plaintext and
            can be used for any future crypto operations for inbound or outbound
-           packets with the that SSRC. Outbound packets SHOULD continue to use
-           the old key for 250 ms after receipt of the new key.  This gives all
+           packets with that SSRC. Outbound packets SHOULD continue to use
+           the old SRTP Master Key for 250 ms after receipt of the new key.  This gives all
            the receivers in the system time to get the new key before they start
            receiving media encrypted with the new key. </t>
           
