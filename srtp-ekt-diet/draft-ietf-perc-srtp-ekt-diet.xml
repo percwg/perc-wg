@@ -983,11 +983,20 @@ SRTP packets                 <------->      SRTP packets
       </section>
 
        <section anchor="iana" title="IANA Considerations">
-        
-         <t>  TODO IANA registry for Message Type </t>
-         
-         <t>  TODO IANA registry EKT ciphers.</t>
 
+         <section anchor="iana-ekt-msg-types" title="EKT Message
+                                                     Types">
+           
+           <t> TODO IANA registry for Message Type </t>
+
+         </section>
+         
+         <section anchor="iana-ciphers" title="EKT Ciphers">
+           
+           <t>  TODO IANA registry EKT ciphers.</t>
+           
+         </section>
+         
          <section anchor="iana-tls-ext" title="TLS Extensions">
 
            <t> IANA is requested to add "srtp_ekt_key_transport" as an
