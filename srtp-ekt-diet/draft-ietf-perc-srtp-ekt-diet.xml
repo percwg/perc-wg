@@ -42,7 +42,28 @@
 
   <front>
     <title abbrev="EKT SRTP">Encrypted Key Transport for Secure RTP</title>
-	
+
+    <author fullname="Cullen Jennings" initials="C." surname="Jennings">
+      <organization abbrev="Cisco">Cisco Systems</organization>
+      
+      <address>
+        <postal>
+        <street></street>
+
+          <city>Calgary</city>
+
+          <region>AB</region>
+
+          <code></code>
+
+          <country>Canada</country>
+       </postal>
+
+        <email>fluffy@iii.ca</email>
+      </address>
+    </author>
+
+
     <author fullname="John Mattsson" initials="J.M" surname="Mattsson" role="editor" >
       <organization abbrev="Ericsson">Ericsson AB</organization>
 
@@ -125,26 +146,6 @@
        </postal>
 
         <email>fandreas@cisco.com</email>
-      </address>
-    </author>
-
-      <author fullname="Cullen Jennings" initials="C." surname="Jennings">
-      <organization abbrev="Cisco">Cisco Systems</organization>
-
-      <address>
-        <postal>
-        <street></street>
-
-          <city>Calgary</city>
-
-          <region>AB</region>
-
-          <code></code>
-
-          <country>Canada</country>
-       </postal>
-
-        <email>fluffy@iii.ca</email>
       </address>
     </author>
 
