@@ -666,7 +666,7 @@ AES-256    AESKW_256        42          56            58
           
           <section title="Other EKT Ciphers">
             
-            <t>Other specifications may extend this specification by defining other EKT
+            <t>Other specifications may extend this document by defining other EKT
             ciphers as described in <xref target="iana"></xref>. This section defines how
             those ciphers interact with this specification.</t>
 
@@ -722,13 +722,15 @@ AES-256    AESKW_256        42          56            58
           third case is a new receiver joining a session already in progress
           which needs to know the sender's SRTP master key.</t>
 
-          <t>New sender: A new sender SHOULD send a packet containing the Full
+          <t> The three cases are: <list style="hanging">
+          
+           <t hangText="New sender:"> A new sender SHOULD send a packet containing the Full
           EKT Field as soon as possible, always before or coincident with
           sending its initial SRTP packet.  To accommodate packet loss, it is
           RECOMMENDED that three consecutive packets contain the Full EKT Field
           be transmitted. </t>
 
-          <t>Rekey: By sending EKT over SRTP, the rekeying event
+           <t hangText="Rekey:"> By sending EKT over SRTP, the rekeying event
           shares fate with the SRTP packets protected with that new
           SRTP master key.  To accommodate packet loss, it is
           RECOMMENDED that three consecutive packets contain the Full
@@ -738,7 +740,7 @@ AES-256    AESKW_256        42          56            58
           packets with the Full EKT Field.-->
          </t>
 
-          <t>New receiver: When a new receiver joins a session it does not need
+          <t hangText="New receiver:"> When a new receiver joins a session it does not need
           to communicate its sending SRTP master key (because it is a receiver).
           When a new receiver joins a session the sender is generally unaware of
           the receiver joining the session.  Thus, senders SHOULD periodically
@@ -750,6 +752,8 @@ AES-256    AESKW_256        42          56            58
           same as the rate of intra coded video frames. If only sending
           audio, the RECOMMENDED frequency is every 100ms. </t>
 
+          </list></t>
+          
         </section>
       </section>
 
@@ -760,10 +764,11 @@ AES-256    AESKW_256        42          56            58
         keying material from one DTLS-SRTP peer to another.  This allows those
         peers to process EKT keying material in SRTP (or SRTCP) and retrieve the
         embedded SRTP keying material.  This combination of protocols is
-        valuable because it combines the advantages of DTLS (strong
-        authentication of the endpoint and flexibility) with the advantages of
-        EKT (allowing secure multiparty RTP with loose coordination and
-        efficient communication of per-source keys).</t>
+        valuable because it combines the advantages of DTLS, which has
+        strong
+        authentication of the endpoint and flexibility, along with
+        allowing secure multiparty RTP with loose coordination and
+        efficient communication of per-source keys.</t>
 
         <section title="DTLS-SRTP Recap">
           
@@ -957,7 +962,7 @@ SRTP packets                 <------->      SRTP packets
         
         <t>
         Thank you to Russ Housley provided detailed review and
-        significant help with crafting text for this specification.
+        significant help with crafting text for this document.
         Thanks to
         David Benham,
         Eddy Lem,
