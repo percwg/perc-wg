@@ -808,10 +808,10 @@ struct {
             <t> 
              <list style="hanging">
             <t hangText="EKT_TTL:">The maximum amount of time, in
-            seconds, that this EKTkey can be used. The EKTkey in this
+            seconds, that this  EKT_Key_Value can be used. The  EKT_Key_Value in this
             message MUST NOT be used for encrypting or decrypting
-            information after this time. TODO: discuss in security
-            section.
+            information after the TTL expires.
+            TODO: discuss in security section.
             </t>
              </list>
             </t>
