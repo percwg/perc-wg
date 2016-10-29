@@ -403,15 +403,8 @@ Short_EKT_Field = '00000000' ; 8 bits
         participants in an SRTP session, for use in processing inbound SRTP and
         SRTCP traffic.</t>
 
-        <t> TODO - Move this paragraph to better section.
-        SRTP master keys MUST be randomly generated, and <xref
-        target="RFC4086"></xref> offers some guidance about random
-        number generation.  SRTP master keys MUST NOT be re-used for
-        any other purpose, and SRTP master keys MUST NOT be derived
-        from other SRTP master keys. </t>
-        
-        <t> Either the Full_EKT_Field or Short_EKT_Field is appended at the tail
-        end of all the SRTP packet.  </t>
+           <t> Either the Full_EKT_Field or Short_EKT_Field is appended at the tail
+        end of all SRTP packets.  </t>
         
         <section anchor="outbound" title="Outbound Processing">
 
@@ -703,7 +696,7 @@ Short_EKT_Field = '00000000' ; 8 bits
           audio, the RECOMMENDED frequency is every 100ms. </t>
 
           </list></t>
-          
+
         </section>
       </section>
 
@@ -879,6 +872,12 @@ SRTP packets                 <------->      SRTP packets
         that the inputs of EKT are the same as for SRTP with key-sharing: a
         single key is provided to protect an entire SRTP session. However, EKT
         remains secure even when SSRC values collide.</t>
+
+        <t> SRTP master keys MUST be randomly generated, and <xref
+        target="RFC4086"></xref> offers some guidance about random
+        number generation.  SRTP master keys MUST NOT be re-used for
+        any other purpose, and SRTP master keys MUST NOT be derived
+        from other SRTP master keys. </t>
 
         <t>The EKT Cipher includes its own authentication/integrity check. For
         an attacker to successfully forge a full EKT packet, it would need to
