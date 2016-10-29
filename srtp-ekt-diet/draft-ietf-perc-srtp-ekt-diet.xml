@@ -251,11 +251,6 @@
       functions of EKT.
       </t>
 
-      <!-- open issue: move the 1,0 to a full byte command at end. Reserve 1
-           for pre standard uses -->
-
-        <!-- open issue: Do we need a non encrypted version of the ROC -->
-        
       <section anchor="EKT" title="EKT Field Formats">
         
         <t> The EKT Field uses the format defined below for the Full_EKT_Field
@@ -317,8 +312,6 @@ Short_EKT_Field = '00000000' ; 8 bits
         </figure>
 
         <t>
-          <!-- Here || denotes concatenation, and '1' and '0' denote single one and
-               zero bits, respectively. -->
          
          These fields and data elements are defined
           as follows:
@@ -390,12 +383,9 @@ Short_EKT_Field = '00000000' ; 8 bits
             to avoid conflicts with pre standards version of EKT that have been
             deployed.  Values less than 64 are mandatory to understand the whole
             EKT field SHOULD be discarded if it contains message
-	    type value that
+	        type value that
             is less than 64 and not implemented.  </t>
 
-            <t> TODO - add IANA registry for
-            Message Type. </t>
-                  
 
           </list>
         </t>
@@ -448,8 +438,6 @@ Short_EKT_Field = '00000000' ; 8 bits
          and ROC fields, as shown in <xref target="EKT"/>.  The ROC, SRTP Master
          Key, and SSRC used in EKT processing SHOULD be the same as the one used
          in the SRTP processing.
-         <!-- really do mean SHOULD not MUST here - ping me to discuss
-              some time - Cullen --> 
          </t>
 
           <t>The EKT_Ciphertext field is set to the ciphertext created by
@@ -569,14 +557,6 @@ Short_EKT_Field = '00000000' ; 8 bits
           used, in which case its use MUST be coordinated by external means
           (e.g., key management).</t>
 
-          <!-- JUNK this or ADD ???  <t>The SRTP Master Salt length for the
-               offered cipher suites MUST be the same.  In practice the easiest
-               way to achieve this is by offering the same crypto suite.</t>
-         -->
-         
-         <!-- OPEN issue : is there a problem with salt lengths when
-              using double -->
-         
           <t>An EKT cipher consists of an encryption function and a decryption
           function. The encryption function E(K, P) takes the following inputs:
           <list style="symbols">
@@ -605,34 +585,27 @@ Short_EKT_Field = '00000000' ; 8 bits
              </t>
           
              <t> These functions have the property that D(K, E(K, P))
-             = P plus optional padding for all values of K and P.  Each cipher also has a
-             limit T on the number of times that it can be used with
-             any fixed key value. <!-- For each key, the encryption
-             function MUST NOT be invoked on more than T distinct
-             values of P, and the decryption function MUST NOT be
-             invoked on more than T distinct values of C. --> The EKT
-             Key MUST NOT be used more that T times.  <!-- Advice on
-             how many times a given ciphers can be used can be found
-             in TODO. --> </t>
+             = ( P concatenated with optional padding) for all values
+             of K and P.  Each cipher also has a limit T on the number
+             of times that it can be used with any fixed key
+             value. The EKT Key MUST NOT be used more that T
+             times. </t>
 
              <t>Security requirements for EKT ciphers are discussed in <xref
              target="sec"/>. </t>
 
           <section anchor="DefaultCipher" title="The Default Cipher">
             
-            <t>
-                 The default EKT Cipher is the Advanced Encryption Standard
-                 (AES) Key Wrap with Padding <xref target="RFC5649"></xref>
-                 algorithm.  It requires a plaintext length M that is at least
-                 one octet, and it returns a ciphertext with a length of
-                 N = M + (M mod 8) + 8
-                 octets.  It can be used with key sizes of L = 16, and
-                 L = 32
-                 octets, and its use with those key sizes is indicated as
-                 AESKW_128, or AESKW_256, respectively.  The key size determines
-                 the length of the AES key used by the Key Wrap algorithm.  With
-                 this cipher, T=2^48.
-               </t>
+            <t> The default EKT Cipher is the Advanced Encryption
+            Standard (AES) Key Wrap with Padding <xref
+            target="RFC5649"></xref> algorithm.  It requires a
+            plaintext length M that is at least one octet, and it
+            returns a ciphertext with a length of N = M + (M mod 8) +
+            8 octets.  It can be used with key sizes of L = 16, and L
+            = 32 octets, and its use with those key sizes is indicated
+            as AESKW_128, or AESKW_256, respectively.  The key size
+            determines the length of the AES key used by the Key Wrap
+            algorithm.  With this cipher, T=2^48. </t>
                
                <texttable anchor="CipherTable" title="EKT Ciphers">
                  <ttcol align='left'>Cipher</ttcol>
@@ -680,7 +653,7 @@ Short_EKT_Field = '00000000' ; 8 bits
 
         <section anchor="srtp" title="Transport">
           
-          <t><!--EKT MUST be used over SRTCP, whenever RTCP is in use.--> EKT
+          <t>  EKT
           SHOULD be used over SRTP, and other specification MAY define how to
           use it over SRTCP.  SRTP is preferred because it shares fate with
           transmitted media, because SRTP rekeying can occur without concern for
@@ -718,11 +691,7 @@ Short_EKT_Field = '00000000' ; 8 bits
           shares fate with the SRTP packets protected with that new
           SRTP master key.  To accommodate packet loss, it is
           RECOMMENDED that three consecutive packets contain the Full
-          EKT Field be transmitted.
-         <!-- ADD LATER To avoid sending large SRTP packets (such as video key frames)
-          with the Full EKT Field, it can be advantageous to send smaller SRTP
-          packets with the Full EKT Field.-->
-         </t>
+          EKT Field be transmitted. </t>
 
           <t hangText="New receiver:"> When a new receiver joins a session it does not need
           to communicate its sending SRTP master key (because it is a receiver).
@@ -787,9 +756,6 @@ Short_EKT_Field = '00000000' ; 8 bits
               target="RFC6347">DTLS</xref>, the following
               structures are used:</preamble>
 
-              <!-- TODO following stuff seems way out of wack with
-                   spec -->
-              
 <artwork align="center"><![CDATA[
 enum {
  reserved(0),  
