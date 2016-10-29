@@ -292,7 +292,7 @@
 EKT_Msg_Type_Full = 2 ;  8 bits
 EKT_Msg_Length ; 16 bits. length in octets including type and length 
 
-EKT_Plaintext = SRTP_Master_Key || SSRC || ROC || TTL
+EKT_Plaintext = SRTP_Master_Key || SSRC || ROC 
 
 EKT_Ciphertext = EKT_Encrypt(EKT_Key, EKT_Plaintext)
 
@@ -312,10 +312,11 @@ Short_EKT_Field = '00000000'
           as follows:
           <list style="hanging">
 
-               <t hangText="EKT_Plaintext:">The data that is input to the EKT
-               encryption operation.  This data never appears on the wire, and
-               is used only in computations internal to EKT. This is the
-               concatenation of the SRTP Master Key, the SSRC, ROC, and the TTL.
+               <t hangText="EKT_Plaintext:">The data that is input to
+               the EKT encryption operation.  This data never appears
+               on the wire, and is used only in computations internal
+               to EKT. This is the concatenation of the SRTP Master
+               Key, the SSRC, and the ROC.
                </t>
 
                <t hangText="EKT_Ciphertext:">The data that is output from the
@@ -341,14 +342,6 @@ Short_EKT_Field = '00000000'
             context associated with the SSRC in the SRTP or SRTCP packet.  The
             length of this field is 32 bits.
             </t>
-
-	        <t hangText="Time to Live (TTL):">The maximum amount of time that
-	        this key can be used. A unsigned 16 bit integer representing
-	        duration in seconds. The SRTP Master key in this message MUST NOT be
-	        used for encrypting or decrypting information after this time. Open
-	        Issue: does this need to be absolute time not duration? TODO:
-	        discuss in security section.
-               </t>
 
             <t hangText="Security Parameter Index (SPI):">This field indicates
             the appropriate EKT Key and other parameters for the receiver to use
@@ -521,8 +514,7 @@ Short_EKT_Field = '00000000'
            packets with the that SSRC. Outbound packets SHOULD continue to use
            the old key for 250 ms after receipt of the new key.  This gives all
            the receivers in the system time to get the new key before they start
-           receiving media encrypted with the new key. The key MUST NOT be used
-           beyond the lifetime found in the TTL field. </t>
+           receiving media encrypted with the new key. </t>
           
             <t>At this point, EKT processing has successfully completed, and the
             normal SRTP or SRTCP processing takes place including replay
@@ -807,11 +799,23 @@ struct {
   uint EKT_Key_Value<1..256>;
   uint EKT_Master_Salt<1..256>;
   uint16 EKT_SPI;
+  uint24 EKT_TTL; 
 } EKTkey;
 ]]></artwork>
 
 			</figure>
 
+            <t> 
+             <list style="hanging">
+            <t hangText="EKT_TTL:">The maximum amount of time, in
+            seconds, that this  EKT_Key_Value can be used. The  EKT_Key_Value in this
+            message MUST NOT be used for encrypting or decrypting
+            information after the TTL expires.
+            TODO: discuss in security section.
+            </t>
+             </list>
+            </t>
+            
             <t>The diagram below shows a message flow of DTLS client and DTLS
             server using the DTLS-SRTP Key Transport extension. </t>
 
@@ -917,6 +921,15 @@ SRTP packets                 <------->      SRTP packets
         <t>An EKT cipher MUST resist attacks in which both ciphertexts and
         plaintexts can be adaptively chosen and adversaries that can query both
         the encryption and decryption functions adaptively.</t>
+
+        <t> In some systems, when a member of a conference leaves the
+        conferences, the conferences is rekeyed so that member no
+        longer has the key.  When changing to a new EKTKey, it is
+        possible that the attacker could block the EKTKey message
+        getting to a particular endpoint and that endpoint would keep
+        sending media encrypted using the old key. To mitigate that
+        risk, the lifetime of the EKTKey SHOULD be limited using the
+        EKT_TTL. </t>
         
       </section>
 
