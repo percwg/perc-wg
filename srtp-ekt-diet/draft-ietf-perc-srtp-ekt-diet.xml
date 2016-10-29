@@ -287,9 +287,6 @@
 ]]></artwork>
         </figure>
 
-        <t> TODO: move following syntax to ABNF. Move name of Short to Empty.
-        Move name of Full to EncryptedKey. Drop extra EKT. </t>
-        
         <figure anchor="tag_formats"
                 title="EKT data formats">
 <artwork align="left"><![CDATA[
@@ -938,7 +935,7 @@ SRTP packets                 <------->      SRTP packets
          <section anchor="iana-ekt-msg-types" title="EKT Message
                                                      Types">
            
-           <t> TODO IANA registry for Message Type </t>
+           <t> TODO IANA registry for Message Type. </t>
 
          </section>
          
