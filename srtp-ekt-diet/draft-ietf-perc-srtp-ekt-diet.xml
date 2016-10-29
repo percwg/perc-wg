@@ -937,14 +937,9 @@ SRTP packets                 <------->      SRTP packets
         described in <xref target="inbound_impl_notes"></xref> helps
         mitigate this issue. </t>
 
-        <t>EKT can rekey an SRTP stream until the SRTP rollover counter (ROC)
-        needs to roll over.  EKT does not extend SRTP's rollover counter (ROC),
-        and like SRTP itself EKT cannot properly handle a ROC rollover.  Thus
-        even if using EKT, new (master or session) keys need to be established
-        after 2^48 packets are transmitted in a single SRTP stream as described
-        in Section 3.3.1 of <xref target="RFC3711"></xref>.  Due to the
-        relatively low packet rates of typical RTP sessions, this is not
-        expected to be a burden.</t>
+        <t> Each EKT cipher specifies a value T that is the maximum
+        number of times a given key can be used. An endpoint MUST NOT
+        send more than T Full EKT Field using the same EKT_Key. </t>
 
         <t>The confidentiality, integrity, and authentication of the EKT cipher
         MUST be at least as strong as the SRTP cipher and at least as
