@@ -36,7 +36,7 @@
 <?rfc sortrefs="yes"?>
 <?rfc iprnotified="no" ?>
 <?rfc strict="yes" ?>
-<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-01" ipr="trust200902">
+<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-02" ipr="trust200902">
 
   <front>
     <title abbrev="EKT SRTP">Encrypted Key Transport for Secure RTP</title>
@@ -146,7 +146,7 @@
       </address>
     </author>
 
-      <date month="July" day="8" year="2016"/>
+      <date month="October" day="28" year="2016"/>
 
 
     <area>ART</area>
@@ -161,11 +161,12 @@
 
     <abstract>
       
-      <t>Encrypted Key Transport (EKT) is an extension to Secure Real-time
-      Transport Protocol (SRTP) that provides for the secure transport of SRTP
-      master keys, Rollover Counters, and other information within SRTP.  This
-      facility enables SRTP to work for decentralized conferences with minimal
-      control by allowing a common key to be used across multiple endpoints.
+      <t>Encrypted Key Transport (EKT) is an extension to Secure
+      Real-time Transport Protocol (SRTP) that provides for the secure
+      transport of SRTP master keys, rollover counters, and other
+      information within SRTP.  This facility enables SRTP for
+      decentralized conferences by distributing a common key to all of
+      the conference endpoints.
       </t>
 
     </abstract>
@@ -175,20 +176,23 @@
   <middle>
     <section title="Introduction">
       
-      <t>RTP is designed to allow decentralized groups with minimal control to
+      <t>Real-time Transport Protcol (RTP) is designed to allow 
+      decentralized groups with minimal control to
       establish sessions, such as for multimedia conferences.  Unfortunately,
       Secure RTP (<xref target="RFC3711">SRTP</xref>) cannot be used in many
-      minimal-control scenarios, because it requires that SSRC values and other
+      minimal-control scenarios, because it requires that
+      synchronization source (SSRC) values and other
       data be coordinated among all of the participants in a session.  For
       example, if a participant joins a session that is already in progress,
-      that participant needs to be told the SRTP keys (and SSRC, ROC and other
-      details) of the other SRTP sources.</t>
+      that participant needs to be told the SRTP keys along with the SSRC, roll
+      over counter (ROC) and other
+      details of the other SRTP sources.</t>
 
       <t>The inability of SRTP to work in the absence of central control was
       well understood during the design of the protocol; the omission was
       considered less important than optimizations such as bandwidth
       conservation. Additionally, in many situations SRTP is used in conjunction
-      with a signaling system that can provide most of the central control
+      with a signaling system that can provide the central control
       needed by SRTP. However, there are several cases in which conventional
       signaling systems cannot easily provide all of the coordination
       required. It is also desirable to eliminate the layer violations that
@@ -197,10 +201,10 @@
 
       <t>This document defines Encrypted Key Transport (EKT) for SRTP and
       reduces the amount of external signaling control that is needed in a SRTP
-      session that is shared with multiple receivers. EKT securely distributes
+      session with multiple receivers. EKT securely distributes
       the SRTP master key and other information for each SRTP source. With this
       method, SRTP entities are free to choose SSRC values as they see fit, and
-      to start up new SRTP sources (SSRC) with new SRTP master keys (see Section
+      to start up new SRTP sources with new SRTP master keys (see Section
       2.2) within a session without coordinating with other entities via
       external signaling or other external means. </t>
 
@@ -213,10 +217,11 @@
       <t>EKT does not control the manner in which the SSRC is generated; it is
       only concerned with their secure transport. </t>
 
-      <t>EKT is not intended to replace external key establishment mechanisms,
-      Instead, it is used in conjunction with those methods, and it relieves
-      them of the burden of tightly coordinating every SRTP source (SSRC) among
-      every SRTP participant.</t>
+      <t>EKT is not intended to replace external key establishment mechanisms.
+      Instead, it is used in conjunction with those methods, and it 
+      relieves those methods of the burden to deliver the 
+      context for each SRTP source to every SRTP participant.
+      </t>
 
       <section title="Conventions Used In This Document">
 
@@ -265,8 +270,10 @@
 :                        EKT Ciphertext                         :
 :                                                               :
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Security Parameter Index  |   Length                        | 2 
-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|   Security Parameter Index  |   Length                        |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+|0 0 0 0 0 0 1 0|
++-+-+-+-+-+-+-+-+
 ]]></artwork>
 
        </figure>
@@ -277,7 +284,7 @@
           <artwork align="center"><![CDATA[
  0 1 2 3 4 5 6 7 
 +-+-+-+-+-+-+-+-+
-|0 0 0 0 0 0 0|0|
+|0 0 0 0 0 0 0 0|
 +-+-+-+-+-+-+-+-+
 ]]></artwork>
         </figure>
@@ -289,7 +296,7 @@
                 title="EKT data formats">
 <artwork align="left"><![CDATA[
 
-EKT_Msg_Type_Full = 2 ;  8 bits
+EKT_Msg_Type_Full = '00000010' ; 8 bits
 EKT_Msg_Length ; 16 bits. length in octets including type and length 
 
 EKT_Plaintext = SRTP_Master_Key || SSRC || ROC || TTL
@@ -299,7 +306,7 @@ EKT_Ciphertext = EKT_Encrypt(EKT_Key, EKT_Plaintext)
 Full_EKT_Field = EKT_Ciphertext || SPI ||
                            EKT_Msg_Length || EKT_Msg_Type_Full
 
-Short_EKT_Field = '00000000' 
+Short_EKT_Field = '00000000' ; 8 bits
 
 ]]></artwork>
         </figure>
@@ -402,7 +409,7 @@ Short_EKT_Field = '00000000'
 
       <section anchor="processing" title="Packet Processing and State Machine">
         
-        <t>At any given time, each SRTP/SRTCP source (SSRC) has associated with
+        <t>At any given time, each SRTP/SRTCP source has associated with
         it a single EKT parameter set. This parameter set is used to process all
         outbound packets, and is called the outbound parameter set for that
         SSRC. There may be other EKT parameter sets that are used by other
@@ -414,9 +421,12 @@ Short_EKT_Field = '00000000'
         participants in an SRTP session, for use in processing inbound SRTP and
         SRTCP traffic.</t>
 
-       <t>All SRTP master keys MUST NOT be re-used, MUST be randomly generated
-       according to <xref target="RFC4086"></xref>, and MUST NOT be equal to or
-       derived from other SRTP master keys.</t>
+        <t> TODO - Move this paragraph to better section.
+        SRTP master keys MUST be randomly generated, and <xref
+        target="RFC4086"></xref> offers some guidance about random
+        number generation.  SRTP master keys MUST NOT be re-used for
+        any other purpose, and SRTP master keys MUST NOT be derived
+        from other SRTP master keys. </t>
         
         <t> Either the Full_EKT_Field or Short_EKT_Field is appended at the tail
         end of all the SRTP packet.  </t>
@@ -483,10 +493,9 @@ Short_EKT_Field = '00000000'
 
         <section anchor="inbound" title="Inbound Processing">
          
-          <t> Inbound EKT processing MUST take place prior to the usual SRTP or
-          SRTCP processing.  The following steps show processing as packets are
-          received in order.
-         </t>
+          <t> When receiving a packet on a RTP stream where EKT was
+          negotiated, the following steps are applied for each
+          received packet.</t>
 
           <t><list style="numbers">
             
@@ -515,7 +524,7 @@ Short_EKT_Field = '00000000'
            fields. The Master Salt that is assocted with the EKT Keys used to do
            the decription is also retreived. </t>
                   
-           <t> The SRTP Master Key, ROC, and Master Salt from the prevous step
+           <t> The SRTP Master Key, ROC, and SRTP Master Salt from the prevous step
            are saved in a map indexed by the SSRC found in the EKT Plaintext and
            can be used for any future crypto operations for inbound or outbound
            packets with the that SSRC. Outbound packets SHOULD continue to use
@@ -562,7 +571,7 @@ Short_EKT_Field = '00000000'
           used, in which case its use MUST be coordinated by external means
           (e.g., key management).</t>
 
-          <!-- JUNK this or ADD ???  <t>The SRTP master salt length for the
+          <!-- JUNK this or ADD ???  <t>The SRTP Master Salt length for the
                offered cipher suites MUST be the same.  In practice the easiest
                way to achieve this is by offering the same crypto suite.</t>
          -->
@@ -596,13 +605,19 @@ Short_EKT_Field = '00000000'
         encryption of plaintext with the key K).
              </t>
           
-             <t>
+           <!--   <t>
                These functions have the property that D(K, E(K, P)) = P for all
                values of K and P.  Each cipher also has a limit T on the number
                of times that it can be used with any fixed key value.  For each
                key, the encryption function MUST NOT be invoked on more than T
                distinct values of P, and the decryption function MUST NOT be
-               invoked on more than T distinct values of C.</t>
+             invoked on more than T distinct values of C.</t>  --> 
+
+             <t> The EKT Key MUST NOT be used more times than is
+             appropriate for the cipher it is using.
+             <!-- Advice on how many
+             times a given ciphers can be used can be found in
+             TODO. --> </t>
 
              <t>Security requirements for EKT ciphers are discussed in <xref
              target="sec"/>. </t>
@@ -613,8 +628,9 @@ Short_EKT_Field = '00000000'
                  The default EKT Cipher is the Advanced Encryption Standard
                  (AES) Key Wrap with Padding <xref target="RFC5649"></xref>
                  algorithm.  It requires a plaintext length M that is at least
-                 one octet, and it returns a ciphertext with a length of N = M +
-                 8 octets.  It can be used with key sizes of L = 16, and 32
+                 one octet, and it returns a ciphertext with a length of
+                 N = M + (M mod 8) + 8
+                 octets.  It can be used with key sizes of L = 16, and 32
                  octets, and its use with those key sizes is indicated as
                  AESKW_128, or AESKW_256, respectively.  The key size determines
                  the length of the AES key used by the Key Wrap algorithm.  With
@@ -713,8 +729,11 @@ AES-256    AESKW_256        42          56            58
           RECOMMENDED that three consecutive packets contain the Full EKT Field
           be transmitted. </t>
 
-          <t>Rekey: By sending EKT over SRTP, the rekeying event shares fate
-          with the SRTP packets protected with that new SRTP master key.
+          <t>Rekey: By sending EKT over SRTP, the rekeying event
+          shares fate with the SRTP packets protected with that new
+          SRTP master key.  To accommodate packet loss, it is
+          RECOMMENDED that three consecutive packets contain the Full
+          EKT Field be transmitted.
          <!-- ADD LATER To avoid sending large SRTP packets (such as video key frames)
           with the Full EKT Field, it can be advantageous to send smaller SRTP
           packets with the Full EKT Field.-->
@@ -727,19 +746,19 @@ AES-256    AESKW_256        42          56            58
           transmit the Full EKT Field.  That interval depends on how frequently
           new receivers join the session, the acceptable delay before those
           receivers can start processing SRTP packets, and the acceptable
-          overhead of sending the Full EKT Field.  The RECOMMENDED frequency is
-          the same as the key frame frequency if sending video and every 100ms
-          for audio.  </t>
-
+          overhead of sending the Full EKT Field.
+          If sending audio and video, the RECOMMENDED frequency is the
+          same as the rate of intra coded video frames. If only sending
+          audio, the RECOMMENDED frequency is every 100ms. </t>
 
         </section>
       </section>
 
       <section anchor="dtls-srtp-kt" title="Use of EKT with DTLS-SRTP">
         
-        <t>This document defines an extension to DTLS-SRTP called Key Transport.
-        The EKT with the DTLS-SRTP Key Transport enables secure transport of EKT
-        keying material from one DTLS-SRTP peer to another.  This enables those
+        <t>This document defines an extension to DTLS-SRTP called SRTP
+        EKT Key Transport which enables secure transport of EKT
+        keying material from one DTLS-SRTP peer to another.  This allows those
         peers to process EKT keying material in SRTP (or SRTCP) and retrieve the
         embedded SRTP keying material.  This combination of protocols is
         valuable because it combines the advantages of DTLS (strong
@@ -761,13 +780,13 @@ AES-256    AESKW_256        42          56            58
         </section>
 
         <section anchor="dtls-srtp-extensions"
-                 title="EKT Extensions to DTLS-SRTP">
+                 title="SRTP EKT Key Transport Extensions to DTLS-SRTP">
           
-          <t>This document adds a new TLS negotiated extension called "ekt".
+          <t>This document adds a new TLS negotiated extension called "srtp_ekt_key_trans".
           This adds a new TLS content type, EKT, and a new negotiated extension
-          EKT. The DTLS server includes "ekt" in its TLS ServerHello message. If
-          a DTLS client includes "ekt" in its ClientHello, but does not receive
-          "ekt" in the ServerHello, the DTLS client MUST NOT send DTLS packets
+          EKT. The DTLS server includes "srtp_ekt_key_trans" in its TLS ServerHello message. If
+          a DTLS client includes "srtp_ekt_key_trans" in its ClientHello, but does not receive
+          "srtp_ekt_key_trans" in the ServerHello, the DTLS client MUST NOT send DTLS packets
           with the "ekt" content-type.</t>
 
             <figure anchor="tls_datastructure"
@@ -776,6 +795,9 @@ AES-256    AESKW_256        42          56            58
               target="RFC6347">DTLS</xref>, the following
               structures are used:</preamble>
 
+              <!-- TODO following stuff seems way out of wack with
+                   spec -->
+              
 <artwork align="center"><![CDATA[
 enum {
   ekt_key(0),
@@ -821,9 +843,9 @@ struct {
 <artwork align="center"><![CDATA[
 Client                                               Server
 
-ClientHello + use_srtp + EKT
+ClientHello + use_srtp + srtp_ekt_key_trans
                              -------->
-                              ServerHello + use_srtp + EKT
+                              ServerHello+use_srtp+srtp_ekt_key_trans
                                               Certificate*
                                         ServerKeyExchange*
                                        CertificateRequest*
@@ -922,13 +944,18 @@ SRTP packets                 <------->      SRTP packets
 
        <section anchor="iana" title="IANA Considerations">
         
-        <t> No IANA actions are required. </t>
+         <t>  TODO IANA registry for Message Type </t>
+         
+         <t>  TODO IANA registry EKT ciphers.</t>
         
       </section>
 
       <section title="Acknowledgements">
         
-        <t>Thanks to
+        <t>
+        Thank you to Russ Housley provided detailed review and
+        significant help with crafting text for this specification.
+        Thanks to
         David Benham,
         Eddy Lem,
         Felix Wyss,
@@ -939,14 +966,13 @@ SRTP packets                 <------->      SRTP packets
         Michael Peck,
         Nermeen Ismail,
         Paul Jones,
-        Rob Raymond,
-        Russ Housley,  and
+        Rob Raymond, and
         Yi Cheng
         for fruitful discussions, comments, and contributions to this
         document.</t>
 
        <t> This draft is a cut down version of draft-ietf-avtcore-srtp-ekt-03
-       and most of the text here came from that draft. </t>
+       and much of the text here came from that draft. </t>
        
       </section>
     </middle>
