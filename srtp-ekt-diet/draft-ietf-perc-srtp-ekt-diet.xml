@@ -812,6 +812,7 @@ struct {
   uint ekt_key_value<1..256>;  
   uint srtp_master_salt<1..256>;  
   uint16 ekt_spi;  
+  uint24 ekt_ttl; 
 } EKTkey;  
 
 enum {
@@ -829,29 +830,8 @@ struct {
    } message;
 }  EKTMessage;
 
-
-struct {
-  ektcipher EKT_Cipher; 
-  uint EKT_Key_Value<1..256>;
-  uint EKT_Master_Salt<1..256>;
-  uint16 EKT_SPI;
-  uint24 EKT_TTL; 
-} EKTkey;
-
 ]]></artwork>
 			</figure>
-
-
-          <!--- TODO DEAL WITH   <t> 
-             <list style="hanging">
-            <t hangText="EKT_TTL:">The maximum amount of time, in
-            seconds, that this  EKT_Key_Value can be used. The  EKT_Key_Value in this
-            message MUST NOT be used for encrypting or decrypting
-            information after the TTL expires.
-            TODO: discuss in security section.
-            </t>
-             </list>
-            </t> -->
 
             <t> The figure above defines the contents for a new TLS
             content type called EKTMessage  which is registered in <xref
@@ -861,6 +841,18 @@ struct {
             and the "srtp_ekt_message" as the content type. The
             "srtp_ekt_message" content type is defined and registered
             in <xref target="iana-tls-ext"/>. </t>
+
+            <t> 
+            <list style="hanging">
+
+              <t hangText="ekt_ttl:">The maximum amount of time, in
+              seconds, that this ekt_key_value can be used. The
+              ekt_key_value in this message MUST NOT be used for
+              encrypting or decrypting information after the TTL
+              expires.  TODO: discuss in security section. </t>
+
+            </list>
+            </t>
 
             <t> When the Server wishes to provide a new EKT Key, it can
             send EKTMessage containing an EKTKey with the new key
