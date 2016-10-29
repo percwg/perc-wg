@@ -953,11 +953,11 @@ SRTP packets                 <------->      SRTP packets
 
          <section tilte="TLS Extensions">
 
-           <t> IANA is requested to add "srtp_ekt_key_trans" as an new extension name
-           to the "ExtensionType Values" table of the "Transport Layer
-           Security (TLS) Extensions" registry with a reference to
-           this specification and allocate a value of TBD to for this
-           extension. </t>
+           <t> IANA is requested to add "srtp_ekt_key_trans" as an new
+           extension name to the "ExtensionType Values" table of the
+           "Transport Layer Security (TLS) Extensions" registry with a
+           reference to this specification and allocate a value of TBD
+           to for this extension. </t>
 
            <t> Considerations for this type of extension are described
            in Section 5 of RFC4366 TODO REF. </t>
