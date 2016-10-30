@@ -752,9 +752,9 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 
 <artwork align="center"><![CDATA[
 enum {
- reserved(0),  
- aeskw_128(1),  
- aeskw_256(3),  
+  reserved(0),  
+  aeskw_128(1),  
+  aeskw_256(3),  
 } EKTCipherType;  
 
 struct {
@@ -779,11 +779,10 @@ enum {
 struct {
   EKTMessageType ekt_message_type;
   select (EKTMessage.ekt_message_type) {
-     case ekt_key:
-        EKTKey;
-   } message;
-}  EKTMessage;
-
+  case ekt_key:
+    EKTKey;
+  } message;
+} EKTMessage;
 ]]></artwork>
 			</figure>
 
