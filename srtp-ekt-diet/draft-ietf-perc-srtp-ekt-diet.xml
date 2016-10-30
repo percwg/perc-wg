@@ -479,7 +479,10 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
            <t> The resulting EKT Plaintext is parsed as described in <xref
            target="EKT"/>, to recover the SRTP Master Key, SSRC, and ROC
            fields. The Master Salt that is associated with the EKT Keys used to do
-           the description is also retrieved. </t>
+           the description is also retrieved.
+           If the value of the srtp_master_salt send in the EKTkey is
+           longer than needed by SRTP, then it is truncated by taking
+           the first N bytes from the srtp_master_salt field.</t>
                   
            <t> 
            The SRTP Master Key, ROC, and SRTP Master Salt from the previous step
@@ -852,13 +855,14 @@ SRTP packets                 <------->      SRTP packets
           </t>
           
         </section>
-      </section>
 
       <section title="Sending the DTLS EKT_Key Reliably">
 
        <t> The DTLS ekt_key is sent using the retransmissions specified
        in Section 4.2.4. of <xref target="RFC6347">DTLS</xref>. </t>
              
+      </section>
+
       </section>
 
       <section anchor="sec" title="Security Considerations">
