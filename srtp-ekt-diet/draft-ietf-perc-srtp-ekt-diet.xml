@@ -742,14 +742,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           
           <t>This document defines a new TLS negotiated extension
           called "srtp_ekt_key_transport"and a new TLS content type
-          called EKTMessage. If a DTLS client includes
-          "srtp_ekt_key_transport" in its ClientHello, then a DTLS
-          server that supports this extensions will includes
-          "srtp_ekt_key_transport" in its ServerHello message. If a
-          DTLS client includes "srtp_ekt_key_transport" in its
-          ClientHello, but does not receive "srtp_ekt_key_transport"
-          in the ServerHello, the DTLS client MUST NOT send DTLS
-          EKTMessage messages.</t>
+          called EKTMessage. </t>
 
             <figure anchor="tls_datastructure"
                     title="Additional TLS Data Structures">
@@ -763,7 +756,11 @@ enum {
  aeskw_128(1),  
  aeskw_256(3),  
 } EKTCipherType;  
-  
+
+struct {
+  EKTCipherType ekt_ciphers<0..254>;
+} SupportedEKTCiphers;
+
 struct {
   EKTCipherType ekt_cipher; 
   uint ekt_key_value<1..256>;  
@@ -790,7 +787,28 @@ struct {
 ]]></artwork>
 			</figure>
 
-            <t> The figure above defines the contents for a new TLS
+          <t> If a DTLS client includes "srtp_ekt_key_transport" in
+          its ClientHello, then a DTLS server that supports this
+          extensions will includes "srtp_ekt_key_transport" in its
+          ServerHello message. If a DTLS client includes
+          "srtp_ekt_key_transport" in its ClientHello, but does not
+          receive "srtp_ekt_key_transport" in the ServerHello, the
+          DTLS client MUST NOT send DTLS EKTMessage messages.</t>
+
+          <t> When a TLS client sends the "srtp_ekt_key_transport" in
+          its ServerHello message, it MUST include a
+          SupportedEKTCiphers as the extension_data for the extension
+          that contains the EKT ciphers the client is willing to use
+          in preference order, with the most preferred version
+          first. When the server responds in the
+          "srtp_ekt_key_transport" in its ServerHello message, it must
+          include a SupportedEKTCiphers list that selects a single EKT
+          cipher to use that is selected out of the list provided by
+          the client or it returns an empty list to indicate there is
+          no EKT cipher that was in the clients list that the server
+          is also willing to use. </t>
+
+          <t> The figure above defines the contents for a new TLS
             content type called EKTMessage  which is registered in <xref
             target="iana-tls-content"/>. The EKTMessage above is used
             as the opaque fragment in the TLSPlaintext structure
