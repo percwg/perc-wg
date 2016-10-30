@@ -777,7 +777,11 @@ struct {
           cipher to use that is selected out of the list provided by
           the client or it returns an empty list to indicate there is
           no EKT cipher that was in the clients list that the server
-          is also willing to use. </t>
+          is also willing to use.
+          The value used in the EKTCipherType for future extension
+          that define new ciphers is the value from the "EKT Ciphers
+          Type" IANA registry defined in <xref
+          target="iana-ciphers"/>. </t>
 
           <t> The figure above defines the contents for a new TLS
             content type called EKTMessage  which is registered in <xref
@@ -946,13 +950,14 @@ SRTP packets                 <------->      SRTP packets
              <ttcol align='left'>Specification</ttcol>
              <c> Short </c><c> 0 </c><c> RFCAAAA </c> 
              <c> Full </c><c> 2 </c><c> RFCAAAA </c> 
+             <c> Reserved </c><c> 63 </c><c> RFCAAAA </c> 
              <c> Reserved </c><c> 255 </c><c> RFCAAAA </c> 
            </texttable>
            
            <t> Note to RFC Editor: Please replace RFCAAAA with the RFC
            number for this specification. </t>
 
-           <t> New entreis to this table can be added via
+           <t> New entries to this table can be added via
            "Specification Required" as defined in <xref
            target="RFC5226"/>. When requesting a new value, the
            requestor needs to indicate if it is mandatory to
@@ -961,7 +966,7 @@ SRTP packets                 <------->      SRTP packets
            mandatory to understand, a value greater than or equal to
            64.  IANA SHOULD prefer allocation of even values over odd
            ones until the even code points are consumed to avoid
-           conflicts with pre standards version of EKT that have been
+           conflicts with pre standard versions of EKT that have been
            deployed.
            </t>
            
@@ -969,7 +974,29 @@ SRTP packets                 <------->      SRTP packets
          
          <section anchor="iana-ciphers" title="EKT Ciphers">
            
-           <t>  TODO IANA registry EKT ciphers.</t>
+           <t> IANA is requested to create a new registry for "EKT
+           Ciphers". The initial values in this registry are:
+           </t>
+
+           <texttable anchor="EKTCipherTable" title="EKT
+                                                     Cipher Types">
+             <ttcol align='left'>Name</ttcol>
+             <ttcol align='right'>Value</ttcol>
+             <ttcol align='left'>Specification</ttcol>
+             <c> AESKW128 </c><c> 1      </c><c> RFCAAAA </c> 
+             <c> AESKW256 </c><c> 3      </c><c> RFCAAAA </c> 
+             <c> Reserved    </c><c> 255 </c><c> RFCAAAA </c> 
+           </texttable>
+           
+           <t> Note to RFC Editor: Please replace RFCAAAA with the RFC
+           number for this specification. </t>
+           
+           <t> New entries to this table can be added via
+           "Specification Required" as defined in <xref
+           target="RFC5226"/>. The expert SHOULD ensure the
+           specification defines the values for L and T as required in
+           RFCAAA. Allocated values MUST be in the range of 1 to
+           254. </t>
            
          </section>
          
