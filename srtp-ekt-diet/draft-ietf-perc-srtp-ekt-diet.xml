@@ -254,8 +254,8 @@
 
       <section anchor="EKT" title="EKT Field Formats">
         
-        <t> The EKT Field uses the format defined below for the Full_EKT_Field
-        and Short_EKT_Field.  </t>
+        <t> The EKT Field uses the format defined below for the FullEKTField
+        and ShortEKTField.  </t>
 
        <figure anchor="tag_format_base"
                 title="Full EKT Field format"
@@ -334,24 +334,24 @@ EKTField = FullEKTField / ShortEKTField / ExtentionEKTField
           as follows:
           <list style="hanging">
 
-               <t hangText="EKT_Plaintext:">The data that is input to
+               <t hangText="EKTPlaintext:">The data that is input to
                the EKT encryption operation.  This data never appears
                on the wire, and is used only in computations internal
                to EKT. This is the concatenation of the SRTP Master
                Key, the SSRC, and the ROC.
                </t>
 
-               <t hangText="EKT_Ciphertext:">The data that is output from the
+               <t hangText="EKTCiphertext:">The data that is output from the
                EKT encryption operation, described in <xref
                target="cipher"></xref>.  This field is included in SRTP packets
                when EKT is in use.  
                </t>
 
-               <t hangText="SRTP_Master_Key:">On the sender side, the SRTP
+               <t hangText="SRTPMasterKey:">On the sender side, the SRTP
                Master Key associated with the indicated SSRC. </t>
 
-                <t hangText="SRTP_Master_Key_Length:"> The length of
-                the SRTP_Master_Key. This depends on the cipher suite
+                <t hangText="SRTPMasterKeyLength:"> The length of
+                the SRTPMasterKey. This depends on the cipher suite
                 negotiated for SRTP using <xref target="RFC3264" />
                 SDP Offer/Answer for the SRTP.</t>
 
@@ -388,7 +388,7 @@ EKTField = FullEKTField / ShortEKTField / ExtentionEKTField
             ambiguity.
            </t>
 
-	   <t hangText="EKT_Msg_Length"> All EKT message other that Short EKT Field
+	   <t hangText="EKTMsgLength"> All EKT message other that Short EKT Field
 	   must have a length as the second from last elements.  This is the length
 	   in octets of the full EKT message including this length field and the
 	   following message type. </t>
@@ -401,7 +401,7 @@ EKTField = FullEKTField / ShortEKTField / ExtentionEKTField
             deployed.  Values less than 64 are mandatory to understand the whole
             EKT field SHOULD be discarded if it contains message
 	        type value that
-            is less than 64 and not implemented.  </t>
+            is less than 64 and is not implemented.  </t>
 
 
           </list>
@@ -423,7 +423,7 @@ EKTField = FullEKTField / ShortEKTField / ExtentionEKTField
         participants in an SRTP session, for use in processing inbound SRTP and
         SRTCP traffic.</t>
 
-           <t> Either the Full_EKT_Field or Short_EKT_Field is appended at the tail
+           <t> Either the FullEKTField or ShortEKTField is appended at the tail
         end of all SRTP packets.  </t>
         
         <section anchor="outbound" title="Outbound Processing">
@@ -444,14 +444,14 @@ EKTField = FullEKTField / ShortEKTField / ExtentionEKTField
           Security Parameter Index that is associated with the outbound
           parameter set. </t>
 
-         <t>The EKT_Plaintext field is computed from the SRTP Master Key, SSRC,
+         <t>The EKTPlaintext field is computed from the SRTP Master Key, SSRC,
          and ROC fields, as shown in <xref target="EKT"/>.  The ROC, SRTP Master
          Key, and SSRC used in EKT processing SHOULD be the same as the one used
          in the SRTP processing.
          </t>
 
-          <t>The EKT_Ciphertext field is set to the ciphertext created by
-          encrypting the EKT_Plaintext with the EKT cipher, using the EKT Key as
+          <t>The EKTCiphertext field is set to the ciphertext created by
+          encrypting the EKTPlaintext with the EKT cipher, using the EKT Key as
           the encryption key. The encryption process is detailed in <xref
           target="cipher"></xref>.
          </t>
@@ -896,11 +896,11 @@ SRTP packets                 <------->      SRTP packets
         defeat the authentication mechanisms of the EKT Cipher authentication
         mechanism.</t>
 
-        <t> The presence of the SSRC in the EKT_Plaintext ensures that an
-        attacker cannot substitute an EKT_Ciphertext from one SRTP stream into
+        <t> The presence of the SSRC in the EKTPlaintext ensures that an
+        attacker cannot substitute an EKTCiphertext from one SRTP stream into
         another SRTP stream.  </t>
         
-        <t> An attacker who tampers with the bits in Full_EKT_Field can prevent
+        <t> An attacker who tampers with the bits in FullEKTField can prevent
         the intended receiver of that packet from being able to decrypt it.
         This is a minor denial of service vulnerability.  </t>
   
@@ -914,13 +914,13 @@ SRTP packets                 <------->      SRTP packets
 
         <t> Each EKT cipher specifies a value T that is the maximum
         number of times a given key can be used. An endpoint MUST NOT
-        send more than T Full EKT Field using the same EKT_Key. </t>
+        send more than T Full EKT Field using the same EKTKey. </t>
 
         <t>The confidentiality, integrity, and authentication of the EKT cipher
         MUST be at least as strong as the SRTP cipher and at least as
         strong as the DTLS-SRTP ciphers. </t>
         
-        <t> Part of the EKT_Plaintext is known, or easily guessable to an
+        <t> Part of the EKTPlaintext is known, or easily guessable to an
         attacker.  Thus, the EKT Cipher MUST resist known plaintext attacks.  In
         practice, this requirement does not impose any restrictions on our
         choices, since the ciphers in use provide high security even when much
@@ -937,7 +937,7 @@ SRTP packets                 <------->      SRTP packets
         getting to a particular endpoint and that endpoint would keep
         sending media encrypted using the old key. To mitigate that
         risk, the lifetime of the EKTKey SHOULD be limited using the
-        EKT_TTL. </t>
+        ekt_ttl. </t>
         
       </section>
 
