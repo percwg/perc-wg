@@ -31,6 +31,7 @@
 <!ENTITY rfc4086 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4086.xml">
 <!ENTITY rfc4366 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4366.xml">
 <!ENTITY rfc5246 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5246.xml">
+<!ENTITY rfc5234 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5234.xml">
 ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc toc="yes" ?>
@@ -287,23 +288,42 @@
 ]]></artwork>
         </figure>
 
+        <t> The following shows the syntax of for the EKTField added
+        to end of an SRTP or SRTCP packet expressed in ABNF <xref
+        target="RFC5234"/>. The EKTCiphertext is computed by
+        encrypting the EKTPlaintext with EKTKey. Future extensions
+        MUST to conform to the syntax of ExtentionEKTField. </t>
+        
         <figure anchor="tag_formats"
-                title="EKT data formats">
+                title="EKTField Syntax">
 <artwork align="left"><![CDATA[
 
-EKT_Msg_Type_Full = '00000010' ; 8 bits
-EKT_Msg_Length ; 16 bits. length in octets including type and length 
-SRTP_Master_Key_Length; 8 bits, length in octents of  SRTP_Master_Key
+BYTE = %x00-FF
 
-EKT_Plaintext = SRTP_Master_Key_Length || SRTP_Master_Key \
-                          || SSRC || ROC 
+EKTMsgTypeFull = %x02 
+EKTMsgTypeShort = %x00 
+EKTMsgTypeExtention = %x03-FF 
 
-EKT_Ciphertext = EKT_Encrypt(EKT_Key, EKT_Plaintext)
+EKTMsgLength = 2BYTE;
 
-Full_EKT_Field = EKT_Ciphertext || SPI ||
-                           EKT_Msg_Length || EKT_Msg_Type_Full
+SRTPMasterKeyLength = BYTE 
+SRTPMasterKey = 1*256BYTE 
+SSRC = 4BYTE; 32 bits SSRC from RTP 
+ROC = 4BYTE ; 32 bits ROC from SRTP
 
-Short_EKT_Field = '00000000' ; 8 bits
+EKTPlaintext = SRTPMasterKeyLength SRTPMasterKey SSRC ROC 
+
+EKTCiphertext = 1*256BYTE ; EKTEncrypt(EKTKey, EKTPlaintext)
+SPI = 2BYTE ; 16 bits SPI
+
+FullEKTField = EKTCiphertext SPI EKTMsgLength EKTMsgTypeFull
+
+ShortEKTField = EKTMsgTypeShort
+
+ExtentionData = 1*1024BYTE
+ExtentionEKTField = ExtentionData EKTMsgLength EKTMsgTypeExtention
+
+EKTField = FullEKTField / ShortEKTField / ExtentionEKTField
 
 ]]></artwork>
         </figure>
@@ -1006,6 +1026,7 @@ SRTP packets                 <------->      SRTP packets
         &rfc5764;
         &rfc6347; 
         &rfc5246; 
+        &rfc5234; 
         
       </references>
 
