@@ -7,7 +7,7 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 mmark ?= mmark
 
 DRAFT = draft-ietf-perc-double
-VERSION = 01
+VERSION = 02
 
 .PHONY: all clean diff
 .PRECIOUS: %.xml

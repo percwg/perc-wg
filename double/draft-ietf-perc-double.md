@@ -11,7 +11,7 @@
     Title = "SRTP Double Encryption Procedures"
     abbrev = "Double SRTP"
     category = "std"
-    docName = "draft-ietf-perc-double-01"
+    docName = "draft-ietf-perc-double-02"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
