@@ -576,7 +576,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
             returns a ciphertext with a length of N = M + (M mod 8) +
             8 octets.  It can be used with key sizes of L = 16, and L
             = 32 octets, and its use with those key sizes is indicated
-            as AESKW_128, or AESKW_256, respectively.  The key size
+            as AESKW128, or AESKW256, respectively.  The key size
             determines the length of the AES key used by the Key Wrap
             algorithm.  With this cipher, T=2^48. </t>
                
@@ -584,14 +584,14 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
                  <ttcol align='left'>Cipher</ttcol>
                  <ttcol align='right'>L</ttcol>
                  <ttcol align='right'>T</ttcol>
-                 <c> AESKW_128 </c><c> 16 </c><c> 2^48 </c> 
-                 <c> AESKW_256 </c><c> 32 </c><c> 2^48 </c> 
+                 <c> AESKW128 </c><c> 16 </c><c> 2^48 </c> 
+                 <c> AESKW256 </c><c> 32 </c><c> 2^48 </c> 
                </texttable>
                
                  <t>
                    As AES-128 is the mandatory to implement transform in <xref
-                   target="RFC3711">SRTP</xref>, AESKW_128 MUST be implemented
-                   for EKT and  AESKW_256 (TODO MAY / SHOULD / or MUST) be implemented.</t>
+                   target="RFC3711">SRTP</xref>, AESKW128 MUST be implemented
+                   for EKT and AESKW256 MAY be implemented.</t>
               
           </section>
 
