@@ -1,44 +1,16 @@
 <?xml version="1.0" encoding="US-ASCII"?>
 
-<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
-<!ENTITY rfc2119 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2119.xml">
-<!ENTITY rfc5226 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5226.xml">
-<!ENTITY rfc6347 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6347.xml">
-<!ENTITY rfc6407 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.6407.xml">
-<!ENTITY rfc5234 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5234.xml">
-<!ENTITY rfc2675 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2675.xml">
-<!ENTITY rfc4301 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4301.xml">
-<!ENTITY rfc2409 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2409.xml">
-<!ENTITY rfc2410 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2410.xml">
-<!ENTITY rfc2406 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2406.xml">
-<!ENTITY rfc2407 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.2407.xml">
-<!ENTITY rfc3261 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3261.xml">
-<!ENTITY rfc3264 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3264.xml">
-<!ENTITY rfc5649 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5649.xml">
-<!ENTITY rfc4648 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4648.xml">
-<!ENTITY rfc3550 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3550.xml">
-<!ENTITY rfc3610 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3610.xml">
-<!ENTITY rfc3602 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3602.xml">
-<!ENTITY rfc3686 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3686.xml">
-<!ENTITY rfc3830 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3830.xml">
-<!ENTITY rfc3711 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.3711.xml">
-<!ENTITY rfc4563 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4563.xml">
-<!ENTITY rfc4771 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4771.xml">
-<!ENTITY rfc4567 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4567.xml">
-<!ENTITY rfc4568 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4568.xml">
-<!ENTITY rfc5764 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5764.xml">
-<!ENTITY rfc4566 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4566.xml">
-<!ENTITY rfc4086 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4086.xml">
-<!ENTITY rfc4366 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.4366.xml">
-<!ENTITY rfc5246 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5246.xml">
-<!ENTITY rfc5234 PUBLIC "" "http://xml.resource.org/public/rfc/bibxml/reference.RFC.5234.xml">
-]>
-<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
 <?rfc toc="yes" ?>
 <?rfc symrefs="yes" ?>
 <?rfc sortrefs="yes"?>
 <?rfc iprnotified="no" ?>
-<?rfc strict="yes" ?>
+<?rfc strict="no" ?>
+
+<!DOCTYPE rfc SYSTEM "rfc2629.dtd" [
+]>
+
+<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
+
 <rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-02" ipr="trust200902">
 
   <front>
@@ -1035,22 +1007,146 @@ SRTP packets                 <------->      SRTP packets
     <back>
       <references title="Normative References">
 
-        &rfc2119;
-        &rfc3711;
-        &rfc4086;
-        &rfc5649;
-        &rfc5764;
-        &rfc6347; 
-        &rfc5246; 
-        &rfc5234; 
-        
+ <reference  anchor='RFC2119' target='http://www.rfc-editor.org/info/rfc2119'>
+<front>
+<title>Key words for use in RFCs to Indicate Requirement Levels</title>
+<author initials='S.' surname='Bradner' fullname='S. Bradner'><organization /></author>
+<date year='1997' month='March' />
+<abstract><t>In many standards track documents several words are used to signify the requirements in the specification.  These words are often capitalized. This document defines these words as they should be interpreted in IETF documents.  This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</t></abstract>
+</front>
+<seriesInfo name='BCP' value='14'/>
+<seriesInfo name='RFC' value='2119'/>
+<seriesInfo name='DOI' value='10.17487/RFC2119'/>
+</reference>
+
+<reference  anchor='RFC3711' target='http://www.rfc-editor.org/info/rfc3711'>
+<front>
+<title>The Secure Real-time Transport Protocol (SRTP)</title>
+<author initials='M.' surname='Baugher' fullname='M. Baugher'><organization /></author>
+<author initials='D.' surname='McGrew' fullname='D. McGrew'><organization /></author>
+<author initials='M.' surname='Naslund' fullname='M. Naslund'><organization /></author>
+<author initials='E.' surname='Carrara' fullname='E. Carrara'><organization /></author>
+<author initials='K.' surname='Norrman' fullname='K. Norrman'><organization /></author>
+<date year='2004' month='March' />
+<abstract><t>This document describes the Secure Real-time Transport Protocol (SRTP), a profile of the Real-time Transport Protocol (RTP), which can provide confidentiality, message authentication, and replay protection to the RTP traffic and to the control traffic for RTP, the Real-time Transport Control Protocol (RTCP).   [STANDARDS-TRACK]</t></abstract>
+</front>
+<seriesInfo name='RFC' value='3711'/>
+<seriesInfo name='DOI' value='10.17487/RFC3711'/>
+</reference>
+
+<reference  anchor='RFC4086' target='http://www.rfc-editor.org/info/rfc4086'>
+<front>
+<title>Randomness Requirements for Security</title>
+<author initials='D.' surname='Eastlake 3rd' fullname='D. Eastlake 3rd'><organization /></author>
+<author initials='J.' surname='Schiller' fullname='J. Schiller'><organization /></author>
+<author initials='S.' surname='Crocker' fullname='S. Crocker'><organization /></author>
+<date year='2005' month='June' />
+<abstract><t>Security systems are built on strong cryptographic algorithms that foil pattern analysis attempts.  However, the security of these systems is dependent on generating secret quantities for passwords, cryptographic keys, and similar quantities.  The use of pseudo-random processes to generate secret quantities can result in pseudo-security. A sophisticated attacker may find it easier to reproduce the environment that produced the secret quantities and to search the resulting small set of possibilities than to locate the quantities in the whole of the potential number space.</t><t>Choosing random quantities to foil a resourceful and motivated adversary is surprisingly difficult.  This document points out many pitfalls in using poor entropy sources or traditional pseudo-random number generation techniques for generating such quantities.  It recommends the use of truly random hardware techniques and shows that the existing hardware on many systems can be used for this purpose. It provides suggestions to ameliorate the problem when a hardware solution is not available, and it gives examples of how large such quantities need to be for some applications.  This document specifies an Internet Best Current Practices for the Internet Community, and requests discussion and suggestions for improvements.</t></abstract>
+</front>
+<seriesInfo name='BCP' value='106'/>
+<seriesInfo name='RFC' value='4086'/>
+<seriesInfo name='DOI' value='10.17487/RFC4086'/>
+</reference>
+
+
+<reference  anchor='RFC5649' target='http://www.rfc-editor.org/info/rfc5649'>
+<front>
+<title>Advanced Encryption Standard (AES) Key Wrap with Padding Algorithm</title>
+<author initials='R.' surname='Housley' fullname='R. Housley'><organization /></author>
+<author initials='M.' surname='Dworkin' fullname='M. Dworkin'><organization /></author>
+<date year='2009' month='September' />
+<abstract><t>This document specifies a padding convention for use with the AES Key Wrap algorithm specified in RFC 3394.  This convention eliminates the requirement that the length of the key to be wrapped be a multiple of 64 bits, allowing a key of any practical length to be wrapped.  This  memo provides information for the Internet community.</t></abstract>
+</front>
+<seriesInfo name='RFC' value='5649'/>
+<seriesInfo name='DOI' value='10.17487/RFC5649'/>
+</reference>
+
+
+<reference  anchor='RFC6347' target='http://www.rfc-editor.org/info/rfc6347'>
+<front>
+<title>Datagram Transport Layer Security Version 1.2</title>
+<author initials='E.' surname='Rescorla' fullname='E. Rescorla'><organization /></author>
+<author initials='N.' surname='Modadugu' fullname='N. Modadugu'><organization /></author>
+<date year='2012' month='January' />
+<abstract><t>This document specifies version 1.2 of the Datagram Transport Layer Security (DTLS) protocol.  The DTLS protocol provides communications privacy for datagram protocols.  The protocol allows client/server applications to communicate in a way that is designed to prevent eavesdropping, tampering, or message forgery.  The DTLS protocol is based on the Transport Layer Security (TLS) protocol and provides equivalent security guarantees.  Datagram semantics of the underlying transport are preserved by the DTLS protocol.  This document updates DTLS 1.0 to work with TLS version 1.2.  [STANDARDS-TRACK]</t></abstract>
+</front>
+<seriesInfo name='RFC' value='6347'/>
+<seriesInfo name='DOI' value='10.17487/RFC6347'/>
+</reference>
+
+
+<reference  anchor='RFC5246' target='http://www.rfc-editor.org/info/rfc5246'>
+<front>
+<title>The Transport Layer Security (TLS) Protocol Version 1.2</title>
+<author initials='T.' surname='Dierks' fullname='T. Dierks'><organization /></author>
+<author initials='E.' surname='Rescorla' fullname='E. Rescorla'><organization /></author>
+<date year='2008' month='August' />
+<abstract><t>This document specifies Version 1.2 of the Transport Layer Security (TLS) protocol.  The TLS protocol provides communications security over the Internet.  The protocol allows client/server applications to communicate in a way that is designed to prevent eavesdropping, tampering, or message forgery.  [STANDARDS-TRACK]</t></abstract>
+</front>
+<seriesInfo name='RFC' value='5246'/>
+<seriesInfo name='DOI' value='10.17487/RFC5246'/>
+</reference>
+
+<reference  anchor='RFC5234' target='http://www.rfc-editor.org/info/rfc5234'>
+<front>
+<title>Augmented BNF for Syntax Specifications: ABNF</title>
+<author initials='D.' surname='Crocker' fullname='D. Crocker' role='editor'><organization /></author>
+<author initials='P.' surname='Overell' fullname='P. Overell'><organization /></author>
+<date year='2008' month='January' />
+<abstract><t>Internet technical specifications often need to define a formal syntax.  Over the years, a modified version of Backus-Naur Form (BNF), called Augmented BNF (ABNF), has been popular among many Internet specifications.  The current specification documents ABNF. It balances compactness and simplicity with reasonable representational power.  The differences between standard BNF and ABNF involve naming rules, repetition, alternatives, order-independence, and value ranges.  This specification also supplies additional rule definitions and encoding for a core lexical analyzer of the type common to several Internet specifications.  [STANDARDS-TRACK]</t></abstract>
+</front>
+<seriesInfo name='STD' value='68'/>
+<seriesInfo name='RFC' value='5234'/>
+<seriesInfo name='DOI' value='10.17487/RFC5234'/>
+</reference>
+
+
+
+<reference  anchor='RFC5764' target='http://www.rfc-editor.org/info/rfc5764'>
+<front>
+<title>Datagram Transport Layer Security (DTLS) Extension to Establish Keys for the Secure Real-time Transport Protocol (SRTP)</title>
+<author initials='D.' surname='McGrew' fullname='D. McGrew'><organization /></author>
+<author initials='E.' surname='Rescorla' fullname='E. Rescorla'><organization /></author>
+<date year='2010' month='May' />
+<abstract><t>This document describes a Datagram Transport Layer Security (DTLS) extension to establish keys for Secure RTP (SRTP) and Secure RTP Control Protocol (SRTCP) flows.  DTLS keying happens on the media path, independent of any out-of-band signalling channel present. [STANDARDS-TRACK]</t></abstract>
+</front>
+<seriesInfo name='RFC' value='5764'/>
+<seriesInfo name='DOI' value='10.17487/RFC5764'/>
+</reference>
+
       </references>
 
       <references title="Informative References">
         
-        &rfc3264;
-        &rfc4366;
-        
+    <reference  anchor='RFC3264' target='http://www.rfc-editor.org/info/rfc3264'>
+<front>
+<title>An Offer/Answer Model with Session Description Protocol (SDP)</title>
+<author initials='J.' surname='Rosenberg' fullname='J. Rosenberg'><organization /></author>
+<author initials='H.' surname='Schulzrinne' fullname='H. Schulzrinne'><organization /></author>
+<date year='2002' month='June' />
+<abstract><t>This document defines a mechanism by which two entities can make use of the Session Description Protocol (SDP) to arrive at a common view of a multimedia session between them.  In the model, one participant offers the other a description of the desired session from their perspective, and the other participant answers with the desired session from their perspective.  This offer/answer model is most useful in unicast sessions where information from both participants is needed for the complete view of the session.  The offer/answer model is used by protocols like the Session Initiation Protocol (SIP).  [STANDARDS-TRACK]</t></abstract>
+</front>
+<seriesInfo name='RFC' value='3264'/>
+<seriesInfo name='DOI' value='10.17487/RFC3264'/>
+</reference>
+
+
+<reference  anchor='RFC4366' target='http://www.rfc-editor.org/info/rfc4366'>
+<front>
+<title>Transport Layer Security (TLS) Extensions</title>
+<author initials='S.' surname='Blake-Wilson' fullname='S. Blake-Wilson'><organization /></author>
+<author initials='M.' surname='Nystrom' fullname='M. Nystrom'><organization /></author>
+<author initials='D.' surname='Hopwood' fullname='D. Hopwood'><organization /></author>
+<author initials='J.' surname='Mikkelsen' fullname='J. Mikkelsen'><organization /></author>
+<author initials='T.' surname='Wright' fullname='T. Wright'><organization /></author>
+<date year='2006' month='April' />
+<abstract><t>This document describes extensions that may be used to add functionality to Transport Layer Security (TLS).  It provides both generic extension mechanisms for the TLS handshake client and server hellos, and specific extensions using these generic mechanisms.</t><t>The extensions may be used by TLS clients and servers.  The extensions are backwards compatible: communication is possible between TLS clients that support the extensions and TLS servers that do not support the extensions, and vice versa.  [STANDARDS-TRACK]</t></abstract>
+</front>
+<seriesInfo name='RFC' value='4366'/>
+<seriesInfo name='DOI' value='10.17487/RFC4366'/>
+</reference>
+
+
       </references>
 
 
