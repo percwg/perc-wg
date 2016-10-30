@@ -366,10 +366,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 	   
             <t hangText="Message Type"> The last byte is used to indicate the
             type of the Field. This MUST be 2 in the Full EKT Field format and 0
-            in Short EKT Field. Future specifications that define new types
-            SHOULD use even values until all the even code points are consumed
-            to avoid conflicts with pre standards version of EKT that have been
-            deployed.  Values less than 64 are mandatory to understand the whole
+            in Short EKT Field. Values less than 64 are mandatory to understand the whole
             EKT field SHOULD be discarded if it contains message
 	        type value that
             is less than 64 and is not implemented.  </t>
@@ -938,8 +935,36 @@ SRTP packets                 <------->      SRTP packets
          <section anchor="iana-ekt-msg-types" title="EKT Message
                                                      Types">
            
-           <t> TODO IANA registry for Message Type. </t>
+           <t> IANA is requested to create a new registry for "EKT
+           Messages Types". The initial values in this registry are:
+           </t>
 
+           <texttable anchor="EKTMsgTypeTable" title="EKT
+                                                      Messages Types">
+             <ttcol align='left'>Message Type</ttcol>
+             <ttcol align='right'>Value</ttcol>
+             <ttcol align='left'>Specification</ttcol>
+             <c> Short </c><c> 0 </c><c> RFCAAAA </c> 
+             <c> Full </c><c> 2 </c><c> RFCAAAA </c> 
+             <c> Reserved </c><c> 255 </c><c> RFCAAAA </c> 
+           </texttable>
+           
+           <t> Note to RFC Editor: Please replace RFCAAAA with the RFC
+           number for this specification. </t>
+
+           <t> New entreis to this table can be added via
+           "Specification Required" as defined in <xref
+           target="RFC5226"/>. When requesting a new value, the
+           requestor needs to indicate if it is mandatory to
+           understand or not. If it is mandatory to understand, IANA
+           needs to allocate a value less than 64, if it is not
+           mandatory to understand, a value greater than or equal to
+           64.  IANA SHOULD prefer allocation of even values over odd
+           ones until the even code points are consumed to avoid
+           conflicts with pre standards version of EKT that have been
+           deployed.
+           </t>
+           
          </section>
          
          <section anchor="iana-ciphers" title="EKT Ciphers">
@@ -1117,6 +1142,21 @@ SRTP packets                 <------->      SRTP packets
 <seriesInfo name='RFC' value='5764'/>
 <seriesInfo name='DOI' value='10.17487/RFC5764'/>
 </reference>
+
+
+<reference  anchor='RFC5226' target='http://www.rfc-editor.org/info/rfc5226'>
+<front>
+<title>Guidelines for Writing an IANA Considerations Section in RFCs</title>
+<author initials='T.' surname='Narten' fullname='T. Narten'><organization /></author>
+<author initials='H.' surname='Alvestrand' fullname='H. Alvestrand'><organization /></author>
+<date year='2008' month='May' />
+<abstract><t>Many protocols make use of identifiers consisting of constants and other well-known values.  Even after a protocol has been defined and deployment has begun, new values may need to be assigned (e.g., for a new option type in DHCP, or a new encryption or authentication transform for IPsec).  To ensure that such quantities have consistent values and interpretations across all implementations, their assignment must be administered by a central authority.  For IETF protocols, that role is provided by the Internet Assigned Numbers Authority (IANA).</t><t>In order for IANA to manage a given namespace prudently, it needs guidelines describing the conditions under which new values can be assigned or when modifications to existing values can be made.  If IANA is expected to play a role in the management of a namespace, IANA must be given clear and concise instructions describing that role.  This document discusses issues that should be considered in formulating a policy for assigning values to a namespace and provides guidelines for authors on the specific text that must be included in documents that place demands on IANA.</t><t>This document obsoletes RFC 2434.  This document specifies an Internet Best  Current Practices for the Internet Community, and requests discussion and  suggestions for improvements.</t></abstract>
+</front>
+<seriesInfo name='BCP' value='26'/>
+<seriesInfo name='RFC' value='5226'/>
+<seriesInfo name='DOI' value='10.17487/RFC5226'/>
+</reference>
+
 
       </references>
 
