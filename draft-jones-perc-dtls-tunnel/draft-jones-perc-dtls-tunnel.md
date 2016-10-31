@@ -414,6 +414,13 @@ value (if any), SRTP master keys, and SRTP master salt values. The key
 distributor **MUST** use the same association identifier in the `MediaKeys`
 message as is used in the `TunneledDtls` messages for the given endpoint.
 
+The key distributor, can use the certificate of the endpoint and
+corelate that with signalling information to know which conference
+this session is associated with. The key distributor informs the media
+distributor of which conferences this session is assorted with by
+sending a globally unique conferences identifier in the conf-id
+attributes of the `MediaKeys`.
+
 The key distributor **MUST** select a cipher that is supported by both the
 endpoint and the media distributor to ensure proper HBH operations.
 
@@ -507,7 +514,7 @@ struct {
     opaque server_write_key<0..255>;
     opaque client_write_salt<0..255>;
     opaque server_write_salt<0..255>;
-    uint64 conf_id;
+    opaque conf_id<0..255>;
 } MediaKeys;
 ```
 
@@ -586,21 +593,6 @@ would be this stream of octets:
 0x0001000400070008
 ```
 
-# To-Do List
-
-Given what is presently defined in this draft, it is not possible for
-the key distributor to determine the conference to which a given
-DTLS-SRTP association belongs, making it impossible for the key
-distributor to ensure it is providing the endpoint with the correct
-conference key.  The client certificate might be insufficient
-if the same client is participating in more than one conference in
-parallel.  The media distributor and key distributor may need to
-coordinate or exchange a "conference identifier" common to the endpoints
-a media distributor is bridging together.  Alternatively, information the
-key distributor needs to know about conference-to-endpoint correlations might
-be satisfied by getting info directly from the endpoints, or some trusted
-entity on their behalf, via some other means.  Need to revisit this
-design choice in the context of all the alternatives.
 
 # IANA Considerations
 
