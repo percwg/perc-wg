@@ -354,7 +354,10 @@ messages between the key distributor and endpoints.
 
 When a DTLS message is received by the media distributor from an
 endpoint, it forwards the UDP payload portion of that message to the key
-distributor encapsulated in a `TuneledDtls` message.
+distributor encapsulated in a `TuneledDtls` message.  If the media
+distributor knows which conference to which a given DTLS association
+belongs, it can pass the conference identifier to the key distributor
+using the `conf_id` field of the `TunneledDtls` message.
 
 The media distributor **MUST** support the same list of protection
 profiles for the life of a given endpoint's DTLS association, which is
