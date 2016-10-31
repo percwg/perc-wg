@@ -264,11 +264,9 @@ is responsible for providing key information to endpoints for both
 end-to-end and hop-by-hop security and for providing key information to
 Media Distributors for the hop-by-hop security.
 
-Interaction between the Key Distributor and the call processing function may be
-necessary to for proper conference-to-endpoint mappings, which may or
-may not be satisfied by getting information directly from the endpoints
-or via some other means. See (#dolist) for a related item in the To Do
-list.
+Interaction between the Key Distributor and the call processing function is
+necessary to for proper conference-to-endpoint mappings. This is
+described in (#identity).
 
 The Key Distributor needs to be secured and managed in a way to prevent exploitation
 by an adversary, as any kind of compromise of the Key Distributor puts the security
@@ -384,8 +382,7 @@ If there is a need to encrypt one or more RTP header extensions
 end-to-end, an encryption key is derived from the end-to-end SRTP master
 key to encrypt header extensions as per [@!RFC6904].  The Media Distributor will not
 be able use the information contained in those header extensions
-encrypted with E2E keys. See (#dolist) for a related item in the To Do
-list.
+encrypted with E2E keys. 
 
 ## HBH Keys and Hop Operations
 
@@ -514,9 +511,9 @@ the correct endpoints for the conference.
 Two possible approaches to solve this are Identity Assertions and
 Certificate Fingerprints.
 
-## Identity Assertions
+## Identity Assertions {#identity}
 
-WebRTC Identity assertion (EDITOR NOTE: add I-D reference) can be used
+WebRTC Identity assertion [@I-D.ietf-rtcweb-security-arch] can be used
 to bind the identity of the user of the endpoint to the fingerprint of
 the DTLS-SRTP certificate used for the call.  This certificate is unique
 for a given call and a conference.  This allows the Key Distributor to ensure that
@@ -550,7 +547,17 @@ the Key Distributor's certificate fingerprint can be conveyed to endpoint in a
 manner that can be authenticated as being an authorized Key Distributor for this
 conference.
 
-# Attacks on Privacy Enhanced RTP Conferencing {#attacks}
+## Conferences Identification
+
+The Key Distributor is responsible for knowing what users are allowed
+in a given conferences. When the call setup signalling indicates a
+session from a particular endpoint and user wishes to join a
+conferences, the Key Distributor will tell the Media Distributor which
+conference to place that session in using a globally unique identifier
+for the conference that is sent, along with the relevant keying
+information, from the Key Distributor to the Media Distributor.
+
+# Security Considerations {#attacks}
 
 This framework, and the individual protocols defined to support it, must
 take care to not increase the exposure to Denial of Service (DoS)
@@ -652,41 +659,9 @@ original source ID, then the Media Distributor could first deliver stream A and 
 later forward stream B under the same SSRC as stream A was previously
 using.  Not allowing the Media Distributor to change the SSRC mitigates this attack.
 
-# To-Do List {#dolist}
-
-- The mapping of endpoints-to-conference identifiers may need to be
-  conveyed in the framework.  Need Revisit this text after a design
-  choice is made between alternatives.
-
-- Consider adding a list of RTP header extensions that should/must not
-  be E2E encrypted.
-
-- Endpoints, Key Distributor and Media Distributor provider must securely convey their respective
-  certificate information directly or indirectly via some means, such as
-  via an identity service provider.
-
-- If as in "Double" draft, the ROC value is no longer in the clear and
-  associated with the "outer" protection scheme, we may need to require
-  that the Media Distributor maintain a separate ROC value for each SSRC sent to each
-  endpoint.  This ROC value should start at 0 regardless of the sequence
-  number in that first packet sent to an endpoint.  
-
-- Investigate adding ability to enable the transmission of one-way media
-  from a non-trusted device (e.g., announcements). One possible solution
-  is to have the Key Distributor send an "ekt_key" message that is explicitly
-  labeled for receive-only and giving that to announcement servers.  A
-  possible approach would be to define EKT Keys with a SPI > 32000, for
-  example, for this purpose and endpoints should only use those EKT Keys
-  to decrypt Full EKT Fields received from such transmitters.  Endpoints
-  would never send media with EKT Keys with those SPI values.
-
 # IANA Considerations
 
 There are no IANA considerations for this document.
-
-# Security Considerations
-
-[TBD]
 
 # Acknowledgments
 
