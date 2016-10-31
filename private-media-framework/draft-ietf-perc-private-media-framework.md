@@ -666,14 +666,6 @@ using.  Not allowing the Media Distributor to change the SSRC mitigates this att
   via an identity service provider.
 
 
-- Investigate adding ability to enable the transmission of one-way media
-  from a non-trusted device (e.g., announcements). One possible solution
-  is to have the Key Distributor send an "ekt_key" message that is explicitly
-  labeled for receive-only and giving that to announcement servers.  A
-  possible approach would be to define EKT Keys with a SPI > 32000, for
-  example, for this purpose and endpoints should only use those EKT Keys
-  to decrypt Full EKT Fields received from such transmitters.  Endpoints
-  would never send media with EKT Keys with those SPI values.
 
 # IANA Considerations
 
