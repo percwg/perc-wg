@@ -550,7 +550,7 @@ the Key Distributor's certificate fingerprint can be conveyed to endpoint in a
 manner that can be authenticated as being an authorized Key Distributor for this
 conference.
 
-# Attacks on Privacy Enhanced RTP Conferencing {#attacks}
+# Security Considerations {#attacks}
 
 This framework, and the individual protocols defined to support it, must
 take care to not increase the exposure to Denial of Service (DoS)
@@ -683,10 +683,6 @@ using.  Not allowing the Media Distributor to change the SSRC mitigates this att
 # IANA Considerations
 
 There are no IANA considerations for this document.
-
-# Security Considerations
-
-[TBD]
 
 # Acknowledgments
 
