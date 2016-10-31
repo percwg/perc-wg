@@ -801,7 +801,7 @@ SRTP packets                 <------->      SRTP packets
       an attempt to consume additional CPU resources of the receiving
       system by causing the receiving system will decrypt the EKT
       ciphertext and detect an authentication failure. In some cases,
-      caching the previos values of the Ciphertext as described in 
+      caching the previous values of the Ciphertext as described in 
       <xref target="inbound_impl_notes"></xref> helps mitigate this
       issue.</t>
 
