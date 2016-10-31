@@ -359,7 +359,7 @@ outer SRTP packet with the following exceptions:
 If any of the following RTP headers extensions are found in the outer
 SRTP packet, they MAY be used:
 
-* TBD
+* Mixer-to-client audio level indicators (See [@RFC6465])
 
 
 # RTCP Operations
