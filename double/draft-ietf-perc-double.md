@@ -338,7 +338,7 @@ cryptographic context.
 
 * Apply the inner cryptographic transform to this synthetic SRTP
   packet.  Note if the RTP Sequence Number was changed by the Media
-  Distributor, the syntetic packet has the original Sequence
+  Distributor, the synthetic packet has the original Sequence
   Number. If the integrity check does not pass, discard the packet.
   If decrypting RTP header extensions end-to-end, then [@!RFC6904]
   MUST be used when decrypting the RTP packet using the inner
@@ -426,7 +426,7 @@ HBH key for the incoming packet.
 
 The receiver can check the authentication of the initial and extra
 envelope information.  This, along with the OBH, is used to construct
-a synthetic packet that is should be identital to one the sender
+a synthetic packet that is should be identical to one the sender
 created and the receiver can check that it is identical and then
 decrypt the original payload.
 
