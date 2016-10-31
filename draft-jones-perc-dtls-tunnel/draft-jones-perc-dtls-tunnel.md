@@ -510,10 +510,10 @@ struct {
     uint32 association_id;
     SRTPProtectionProfile protection_profile;
     opaque mki<0..255>;
-    opaque client_write_key<1..255>;
-    opaque server_write_key<1..255>;
-    opaque client_write_salt<1..255>;
-    opaque server_write_salt<1..255>;
+    opaque client_write_SRTP_master_key<1..255>;
+    opaque server_write_SRTP_master_key<1..255>;
+    opaque client_write_SRTP_master_salt<1..255>;
+    opaque server_write_SRTP_master_salt<1..255>;
     opaque conf_id<0..255>; 
 } MediaKeys;
 ```
@@ -526,17 +526,16 @@ The fields are described as follows:
 
 * mki: Master key identifier [@!RFC3711].
 
-* client_write_key: The value of the SRTP master key used by the client (endpoint).
+* client_write_SRTP_master_key: The value of the SRTP master key used by the client (endpoint).
 
-* server_write_key: The value of the SRTP master key used by the server (media distributor).
+* server_write_SRTP_master_key: The value of the SRTP master key used by the server (media distributor).
 
-* client_write_salt: The value of the SRTP master salt used by the
+* client_write_SRTP_master_salt: The value of the SRTP master salt used by the
 client (endpoint).
 
-* server_write_salt: The value of the SRTP master salt used by the server (media distributor).
+* server_write_SRTP_master_salt: The value of the SRTP master salt used by the server (media distributor).
 
-* conf_id: Identifier that uniquely specfies which conference the
-  media distributor should place this media flow in.
+* conf_id: Identifier that uniquely specfies which conference the media distributor should place this media flow in.
 
 The `TunneledDtls` message is defined as:
 
