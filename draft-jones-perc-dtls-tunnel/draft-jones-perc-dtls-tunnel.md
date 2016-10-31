@@ -414,6 +414,13 @@ value (if any), SRTP master keys, and SRTP master salt values. The key
 distributor **MUST** use the same association identifier in the `MediaKeys`
 message as is used in the `TunneledDtls` messages for the given endpoint.
 
+The key distributor, can use the certificate of the endpoint and
+corelate that with signalling information to know which conference
+this session is associated with. The key distributor informs the media
+distributor of which conferences this session is assorted with by
+sending a globally unique conferences identifier in the conf-id
+attributes of the `MediaKeys`.
+
 The key distributor **MUST** select a cipher that is supported by both the
 endpoint and the media distributor to ensure proper HBH operations.
 
@@ -501,23 +508,35 @@ The `MediaKeys` message is defined as:
 ```
 struct {
     uint32 association_id;
-    SRTPProtectionProfile protection_profiles;
+    SRTPProtectionProfile protection_profile;
     opaque mki<0..255>;
-    opaque client_write_key<0..255>;
-    opaque server_write_key<0..255>;
-    opaque client_write_salt<0..255>;
-    opaque server_write_salt<0..255>;
+    opaque client_write_key<1..255>;
+    opaque server_write_key<1..255>;
+    opaque client_write_salt<1..255>;
+    opaque server_write_salt<1..255>;
+    opaque conf_id<0..255>; 
 } MediaKeys;
 ```
 
 The fields are described as follows:
-* association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
+
+* association_id: A value that identifies a distinct DTLS association between an endpoint and the key distributor.
+
 * protection_profiles: The value of the two-octet SRTP protection profile value as per [@!RFC5764] used for this DTLS association.
+
 * mki: Master key identifier [@!RFC3711].
+
 * client_write_key: The value of the SRTP master key used by the client (endpoint).
+
 * server_write_key: The value of the SRTP master key used by the server (media distributor).
-* client_write_salt: The value of the SRTP master salt used by the client (endpoint).
+
+* client_write_salt: The value of the SRTP master salt used by the
+client (endpoint).
+
 * server_write_salt: The value of the SRTP master salt used by the server (media distributor).
+
+* conf_id: Identifier that uniquely specfies which conference the
+  media distributor should place this media flow in.
 
 The `TunneledDtls` message is defined as:
 
@@ -525,12 +544,18 @@ The `TunneledDtls` message is defined as:
 ```
 struct {
     uint32 association_id;
+    opaque conf_id<0..255>; 
     opaque dtls_message<0..2^16-1>;
 } TunneledDtls;
 ```
 
 The fields are described as follows:
+
 * association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
+
+* conf_id: Optional identifier that uniquely specfies which conference
+  this media flow is in.
+
 * dtls_message: the content of the DTLS message received by the endpoint or to be sent to the endpoint.
 
 The `EndpointDisconect` message is defined as:
@@ -543,6 +568,7 @@ struct {
 ```
 
 The fields are described as follows:
+
 * association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
 
 # Example Binary Encoding
@@ -571,21 +597,6 @@ would be this stream of octets:
 0x0001000400070008
 ```
 
-# To-Do List
-
-Given what is presently defined in this draft, it is not possible for
-the key distributor to determine the conference to which a given
-DTLS-SRTP association belongs, making it impossible for the key
-distributor to ensure it is providing the endpoint with the correct
-conference key.  The client certificate might be insufficient
-if the same client is participating in more than one conference in
-parallel.  The media distributor and key distributor may need to
-coordinate or exchange a "conference identifier" common to the endpoints
-a media distributor is bridging together.  Alternatively, information the
-key distributor needs to know about conference-to-endpoint correlations might
-be satisfied by getting info directly from the endpoints, or some trusted
-entity on their behalf, via some other means.  Need to revisit this
-design choice in the context of all the alternatives.
 
 # IANA Considerations
 
@@ -610,8 +621,6 @@ The name for this registry is "Datagram Transport Layer Security
 (DTLS) Tunnel Protocol Data Types for Privacy Enhanced Conferencing".
 
 # Security Considerations
-
-TODO - Much more needed.
 
 The encapsulated data is protected by the TLS connection from the endpoint
 to key distributor, and the media distributor is merely an on path entity.

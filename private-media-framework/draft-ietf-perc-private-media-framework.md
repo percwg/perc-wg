@@ -8,7 +8,7 @@
     Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-ietf-perc-private-media-framework-01"
+    docName = "draft-ietf-perc-private-media-framework-02"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "Private Media Framework", "conferencing"]
@@ -264,10 +264,9 @@ is responsible for providing key information to endpoints for both
 end-to-end and hop-by-hop security and for providing key information to
 Media Distributors for the hop-by-hop security.
 
-Interaction between the Key Distributor and the call processing function may be
-necessary for proper conference-to-endpoint mappings, which may or
-may not be satisfied by getting information directly from the endpoints
-or via some other means. 
+Interaction between the Key Distributor and the call processing function is
+necessary to for proper conference-to-endpoint mappings. This is
+described in (#identity).
 
 The Key Distributor needs to be secured and managed in a way to prevent exploitation
 by an adversary, as any kind of compromise of the Key Distributor puts the security
@@ -496,7 +495,7 @@ EKTKey. Since it may take some time for all of the endpoints in
 conference to finish re-keying, senders **MUST** delay a short period of
 time before sending media encrypted with the new master key, but it
 **MUST** be prepared to make use of the information from a new inbound
-EKT Key immediately. See Section 2.2.2 of
+EKTKey immediately. See Section 2.2.2 of
 [@!I-D.ietf-perc-srtp-ekt-diet].
 
 # Entity Trust
@@ -512,9 +511,9 @@ the correct endpoints for the conference.
 Two possible approaches to solve this are Identity Assertions and
 Certificate Fingerprints.
 
-## Identity Assertions
+## Identity Assertions {#identity}
 
-WebRTC Identity assertion (EDITOR NOTE: add I-D reference) can be used
+WebRTC Identity assertion [@I-D.ietf-rtcweb-security-arch] can be used
 to bind the identity of the user of the endpoint to the fingerprint of
 the DTLS-SRTP certificate used for the call.  This certificate is unique
 for a given call and a conference.  This allows the Key Distributor to ensure that
@@ -549,7 +548,17 @@ the Key Distributor's certificate fingerprint can be conveyed to endpoint in a
 manner that can be authenticated as being an authorized Key Distributor for this
 conference.
 
-# Attacks on Privacy Enhanced RTP Conferencing {#attacks}
+## Conferences Identification
+
+The Key Distributor is responsible for knowing what users are allowed
+in a given conferences. When the call setup signalling indicates a
+session from a particular endpoint and user wishes to join a
+conferences, the Key Distributor will tell the Media Distributor which
+conference to place that session in using a globally unique identifier
+for the conference that is sent, along with the relevant keying
+information, from the Key Distributor to the Media Distributor.
+
+# Security Considerations {#attacks}
 
 This framework, and the individual protocols defined to support it, must
 take care to not increase the exposure to Denial of Service (DoS)
@@ -654,10 +663,6 @@ using.  Not allowing the Media Distributor to change the SSRC mitigates this att
 # IANA Considerations
 
 There are no IANA considerations for this document.
-
-# Security Considerations
-
-[TBD]
 
 # Acknowledgments
 
