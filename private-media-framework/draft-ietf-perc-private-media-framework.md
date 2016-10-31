@@ -264,11 +264,9 @@ is responsible for providing key information to endpoints for both
 end-to-end and hop-by-hop security and for providing key information to
 Media Distributors for the hop-by-hop security.
 
-Interaction between the Key Distributor and the call processing function may be
-necessary to for proper conference-to-endpoint mappings, which may or
-may not be satisfied by getting information directly from the endpoints
-or via some other means. See (#dolist) for a related item in the To Do
-list.
+Interaction between the Key Distributor and the call processing function is
+necessary to for proper conference-to-endpoint mappings. This is
+described in (#identity).
 
 The Key Distributor needs to be secured and managed in a way to prevent exploitation
 by an adversary, as any kind of compromise of the Key Distributor puts the security
@@ -384,8 +382,7 @@ If there is a need to encrypt one or more RTP header extensions
 end-to-end, an encryption key is derived from the end-to-end SRTP master
 key to encrypt header extensions as per [@!RFC6904].  The Media Distributor will not
 be able use the information contained in those header extensions
-encrypted with E2E keys. See (#dolist) for a related item in the To Do
-list.
+encrypted with E2E keys. 
 
 ## HBH Keys and Hop Operations
 
@@ -514,7 +511,7 @@ the correct endpoints for the conference.
 Two possible approaches to solve this are Identity Assertions and
 Certificate Fingerprints.
 
-## Identity Assertions
+## Identity Assertions {#identity}
 
 WebRTC Identity assertion (EDITOR NOTE: add I-D reference) can be used
 to bind the identity of the user of the endpoint to the fingerprint of
@@ -661,9 +658,6 @@ change the SSRC without the receiver having any method for verifying the
 original source ID, then the Media Distributor could first deliver stream A and then
 later forward stream B under the same SSRC as stream A was previously
 using.  Not allowing the Media Distributor to change the SSRC mitigates this attack.
-
-# To-Do List {#dolist}
-
 
 # IANA Considerations
 
