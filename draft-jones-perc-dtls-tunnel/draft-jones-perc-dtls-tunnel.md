@@ -11,7 +11,7 @@
     Title = "DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
-    docName = "draft-jones-perc-dtls-tunnel-04"
+    docName = "draft-jones-perc-dtls-tunnel-05"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
@@ -77,6 +77,7 @@
     #        Changed key field names to align with RFC 5764.
     #        Introduced a conference identifier field
     #        Minor editorial issues.
+    #   05 - Minor editorial changes
     #
 
 %%%
@@ -355,7 +356,7 @@ messages between the key distributor and endpoints.
 When a DTLS message is received by the media distributor from an
 endpoint, it forwards the UDP payload portion of that message to the key
 distributor encapsulated in a `TuneledDtls` message.  If the media
-distributor knows which conference to which a given DTLS association
+distributor knows the conference to which a given DTLS association
 belongs, it can pass the conference identifier to the key distributor
 using the `conf_id` field of the `TunneledDtls` message.
 
