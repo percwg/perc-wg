@@ -266,7 +266,7 @@ Media Distributors for the hop-by-hop security.
 
 Interaction between the Key Distributor and the call processing function is
 necessary to for proper conference-to-endpoint mappings. This is
-described in (##Conferences Identification).
+described in (#conf-id).
 
 The Key Distributor needs to be secured and managed in a way to prevent exploitation
 by an adversary, as any kind of compromise of the Key Distributor puts the security
@@ -548,7 +548,7 @@ the Key Distributor's certificate fingerprint can be conveyed to endpoint in a
 manner that can be authenticated as being an authorized Key Distributor for this
 conference.
 
-## Conferences Identification
+## Conferences Identification {#conf-id}
 
 The Key Distributor is responsible for knowing what endpoints are allowed
 in a given conference. Thus, the Key Distributor and the Media Distributor 
