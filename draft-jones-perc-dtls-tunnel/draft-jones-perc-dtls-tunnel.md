@@ -514,7 +514,7 @@ struct {
     opaque server_write_key<1..255>;
     opaque client_write_salt<1..255>;
     opaque server_write_salt<1..255>;
-    opaque conf_id<0..255>;
+    opaque conf_id<0..255>; 
 } MediaKeys;
 ```
 
@@ -544,6 +544,7 @@ The `TunneledDtls` message is defined as:
 ```
 struct {
     uint32 association_id;
+    opaque conf_id<0..255>; 
     opaque dtls_message<0..2^16-1>;
 } TunneledDtls;
 ```
@@ -551,6 +552,9 @@ struct {
 The fields are described as follows:
 
 * association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
+
+* conf_id: Optional identifier that uniquely specfies which conference
+  this media flow is in.
 
 * dtls_message: the content of the DTLS message received by the endpoint or to be sent to the endpoint.
 
