@@ -8,7 +8,7 @@
     Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-ietf-perc-private-media-framework-01"
+    docName = "draft-ietf-perc-private-media-framework-02"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "Private Media Framework", "conferencing"]
