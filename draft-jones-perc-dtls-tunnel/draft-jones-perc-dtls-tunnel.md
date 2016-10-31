@@ -510,10 +510,10 @@ struct {
     uint32 association_id;
     SRTPProtectionProfile protection_profile;
     opaque mki<0..255>;
-    opaque client_write_key<0..255>;
-    opaque server_write_key<0..255>;
-    opaque client_write_salt<0..255>;
-    opaque server_write_salt<0..255>;
+    opaque client_write_key<1..255>;
+    opaque server_write_key<1..255>;
+    opaque client_write_salt<1..255>;
+    opaque server_write_salt<1..255>;
     opaque conf_id<0..255>;
 } MediaKeys;
 ```
