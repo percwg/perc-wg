@@ -507,6 +507,7 @@ struct {
     opaque server_write_key<0..255>;
     opaque client_write_salt<0..255>;
     opaque server_write_salt<0..255>;
+    uint64 conf_id;
 } MediaKeys;
 ```
 
@@ -526,6 +527,9 @@ The fields are described as follows:
 client (endpoint).
 
 * server_write_salt: The value of the SRTP master salt used by the server (media distributor).
+
+* conf_id: Identifier that uniquely specfies which conference the
+  media distributor should place this media flow in.
 
 The `TunneledDtls` message is defined as:
 
