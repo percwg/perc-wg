@@ -74,6 +74,9 @@
     #   04 - Minor title change.
     #        Switched syntax to be TLS-like.
     #        Switched transport to TCP/TLS.
+    #        Changed key field names to align with RFC 5764.
+    #        Introduced a conference identifier field
+    #        Minor editorial issues.
     #
 
 %%%
@@ -415,11 +418,11 @@ distributor **MUST** use the same association identifier in the `MediaKeys`
 message as is used in the `TunneledDtls` messages for the given endpoint.
 
 The key distributor, can use the certificate of the endpoint and
-corelate that with signalling information to know which conference
+correlate that with signaling information to know which conference
 this session is associated with. The key distributor informs the media
-distributor of which conferences this session is assorted with by
-sending a globally unique conferences identifier in the conf-id
-attributes of the `MediaKeys`.
+distributor of which conference this session is associated by
+sending a globally unique conference identifier in the `conf_id`
+attribute of the `MediaKeys`.
 
 The key distributor **MUST** select a cipher that is supported by both the
 endpoint and the media distributor to ensure proper HBH operations.
@@ -477,6 +480,7 @@ struct {
 The elements of `TunnelMessage` include:
 
 * version: indicates the version of this protocol (0x00).
+
 * msg_type: the type of message contained within the structure `body`.
 
 The `UnsupportedVersion` message is defined as follows:
@@ -514,7 +518,7 @@ struct {
     opaque server_write_SRTP_master_key<1..255>;
     opaque client_write_SRTP_master_salt<1..255>;
     opaque server_write_SRTP_master_salt<1..255>;
-    opaque conf_id<0..255>; 
+    opaque conf_id<0..255>;
 } MediaKeys;
 ```
 
@@ -530,8 +534,7 @@ The fields are described as follows:
 
 * server_write_SRTP_master_key: The value of the SRTP master key used by the server (media distributor).
 
-* client_write_SRTP_master_salt: The value of the SRTP master salt used by the
-client (endpoint).
+* client_write_SRTP_master_salt: The value of the SRTP master salt used by the client (endpoint).
 
 * server_write_SRTP_master_salt: The value of the SRTP master salt used by the server (media distributor).
 
@@ -543,7 +546,7 @@ The `TunneledDtls` message is defined as:
 ```
 struct {
     uint32 association_id;
-    opaque conf_id<0..255>; 
+    opaque conf_id<0..255>;
     opaque dtls_message<0..2^16-1>;
 } TunneledDtls;
 ```
@@ -552,8 +555,7 @@ The fields are described as follows:
 
 * association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
 
-* conf_id: Optional identifier that uniquely specfies which conference
-  this media flow is in.
+* conf_id: Optional identifier that uniquely specifies which conference this media flow is in.
 
 * dtls_message: the content of the DTLS message received by the endpoint or to be sent to the endpoint.
 
