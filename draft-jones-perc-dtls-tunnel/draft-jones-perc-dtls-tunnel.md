@@ -538,7 +538,7 @@ The fields are described as follows:
 
 * server_write_SRTP_master_salt: The value of the SRTP master salt used by the server (media distributor).
 
-* conf_id: Identifier that uniquely specfies which conference the media distributor should place this media flow in.
+* conf_id: Identifier that uniquely specifies which conference the media distributor should place this media flow in.
 
 The `TunneledDtls` message is defined as:
 
