@@ -130,9 +130,9 @@ gateways, MCUs, media recording device and more that are in the trusted
 domain for a given deployment.
 
 Media Distributor (MD): An RTP middlebox that is not allowed to
-to have access to E2E encryption keys.  It may operate according to any
-of the RTP topologies [@I-D.ietf-avtcore-rtp-topologies-update] per the
-constraints defined by the PERC system, which includes, but not limited
+to have access to E2E encryption keys.  It operates according to the
+Selective Forwarding Middlebox RTP topologies [@I-D.ietf-avtcore-rtp-topologies-update] 
+per the constraints defined by the PERC system, which includes, but not limited
 to, having no access to RTP media unencrypted and having limits on what
 RTP header field it can alter.
 
@@ -287,7 +287,7 @@ and DTLS-SRTP [@!RFC5764].
 ## End-to-End and Hop-by-Hop Authenticated Encryption
 
 This solution framework focuses on the end-to-end privacy and integrity
-of the participant's media by limiting access to end-to-end key
+of the participant's media by limiting access of the end-to-end key
 information to trusted entities.  However, this framework does give a
 Media Distributor access to RTP headers and all or most header extensions, as well as
 the ability to modify a certain subset of those headers and to add
@@ -343,7 +343,7 @@ described above.
 To ensure the confidentiality of E2E keys shared between endpoints,
 endpoints will make use of a common Key Encryption Key (KEK) that is
 known only by the trusted entities in a conference.  That KEK, defined
-in the PERC EKT [@!I-D.ietf-perc-srtp-ekt-diet] as the EKT Key, will be
+in the PERC EKT [@!I-D.ietf-perc-srtp-ekt-diet] as the EKTKey, will be
 used to subsequently encrypt SRTP master keys used for E2E authenticated
 encryption (E2E Key(i); i={a given endpoint}) of media sent by a given
 endpoint.
@@ -372,7 +372,7 @@ transmitted during the life of a conference.
 
 Thus, endpoints **MUST** maintain a list of SSRCs from received RTP
 flows and each SSRC's associated E2E Key(i) information.  Following a
-change of the KEK (i.e., EKT Key), prior E2E Key(i) information
+change of the KEK (i.e., EKTKey), prior E2E Key(i) information
 **SHOULD** be retained for a period long enough to ensure that
 late-arriving or out-of-order packets from other endpoints can be
 successfully decrypted. The endpoint **MUST** discard the E2E Key(i) and
@@ -382,7 +382,7 @@ If there is a need to encrypt one or more RTP header extensions
 end-to-end, an encryption key is derived from the end-to-end SRTP master
 key to encrypt header extensions as per [@!RFC6904].  The Media Distributor will not
 be able use the information contained in those header extensions
-encrypted with E2E keys. 
+encrypted with E2E keys.
 
 ## HBH Keys and Hop Operations
 
@@ -420,7 +420,7 @@ framework utilizes a DTLS-SRTP [@!RFC5764] association between an
 endpoint and the Key  Distributor.  To establish this association, an endpoint will
 send DTLS-SRTP messages to the Media Distributor which will then forward them to the
 Key Distributor as defined in [@!I-D.jones-perc-dtls-tunnel].  The Key Encryption
-Key (KEK) (i.e., EKT Key) is also conveyed by the Key Distributor over the DTLS
+Key (KEK) (i.e., EKTKey) is also conveyed by the Key Distributor over the DTLS
 association to endpoints via procedures defined in PERC EKT
 [I-D.ietf-perc-srtp-ekt-diet].
 
@@ -436,7 +436,7 @@ between the Media Distributor and Key Distributor, making it is possible for the
 the establishment of a secure DTLS association between each endpoint and
 the Key Distributor as shown the following figure.  The DTLS association between
 endpoints and the Key Distributor will enable each endpoint to receive E2E key
-information, Key Encryption Key (KEK) information (i.e., EKT Key), and
+information, Key Encryption Key (KEK) information (i.e., EKTKey), and
 HBH key information.  At the same time, the Key Distributor can securely provide the
 HBH key information to the Media Distributor.  The key information summarized here may
 include the SRTP master key, SRTP master salt, and the negotiated
@@ -481,7 +481,7 @@ procedures defined do not allow the Media Distributor to gain access to the KEK
 information, preventing it from gaining access to any endpoint's E2E key
 and subsequently decrypting media.
 
-The KEK (i.e., EKT Key) may need to change from time-to-time during the
+The KEK (i.e., EKTKey) may need to change from time-to-time during the
 life of a conference, such as when a new participant joins or leaves a
 conference.  Dictating if, when or how often a conference is to be
 re-keyed is outside the scope of this document, but this framework does
@@ -491,11 +491,11 @@ When a Key Distributor decides to rekey a conference, it transmits a specific
 message defined in PERC EKT [I-D.ietf-perc-srtp-ekt-diet] to each of the
 conference participants.  The endpoint **MUST** create a new SRTP master
 key and prepare to send that key inside a Full EKT Field using the new
-EKT Key. Since it may take some time for all of the endpoints in
+EKTKey. Since it may take some time for all of the endpoints in
 conference to finish re-keying, senders **MUST** delay a short period of
 time before sending media encrypted with the new master key, but it
 **MUST** be prepared to make use of the information from a new inbound
-EKT Key immediately. See Section 2.2.2 of
+EKTKey immediately. See Section 2.2.2 of
 [@!I-D.ietf-perc-srtp-ekt-diet].
 
 # Entity Trust
@@ -520,7 +520,8 @@ for a given call and a conference.  This allows the Key Distributor to ensure th
 only authorized users participate in the conference. Similarly the Key Distributor
 can create a WebRTC Identity assertion to bind the fingerprint of the
 unique certificate used by the Key Distributor for this conference so that the
-endpoint can validate it is talking to the correct Key Distributor.
+endpoint can validate it is talking to the correct Key Distributor. Such a 
+setup requires an Identity Provider (Idp) trusted by the endpoints and the Key Distributor.
 
 ## Certificate Fingerprints in Session Signaling
 
