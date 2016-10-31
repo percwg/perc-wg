@@ -501,7 +501,7 @@ The `MediaKeys` message is defined as:
 ```
 struct {
     uint32 association_id;
-    SRTPProtectionProfile protection_profiles;
+    SRTPProtectionProfile protection_profile;
     opaque mki<0..255>;
     opaque client_write_key<0..255>;
     opaque server_write_key<0..255>;
@@ -511,12 +511,20 @@ struct {
 ```
 
 The fields are described as follows:
+
 * association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
+
 * protection_profiles: The value of the two-octet SRTP protection profile value as per [@!RFC5764] used for this DTLS association.
+
 * mki: Master key identifier [@!RFC3711].
+
 * client_write_key: The value of the SRTP master key used by the client (endpoint).
+
 * server_write_key: The value of the SRTP master key used by the server (media distributor).
-* client_write_salt: The value of the SRTP master salt used by the client (endpoint).
+
+* client_write_salt: The value of the SRTP master salt used by the
+client (endpoint).
+
 * server_write_salt: The value of the SRTP master salt used by the server (media distributor).
 
 The `TunneledDtls` message is defined as:
@@ -530,7 +538,9 @@ struct {
 ```
 
 The fields are described as follows:
+
 * association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
+
 * dtls_message: the content of the DTLS message received by the endpoint or to be sent to the endpoint.
 
 The `EndpointDisconect` message is defined as:
@@ -543,6 +553,7 @@ struct {
 ```
 
 The fields are described as follows:
+
 * association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
 
 # Example Binary Encoding
