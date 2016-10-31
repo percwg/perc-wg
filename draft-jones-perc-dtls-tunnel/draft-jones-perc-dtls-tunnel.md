@@ -618,8 +618,6 @@ The name for this registry is "Datagram Transport Layer Security
 
 # Security Considerations
 
-TODO - Much more needed.
-
 The encapsulated data is protected by the TLS connection from the endpoint
 to key distributor, and the media distributor is merely an on path entity.
 The media distributor does not have access to the end-to-end keying material
