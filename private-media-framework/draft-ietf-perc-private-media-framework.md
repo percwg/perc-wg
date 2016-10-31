@@ -658,9 +658,6 @@ using.  Not allowing the Media Distributor to change the SSRC mitigates this att
   conveyed in the framework.  Need Revisit this text after a design
   choice is made between alternatives.
 
-- Consider adding a list of RTP header extensions that should/must not
-  be E2E encrypted.
-
 - Endpoints, Key Distributor and Media Distributor provider must securely convey their respective
   certificate information directly or indirectly via some means, such as
   via an identity service provider.
