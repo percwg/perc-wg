@@ -665,11 +665,6 @@ using.  Not allowing the Media Distributor to change the SSRC mitigates this att
   certificate information directly or indirectly via some means, such as
   via an identity service provider.
 
-- If as in "Double" draft, the ROC value is no longer in the clear and
-  associated with the "outer" protection scheme, we may need to require
-  that the Media Distributor maintain a separate ROC value for each SSRC sent to each
-  endpoint.  This ROC value should start at 0 regardless of the sequence
-  number in that first packet sent to an endpoint.  
 
 - Investigate adding ability to enable the transmission of one-way media
   from a non-trusted device (e.g., announcements). One possible solution
