@@ -550,6 +550,16 @@ the Key Distributor's certificate fingerprint can be conveyed to endpoint in a
 manner that can be authenticated as being an authorized Key Distributor for this
 conference.
 
+## Conferences Identification
+
+The Key Distributor is responsible for knowing what users are allowed
+in a given conferences. When the call setup signalling indicates a
+session from a particular endpoint and user wishes to join a
+conferences, the Key Distributor will tell the Media Distributor which
+conference to place that session in using a globally unique identifier
+for the conference that is sent, along with the relevant keying
+information, from the Key Distributor to the Media Distributor.
+
 # Security Considerations {#attacks}
 
 This framework, and the individual protocols defined to support it, must
@@ -653,15 +663,6 @@ later forward stream B under the same SSRC as stream A was previously
 using.  Not allowing the Media Distributor to change the SSRC mitigates this attack.
 
 # To-Do List {#dolist}
-
-- The mapping of endpoints-to-conference identifiers may need to be
-  conveyed in the framework.  Need Revisit this text after a design
-  choice is made between alternatives.
-
-- Endpoints, Key Distributor and Media Distributor provider must securely convey their respective
-  certificate information directly or indirectly via some means, such as
-  via an identity service provider.
-
 
 
 # IANA Considerations
