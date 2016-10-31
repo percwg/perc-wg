@@ -864,7 +864,7 @@ SRTP packets                 <------->      SRTP packets
         requestor needs to indicate if it is mandatory to understand or
         not. If it is mandatory to understand, IANA needs to allocate a
         value less than 64, if it is not mandatory to understand, a
-        value greater than or equal to 64. IANA SHOULD prefer
+        value greater than or equal to 64 needs to be allocated. IANA SHOULD prefer
         allocation of even values over odd ones until the even code
         points are consumed to avoid conflicts with pre standard
         versions of EKT that have been deployed.</t>
@@ -895,7 +895,7 @@ SRTP packets                 <------->      SRTP packets
         Required" as defined in 
         <xref target="RFC5226" />. The expert SHOULD ensure the
         specification defines the values for L and T as required in
-        RFCAAA. Allocated values MUST be in the range of 1 to 254.</t>
+        <xref target="cipher"/> of RFCAAA. Allocated values MUST be in the range of 1 to 254.</t>
       </section>
       <section anchor="iana-tls-ext" title="TLS Extensions">
 
