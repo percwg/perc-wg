@@ -513,7 +513,7 @@ Certificate Fingerprints.
 
 ## Identity Assertions {#identity}
 
-WebRTC Identity assertion (EDITOR NOTE: add I-D reference) can be used
+WebRTC Identity assertion [@I-D.ietf-rtcweb-security-arch] can be used
 to bind the identity of the user of the endpoint to the fingerprint of
 the DTLS-SRTP certificate used for the call.  This certificate is unique
 for a given call and a conference.  This allows the Key Distributor to ensure that
