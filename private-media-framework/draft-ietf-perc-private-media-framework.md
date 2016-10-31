@@ -266,7 +266,7 @@ Media Distributors for the hop-by-hop security.
 
 Interaction between the Key Distributor and the call processing function is
 necessary to for proper conference-to-endpoint mappings. This is
-described in (#identity).
+described in (##Conferences Identification).
 
 The Key Distributor needs to be secured and managed in a way to prevent exploitation
 by an adversary, as any kind of compromise of the Key Distributor puts the security
@@ -550,13 +550,11 @@ conference.
 
 ## Conferences Identification
 
-The Key Distributor is responsible for knowing what users are allowed
-in a given conferences. When the call setup signalling indicates a
-session from a particular endpoint and user wishes to join a
-conferences, the Key Distributor will tell the Media Distributor which
-conference to place that session in using a globally unique identifier
-for the conference that is sent, along with the relevant keying
-information, from the Key Distributor to the Media Distributor.
+The Key Distributor is responsible for knowing what endpoints are allowed
+in a given conference. Thus, the Key Distributor and the Media Distributor 
+will need to know endpoint-to-conference mappings, which is enabled by exchanging
+a conference-specific unique identifier as defined in [@!I-D.jones-perc-dtls-tunnel]. 
+How this unique identifier is assigned is outside the scope of this document.
 
 # Security Considerations {#attacks}
 
