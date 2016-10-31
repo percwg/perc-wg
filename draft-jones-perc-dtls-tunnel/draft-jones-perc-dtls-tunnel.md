@@ -520,7 +520,7 @@ struct {
 
 The fields are described as follows:
 
-* association_id: An value that identifies a distinct DTLS association between an endpoint and the key distributor.
+* association_id: A value that identifies a distinct DTLS association between an endpoint and the key distributor.
 
 * protection_profiles: The value of the two-octet SRTP protection profile value as per [@!RFC5764] used for this DTLS association.
 
