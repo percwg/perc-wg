@@ -359,7 +359,7 @@ outer SRTP packet with the following exceptions:
 If any of the following RTP headers extensions are found in the outer
 SRTP packet, they MAY be used:
 
-* TBD
+* Mixer-to-client audio level indicators (See [@RFC6465])
 
 
 # RTCP Operations
@@ -402,16 +402,6 @@ octets.  If no other header extensions are present in the packet and
 the OHB is introduced, that will consume an additional 8 octets.  If
 other extensions are already present, the OHB will consume up to 4
 additional octets.
-
-Open Issue: For an audio confernce using opus in a narrowband
-configuration at TBD kbps with 20 ms packetizaton, the total bandwidth
-of the RTP would change from TBD to TBD. Do we want to consider having
-some AES-GCM transfroms with reduced length authentication tags for
-the HBH. Since the actual authentication is provided by the E2E check,
-and tampering with the the HBH can only result in the wrong packet
-being selected as the loudest speaker, it might be desirable to have
-64 bits or even less of securiyt for the HBH portion of the
-authentication.
 
 
 # Security Considerations
