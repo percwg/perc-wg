@@ -500,7 +500,7 @@ The `SupportedProfiles` message is defined as:
 
 {align="left"}
 ```
-uint8 SRTPProtectionProfile[2]; // from RFC5764
+uint8 SRTPProtectionProfile[2]; /* from RFC5764 */
 
 struct {
   SRTPProtectionProfile protection_profiles<0..2^16-1>;
