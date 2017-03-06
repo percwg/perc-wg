@@ -11,7 +11,7 @@
     Title = "DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
-    docName = "draft-jones-perc-dtls-tunnel-05"
+    docName = "draft-perc-dtls-tunnel-00"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
@@ -55,29 +55,8 @@
 
     #
     # Revision History
-    #   00 - Initial draft.
-    #   01 - Removed TLS-style syntax.
-    #        MDD always sends its list of protection profiles.
-    #        Removed EKT stuff; not relevant to the tunnel protocol.
-    #        Added a visual representation of the tunneling protocol.
-    #        Changed the message names to be simpler.
-    #        Simplified message flows, because they were overly complex.
-    #        Simplified the text overall.
-    #        Removed the "conference identifier".
-    #        Much editorial cleanup.
-    #   02 - The protection profile was inadvertently left out of the Key
-    #        Info message.
-    #   03 - Modified the protocol to reduce the message sizes.
-    #        Added text related to PMTU size considerations.
-    #        Added instructions for an IANA registry.
-    #        Changed KMF and MDD to Key Distributor and Media Distributor.
-    #   04 - Minor title change.
-    #        Switched syntax to be TLS-like.
-    #        Switched transport to TCP/TLS.
-    #        Changed key field names to align with RFC 5764.
-    #        Introduced a conference identifier field
-    #        Minor editorial issues.
-    #   05 - Minor editorial changes
+    #   00 - Minor editorial corrections
+    #        Draft re-named to be WG document
     #
 
 %%%
@@ -96,12 +75,12 @@ authentication is inaccessible to the media distributor.
 
 # Introduction
 
-An objective of the work in the Privacy-Enhanced RTP Conferencing (PERC)
-working group is to ensure that endpoints in a multimedia conference
-have access to the end-to-end (E2E) and hop-by-hop (HBH) keying material
-used to encrypt and authenticate Real-time Transport Protocol (RTP)
-[@!RFC3550] packets, while the Media Distributor has access only to the
-hop-by-hop (HBH) keying material for encryption and authentication.
+An objective of Privacy-Enhanced RTP Conferencing (PERC) is to ensure
+that endpoints in a multimedia conference have access to the end-to-end
+(E2E) and hop-by-hop (HBH) keying material used to encrypt and authenticate
+Real-time Transport Protocol (RTP) [@!RFC3550] packets, while the Media
+Distributor has access only to the hop-by-hop (HBH) keying material for
+encryption and authentication.
 
 This specification defines a tunneling protocol that enables the media
 distributor to tunnel DTLS [@!RFC6347] messages between an endpoint and
