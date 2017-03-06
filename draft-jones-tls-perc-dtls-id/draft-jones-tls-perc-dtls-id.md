@@ -1,17 +1,17 @@
 %%%
 
     #
-    # dtls-id Extension for DTLS in support of PERC
+    # dtls-id Extension for TLS/DTLS in support of PERC
     #
     # Generation tool chain:
     #   mmark (https://github.com/miekg/mmark)
     #   xml2rfc (http://xml2rfc.ietf.org/)
     #
 
-    Title = "Signaling the SDP attribute 'dtls-id' in DTLS"
-    abbrev = "dtls-id in DTLS"
+    Title = "Transporting the SDP attribute 'dtls-id' in TLS and DTLS"
+    abbrev = "dtls-id in TLS and DTLS"
     category = "std"
-    docName = "draft-jones-perc-dtls-id-00"
+    docName = "draft-jones-tls-perc-dtls-id-00"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
@@ -53,8 +53,8 @@
 
 .# Abstract
 
-This draft defines a new DTLS extension to carry the `dtls-id` defined for
-the Session Description Protocol.
+This draft defines a new extension to carry the `dtls-id` value defined
+for use in the Session Description Protocol within TLS and DTLS.
 
 {mainmatter}
 
@@ -110,7 +110,8 @@ received in SDP.  If the values do not match, the endpoint **SHOULD**
 consider any received keying material to be invalid and terminate the
 DTLS association.
 
-> Editor's Note: Do we want to require the KDD to provide the dtls-id via SDP?
+> Editor's Note: Do we want to require the KDD to provide the `dtls-id`
+  via SDP?
 
 # Media distribution device procedures
 
