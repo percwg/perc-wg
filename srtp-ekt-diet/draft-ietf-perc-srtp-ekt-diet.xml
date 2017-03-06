@@ -110,7 +110,7 @@ ipr="trust200902">
       coordinated among all of the participants in a session. For
       example, if a participant joins a session that is already in
       progress, that participant needs to be told the SRTP keys along
-      with the SSRC, roll over counter (ROC) and other details of the
+      with the SSRC, rollover counter (ROC) and other details of the
       other SRTP sources.</t>
 
       <t>The inability of SRTP to work in the absence of central
@@ -162,10 +162,10 @@ ipr="trust200902">
       <t>EKT defines a new method of providing SRTP master keys to an
       endpoint. In order to convey the ciphertext corresponding to the SRTP master
       key, and other additional information, an additional EKT field is
-      added to SRTP packets. When added to SRTP, the EKT field appears
-      at the end of the SRTP packet, after the authentication tag (if
-      that tag is present), or after the ciphertext of the encrypted
-      portion of the packet otherwise.</t>
+      added to SRTP packets. The EKT field appears at the end of the SRTP packet. 
+      The EKT field appears after the optional authentication tag if one is 
+      present, otherwise the EKT field appears after the ciphertext portion of 
+      the packet.</t>
 
       <t>EKT MUST NOT be used in conjunction with SRTP's MKI (Master
       Key Identifier) or with SRTP's &lt;From, To&gt; 
@@ -255,11 +255,12 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           <t hangText="EKTCiphertext:">The data that is output from the
           EKT encryption operation, described in 
           <xref target="cipher"></xref>. This field is included in SRTP
-          packets when EKT is in use.</t>
+          packets when EKT is in use. The length of EKTCiphertext can be 
+          larger than the length of the EKTPlaintext that was encrypted.</t>
           <t hangText="SRTPMasterKey:">On the sender side, the SRTP
           Master Key associated with the indicated SSRC.</t>
           <t hangText="SRTPMasterKeyLength:">The length of the
-          SRTPMasterKey. This depends on the cipher suite negotiated
+          SRTPMasterKey in bytes. This depends on the cipher suite negotiated
           for SRTP using 
           <xref target="RFC3264" /> SDP Offer/Answer for the SRTP.</t>
           <t hangText="SSRC:">On the sender side, this field is the
@@ -289,11 +290,11 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           parameter set. Each distinct EKT parameter set that is used
           MUST be associated with a distinct SPI value to avoid
           ambiguity.</t>
-          <t hangText="EKTMsgLength">All EKT message other that ShortEKTField 
+          <t hangText="EKTMsgLength:">All EKT message other that ShortEKTField 
           must have a length as second from the last element. This is the 
           length in octets of either the FullEKTField/ExtensionEKTField including 
           this length field and the following message type.</t>
-          <t hangText="Message Type">The last byte is used to indicate
+          <t hangText="Message Type:">The last byte is used to indicate
           the type of the EKTField. This MUST be 2 in the FullEKTField
           format and 0 in ShortEKTField format. Values less than 64 are
           mandatory to understand and the whole EKTField SHOULD be
@@ -324,11 +325,11 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           <t>See 
           <xref target="timing"></xref> which describes when to send an
           EKT packet with a FullEKTField. If a FullEKTField is not
-          being sent, then a ShortEKTField needs to be sent so the
+          being sent, then a ShortEKTField is sent so the
           receiver can correctly determine how to process the
           packet.</t>
 
-          <t>When an SRTP packet is to be sent with a FullEKTField,
+          <t>When an SRTP packet is sent with a FullEKTField,
           the EKTField for that packet is created as follows, or uses
           an equivalent set of steps. The creation of the EKTField
           MUST precede the normal SRTP packet processing.</t>
@@ -354,10 +355,10 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 
               <t>Then the FullEKTField is formed using the EKTCiphertext and 
               the SPI associated with the EKTKey used above. Also appended are
-              the Length and EKTMEsgTypeFull elements.
+              the Length and Message Type using the FullEKTField format.
               <list style="empty">
 
-                <t>Note: the value of the EKT Ciphertext field is
+                <t>Note: the value of the EKTCiphertext field is
                 identical in successive packets protected by the same
                 EKTKey and SRTP master key. This value MAY be cached by an
                 SRTP sender to minimize computational effort.</t>
@@ -402,7 +403,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 
               <t>The resulting EKTPlaintext is parsed as described in 
               <xref target="EKT" />, to recover the SRTP Master Key,
-              SSRC, and ROC fields. The Master Salt that is associated
+              SSRC, and ROC fields. The SRTP Master Salt that is associated
               with the EKTKey is also retrieved. If the value of the 
               srtp_master_salt sent as part of the EKTkey is longer than 
               needed by SRTP, then it is truncated by taking the first N bytes 
@@ -451,7 +452,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
         <xref target="DefaultCipher"></xref> MUST be implemented, but
         another cipher that conforms to this interface MAY be used, in
         which case its use MUST be coordinated by external means (e.g.,
-        key management).</t>
+        key management).</t>  
 
         <t>An EKTCipher consists of an encryption function and a
         decryption function. The encryption function E(K, P) takes the
@@ -674,7 +675,10 @@ struct {
         message. If a DTLS client includes "srtp_ekt_key_transport" in
         its ClientHello, but does not receive "srtp_ekt_key_transport"
         in the ServerHello, the DTLS client MUST NOT send DTLS
-        EKTMessage messages.</t>
+        EKTMessage messages. Also, the "srtp_ekt_key_transport" in the 
+        ServerHello MUST select one and only one EKTCipherType from the 
+        list provided by the client in the "srtp_ekt_key_transport" in the 
+        ClientHello.</t>
 
         <t>When a DTLS client sends the "srtp_ekt_key_transport" in its
         ClientHello message, it MUST include the SupportedEKTCiphers as
@@ -682,7 +686,7 @@ struct {
         the client is willing to use in preference order, with
         the most preferred version first. When the server responds in
         the "srtp_ekt_key_transport" in its ServerHello message, it
-        must include a SupportedEKTCiphers list that selects a single
+        MUST include a SupportedEKTCiphers list that selects a single
         EKTCipherType to use (selected from the list provided by
         the client) or it returns an empty list to indicate there is no
         matching EKTCipherType in the clients list that the server is also
