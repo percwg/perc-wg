@@ -339,6 +339,11 @@ distributor knows the conference to which a given DTLS association
 belongs, it can pass the conference identifier to the key distributor
 using the `conf_id` field of the `TunneledDtls` message.
 
+> Editor's Note: if the PERC WG adopts the `dtls-id` concept presented
+  in [@!I-D.jones-tls-perc-dtls-id], we can remove `conf_id` from
+  this draft, since the `dtls-id` can convey enough information for
+  the key distributor to determine the correct conference.
+
 The media distributor **MUST** support the same list of protection
 profiles for the life of a given endpoint's DTLS association, which is
 represented by the association identifier.
