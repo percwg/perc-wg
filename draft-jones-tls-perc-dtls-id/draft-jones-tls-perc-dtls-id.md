@@ -157,8 +157,12 @@ is shown below.
 
 This document registers an extension in the TLS "ExtensionType
 Values" registry established in [@!RFC5246].  The extension
-is called `dtls_id` and is assigned the code point TBD.  It is
-indicated to be recommended and, for TLS 1.3, encrypted.
+is called `dtls_id` and is assigned the code point TBD.  The
+following addition is made to the registry.
+
+Extension | Recommended | TLS 1.3   | HelloRetryRequested
+----------|-------------|-----------|---------------------
+dlts_id   | Yes         | Encrypted | Yes
 
 # Security Considerations
 
@@ -184,7 +188,9 @@ by other conference participants.
 # Acknowledgments
 
 The authors would like to thank Martin Thomson for discussing the idea and
-providing some initial feedback before the draft was written.
+providing some initial feedback before the draft was written.  We also
+want to express our appreciation to Cullen Jennings for reviewing the
+text and providing constructive input.
 
 {backmatter}
 
