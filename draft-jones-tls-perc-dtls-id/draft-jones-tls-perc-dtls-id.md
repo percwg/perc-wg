@@ -105,8 +105,8 @@ the `dtls-id` SDP attribute **MUST** be included in SDP sent by the endpoint
 in both the offer and answer messages as per [@!I-D.ietf-mmusic-dtls-sdp].
 
 When receiving a `dtls_id` value from the key distributor, the
-client **SHOULD** check to ensure that value matches the `dtls-id` value
-received in SDP.  If the values do not match, the endpoint **SHOULD**
+client **MUST** check to ensure that value matches the `dtls-id` value
+received in SDP.  If the values do not match, the endpoint **MUST**
 consider any received keying material to be invalid and terminate the
 DTLS association.
 
@@ -126,18 +126,19 @@ SDP, that information will be conveyed somehow to the key distributor.
 The process through which the `dtls-id` in SDP is conveyed to
 the key distributor is outside the scope of this document.
 
-The key distributor MUST extract the `dtls_id` value transmitted
+The key distributor **MUST** extract the `dtls_id` value transmitted
 in the `ClientHello` message and match that against `dtls-id` value the
-endpoint transmitted via SDP.
+endpoint transmitted via SDP.  If the values in SDP and the `ClientHello`
+do not match, the DTLS association **MUST** be rejected.
 
-The key distributor MUST correlate the certificate fingerprint and
+The key distributor **MUST** correlate the certificate fingerprint and
 `dtls_id` received from endpoint's `ClientHello` message with the
 corresponding values received from the SDP transmitted by the endpoint.  It
 is through this correlation that the key distributor can be sure to
 deliver the correct conference key to the endpoint.
 
-When sending the `ServerHello` message, the key distributor **SHOULD**
-insert its own `dtls-id` value.  This value **SHOULD** also be conveyed back
+When sending the `ServerHello` message, the key distributor **MUST**
+insert its own `dtls-id` value.  This value **MUST** also be conveyed back
 to the client in SDP messages.
 
 # The dtls_id TLS extension
@@ -150,7 +151,7 @@ is shown below.
 ~~~
     struct {
         opaque dtls_id<6..256>;
-    } dtlsIdData;
+    } SdpDtlsIdData;
 ~~~
 
 # IANA Considerations
@@ -169,8 +170,8 @@ dlts_id   | Yes         | Encrypted | Yes
 The dtls-id value is a random value that has no personal identifiable
 information associated with it.  Thus, the value does not expose such
 information.  It also has no particular security properties in and
-of itself, so being in plaintext in the `ClientHello` is not viewed as
-a security concern.
+of itself, so being in plaintext in the `ClientHello` or `ServerHello` is
+not viewed as a security concern.
 
 However, the value does have significance to the receiver, thus changes to
 the `dtls-id` may result in unexpected behavior.  For example, if Alice 
@@ -181,9 +182,13 @@ However, since Alice will only be provided keys for conferences for which
 she is authorized to join based on her client certificate, receiving the
 wrong key will not compromise the security of the conference.  However,
 receipt of the wrong key will deny Alice access to the plaintext
-information transmitted by other participants.  Further, if Alice transmits
+media transmitted by other participants.  Further, if Alice transmits
 media using the wrong conference key, the media will be undecipherable
 by other conference participants.
+
+Likewise, if the `dtls_id` field transmitted from the key distributor to
+Alice is modified, Alice will tear down the DTLS association and fail to
+join the conference.  Again, the result is a denial of service for Alice.
 
 # Acknowledgments
 
