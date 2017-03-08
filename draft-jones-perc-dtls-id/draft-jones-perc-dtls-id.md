@@ -11,7 +11,7 @@
     Title = "Transporting the SDP attribute 'dtls-id' in TLS and DTLS"
     abbrev = "dtls-id in TLS and DTLS"
     category = "std"
-    docName = "draft-jones-tls-perc-dtls-id-00"
+    docName = "draft-jones-perc-dtls-id-00"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
@@ -99,7 +99,7 @@ used in this document are introduced in
 
 # Endpoint procedures
 
-The endpoint MUST include the `dtls_id` DTLS extension in the `ClientHello`
+The endpoint **MUST** include the `dtls_id` DTLS extension in the `ClientHello`
 message when establishing a DTLS tunnel in a PERC conference.  Likewise,
 the `dtls-id` SDP attribute **MUST** be included in SDP sent by the endpoint
 in both the offer and answer messages as per [@!I-D.ietf-mmusic-dtls-sdp].
@@ -174,7 +174,7 @@ of itself, so being in plaintext in the `ClientHello` or `ServerHello` is
 not viewed as a security concern.
 
 However, the value does have significance to the receiver, thus changes to
-the `dtls-id` may result in unexpected behavior.  For example, if Alice 
+the `dtls-id` may result in unexpected behavior.  For example, if Alice
 attempts to join a PERC-enabled conference and the `dtls_id` field is
 modified in route to the key distributor, Alice may either fail
 to receive the conference key or receive the wrong conference key.
@@ -198,6 +198,3 @@ want to express our appreciation to Cullen Jennings for reviewing the
 text and providing constructive input.
 
 {backmatter}
-
-
-
