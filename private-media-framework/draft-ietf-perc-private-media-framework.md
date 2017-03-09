@@ -214,7 +214,7 @@ which this framework's key exchange mechanisms will prevent.
 An endpoint's ability to join a conference hosted by a Media Distributor **MUST NOT**
 alone be interpreted as being authorized to have access to the E2E media
 encryption keys, as the Media Distributor does not have the ability to determine
-whether an endpoint is authorized.  Trusted endpoint authorizion is described
+whether an endpoint is authorized.  Trusted endpoint authorization is described
 in the (add ref to new signaling draft here).
 
 A Media Distributor **MUST** perform its role in properly forwarding media packets
@@ -542,7 +542,7 @@ convey the fingerprint information per [@RFC5763].  An endpoint's SIP
 User Agent would send an INVITE message containing SDP for the media
 session along with the endpoint's certificate fingerprint, which can be
 signed using the procedures described in [@RFC4474] for the benefit of
-forwarding the message to other entities by the Focus [@RFC353].  Other entities can now verify
+forwarding the message to other entities by the Focus [@RFC4353].  Other entities can now verify
 the fingerprints match the certificates found in the DTLS-SRTP
 connections to find the identity of the far end of the DTLS-SRTP
 connection and check that is the authorized entity.
