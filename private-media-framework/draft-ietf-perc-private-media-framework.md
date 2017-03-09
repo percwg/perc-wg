@@ -123,7 +123,7 @@ Media Distribution Devices to the endpoint at the other end.
 Hop-by-Hop (HBH): Communications between an endpoint and a Media
 Distribution Device or between Media Distribution Devices.
 
-Endpoint: An RTP flow terminating entity that has possession of E2E
+Trusted Endpoint: An RTP flow terminating entity that has possession of E2E
 media encryption keys and terminates E2E encryption.  This may include
 embedded user conferencing equipment or browsers on computers, media
 gateways, MCUs, media recording device and more that are in the trusted
@@ -137,16 +137,19 @@ to, having no access to RTP media unencrypted and having limits on what
 RTP header field it can alter.
 
 Key Distributor: An entity that is a logical function
-which passes keying material and related information to endpoints and
-Media Distributor(s) that is appropriate for each.  The Key Distributor might
+which distributes keying material and related information to trusted endpoints and
+Media Distributor(s), only that which is appropriate for each.  The Key Distributor might
 be co-resident with another entity trusted with E2E keying material.
 
 Conference: Two or more participants communicating via trusted endpoints
 to exchange RTP flows through one or more Media Distributor.
 
+Call Processing: All tusted endpoints in the conference connect to it by a call 
+processing dialog, such as with the Focus defined in the Framework for 
+Conferencing with SIP [@RFC4353].
+
 Third Party: Any entity that is not an Endpoint, Media Distributor, Key Distributor or Call
 Processing entity as described in this document.
-
 
 # PERC Entities and Trust Model
 
@@ -211,12 +214,13 @@ which this framework's key exchange mechanisms will prevent.
 An endpoint's ability to join a conference hosted by a Media Distributor **MUST NOT**
 alone be interpreted as being authorized to have access to the E2E media
 encryption keys, as the Media Distributor does not have the ability to determine
-whether an endpoint is authorized.
+whether an endpoint is authorized.  Trusted endpoint authorization is described
+in the (add ref to new signaling draft here).
 
 A Media Distributor **MUST** perform its role in properly forwarding media packets
 while taking measures to mitigate the adverse effects of denial of
 service attacks (refer to (#attacks)), etc, to a level equal to or
-better than traditional conferencing (i.e. pre-PERC) deployments.
+better than traditional conferencing (i.e. non-PERC) deployments.
 
 A Media Distributor or associated conferencing infrastructure may also initiate or
 terminate various conference control related messaging, which is outside
@@ -255,7 +259,7 @@ to compromise is outside the scope of this document.  Endpoints will
 take measures to mitigate the adverse effects of denial of service
 attacks (refer to (#attacks)) from other entities, including from other
 endpoints, to a level equal to or better than traditional conference
-(i.e., pre-PERC) deployments.
+(i.e., non-PERC) deployments.
 
 ### Key Distributor
 
@@ -346,21 +350,23 @@ known only by the trusted entities in a conference.  That KEK, defined
 in the PERC EKT [@!I-D.ietf-perc-srtp-ekt-diet] as the EKTKey, will be
 used to subsequently encrypt SRTP master keys used for E2E authenticated
 encryption (E2E Key(i); i={a given endpoint}) of media sent by a given
-endpoint.
+endpoint. 
 
 {#fig-who-has-what-key align="center"}
 ~~~
-+---------------------+------------+-------+-------+------------+
-| Key     /    Entity | Endpoint A |  MD X |  MD Y | Endpoint B |
-+---------------------+------------+-------+-------+------------+
-| KEK                 |    Yes     |  No   |  No   |     Yes    |
-+---------------------+------------+-------+-------+------------+
-| E2E Key (i)         |    Yes     |  No   |  No   |     Yes    |
-+---------------------+------------+-------+-------+------------+
-| HBH Key (A<=>MD X)  |    Yes     |  Yes  |  No   |     No     |
-+---------------------+------------+-------+-------+------------+
-| HBH Key (B<=>MD Y)  |    No      |  No   |  Yes  |     Yes    |
-+---------------------+------------+---------------+------------+
++----------------------+------------+-------+-------+------------+
+| Key     /    Entity  | Endpoint A |  MD X |  MD Y | Endpoint B |
++----------------------+------------+-------+-------+------------+
+| KEK                  |    Yes     |  No   |  No   |     Yes    |
++----------------------+------------+-------+-------+------------+
+| E2E Key (i)          |    Yes     |  No   |  No   |     Yes    |
++----------------------+------------+-------+-------+------------+
+| HBH Key (A<=>MD X)   |    Yes     |  Yes  |  No   |     No     |
++----------------------+------------+-------+-------+------------+
+| HBH Key (B<=>MD Y)   |    No      |  No   |  Yes  |     Yes    |
++----------------------+------------+---------------+------------+
+| HBH Key (MD X<=>MD Y)|    No      |  Yes  |  Yes  |     No     |
++----------------------+------------+---------------+------------+
 ~~~
 Figure: Keys per Entity
 
@@ -536,7 +542,7 @@ convey the fingerprint information per [@RFC5763].  An endpoint's SIP
 User Agent would send an INVITE message containing SDP for the media
 session along with the endpoint's certificate fingerprint, which can be
 signed using the procedures described in [@RFC4474] for the benefit of
-forwarding the message to other entities.  Other entities can now verify
+forwarding the message to other entities by the Focus [@RFC4353].  Other entities can now verify
 the fingerprints match the certificates found in the DTLS-SRTP
 connections to find the identity of the far end of the DTLS-SRTP
 connection and check that is the authorized entity.
@@ -550,8 +556,8 @@ conference.
 
 ## Conferences Identification {#conf-id}
 
-The Key Distributor is responsible for knowing what endpoints are allowed
-in a given conference. Thus, the Key Distributor and the Media Distributor 
+The Key Distributor needs to know what endpoints are to being added to
+in a given conference resource. Thus, the Key Distributor and the Media Distributor 
 will need to know endpoint-to-conference mappings, which is enabled by exchanging
 a conference-specific unique identifier as defined in [@!I-D.jones-perc-dtls-tunnel]. 
 How this unique identifier is assigned is outside the scope of this document.
