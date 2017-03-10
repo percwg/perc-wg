@@ -291,7 +291,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           MUST be associated with a distinct SPI value to avoid
           ambiguity.</t>
           <t hangText="EKTMsgLength:">All EKT message other that ShortEKTField 
-          must have a length as second from the last element. This is the 
+          MUST have a length as second from the last element. This is the 
           length in octets of either the FullEKTField/ExtensionEKTField including 
           this length field and the following message type.</t>
           <t hangText="Message Type:">The last byte is used to indicate
