@@ -215,7 +215,7 @@ An endpoint's ability to join a conference hosted by a Media Distributor **MUST 
 alone be interpreted as being authorized to have access to the E2E media
 encryption keys, as the Media Distributor does not have the ability to determine
 whether an endpoint is authorized.  Trusted endpoint authorization is described
-in the (add ref to new signaling draft here).
+in WebRTC Signaling for PERC [@!I-D.ietf-roach-perc-webrtc].
 
 A Media Distributor **MUST** perform its role in properly forwarding media packets
 while taking measures to mitigate the adverse effects of denial of
