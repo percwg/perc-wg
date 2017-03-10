@@ -150,9 +150,12 @@ is shown below.
 
 ~~~
     struct {
-        opaque dtls_id<6..256>;
+        opaque dtls_id<6..255>;
     } SdpDtlsIdData;
 ~~~
+
+Note: the maximum length of the dtls-id attribute was 256 and per recent
+discussion on the MMUSIC mailing list, it was agreed to change it to 255.
 
 # IANA Considerations
 
