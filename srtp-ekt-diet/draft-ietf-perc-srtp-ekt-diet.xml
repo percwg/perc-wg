@@ -170,7 +170,10 @@ ipr="trust200902">
       <t>EKT MUST NOT be used in conjunction with SRTP's MKI (Master
       Key Identifier) or with SRTP's &lt;From, To&gt; 
       <xref target="RFC3711"></xref>, as those SRTP features duplicate
-      some of the functions of EKT.</t>
+      some of the functions of EKT.
+      Senders MUST not include MKI when using EKT. Receivers SHOULD
+      simply ignore any MKI field received if EKT is in use. </t>
+      
       <section anchor="EKT" title="EKT Field Formats">
 
         <t>The EKT Field uses the format defined below for the
