@@ -208,7 +208,10 @@ ipr="trust200902">
         <t>The following shows the syntax of the EKTField expressed
         in ABNF 
         <xref target="RFC5234" />. The EKTField is added to the end of an
-        SRTP or SRTCP packet. The EKTCiphertext is computed by
+        SRTP or SRTCP packet.
+        The EKTPlaintext is the concatenation of SRTPMasterKeyLength,
+        SRTPMasterKey, SSRC, and ROC in that order.
+        The EKTCiphertext is computed by
         encrypting the EKTPlaintext using the EKTKey. Future extensions
         to the EKTField MUST conform to the syntax of
         ExtensionEKTField.</t>
