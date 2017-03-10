@@ -425,7 +425,7 @@ and a HBH key for an endpoint and the same HBH key for the Media Distributor, th
 framework utilizes a DTLS-SRTP [@!RFC5764] association between an
 endpoint and the Key  Distributor.  To establish this association, an endpoint will
 send DTLS-SRTP messages to the Media Distributor which will then forward them to the
-Key Distributor as defined in [@!I-D.jones-perc-dtls-tunnel].  The Key Encryption
+Key Distributor as defined in [@!I-D.draft-ietf-perc-dtls-tunnel].  The Key Encryption
 Key (KEK) (i.e., EKTKey) is also conveyed by the Key Distributor over the DTLS
 association to endpoints via procedures defined in PERC EKT
 [I-D.ietf-perc-srtp-ekt-diet].
@@ -437,7 +437,7 @@ not facilitate establishing HBH keys for use between Media Distributors.
 ### Initial Key Exchange and Key Distributor
 
 The procedures defined in DTLS Tunnel for PERC
-[@!I-D.jones-perc-dtls-tunnel] establish one or more TLS tunnels
+[@!I-D.draft-ietf-perc-dtls-tunnel] establish one or more TLS tunnels
 between the Media Distributor and Key Distributor, making it is possible for the Media Distributor to facilitate
 the establishment of a secure DTLS association between each endpoint and
 the Key Distributor as shown the following figure.  The DTLS association between
@@ -559,7 +559,7 @@ conference.
 The Key Distributor needs to know what endpoints are being added to
 a given conference. Thus, the Key Distributor and the Media Distributor 
 will need to know endpoint-to-conference mappings, which is enabled by exchanging
-a conference-specific unique identifier as defined in [@!I-D.jones-perc-dtls-tunnel]. 
+a conference-specific unique identifier as defined in [@!I-D.draft-ietf-perc-dtls-tunnel]. 
 How this unique identifier is assigned is outside the scope of this document.
 
 # Security Considerations {#attacks}
@@ -674,5 +674,13 @@ The authors would like to thank Mo Zanaty and Christian Oien for
 invaluable input on this document.  Also, we would like to acknowledge
 Nermeen Ismail for serving on the initial versions of this document as a
 co-author.
+
+<reference anchor='I-D.ietf-roach-perc-webrtc'>
+  <front>
+    <title>WebRTC Signaling for PERC</title>
+    <author initials='A' surname='Roach' fullname='Adam Roach'/>
+    <date month='March' day='13' year='2017' />
+  </front>
+</reference>
 
 {backmatter}
