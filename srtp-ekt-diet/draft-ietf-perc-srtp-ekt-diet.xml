@@ -300,10 +300,9 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           Values less than 64 are mandatory to understand while other
           values are optional to understand.  A receiver SHOULD
           discard the whole EKTField if it contains any message type value
-          that is less than 64 and that the receiver does not implement or
-          understand the feature specified by that code point. Message
-          type values are are 64 or greater but not implemented or
-          understood can simply be ignored. 
+          that is less than 64 and that is not understood. Message
+          type values that are 64 or greater but not implemented or
+          understood can simply be ignored.
           </t>
         </list></t>
       </section>
