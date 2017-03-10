@@ -636,7 +636,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 enum {
   reserved(0),  
   aeskw_128(1),  
-  aeskw_256(3),  
+  aeskw_256(2),  
 } EKTCipherType;  
 
 struct {
