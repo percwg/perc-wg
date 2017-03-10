@@ -556,8 +556,8 @@ conference.
 
 ## Conferences Identification {#conf-id}
 
-The Key Distributor needs to know what endpoints are to being added to
-in a given conference resource. Thus, the Key Distributor and the Media Distributor 
+The Key Distributor needs to know what endpoints are being added to
+a given conference. Thus, the Key Distributor and the Media Distributor 
 will need to know endpoint-to-conference mappings, which is enabled by exchanging
 a conference-specific unique identifier as defined in [@!I-D.jones-perc-dtls-tunnel]. 
 How this unique identifier is assigned is outside the scope of this document.
