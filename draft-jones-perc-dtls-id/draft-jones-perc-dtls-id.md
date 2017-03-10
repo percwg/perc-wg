@@ -150,7 +150,7 @@ is shown below.
 
 ~~~
     struct {
-        opaque dtls_id<6..255>;
+        opaque dtls_id<20..255>;
     } SdpDtlsIdData;
 ~~~
 
