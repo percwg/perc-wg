@@ -888,7 +888,7 @@ SRTP packets                 <------->      SRTP packets
           <c>1</c>
           <c>RFCAAAA</c>
           <c>AESKW256</c>
-          <c>3</c>
+          <c>2</c>
           <c>RFCAAAA</c>
           <c>Reserved</c>
           <c>255</c>
