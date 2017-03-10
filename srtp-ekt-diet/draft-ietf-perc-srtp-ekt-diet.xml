@@ -291,7 +291,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           MUST be associated with a distinct SPI value to avoid
           ambiguity.</t>
           <t hangText="EKTMsgLength:">All EKT message other that ShortEKTField 
-          MUST have a length as second from the last element. This is the 
+          have a length as second from the last element. This is the 
           length in octets of either the FullEKTField/ExtensionEKTField including 
           this length field and the following message type.</t>
           <t hangText="Message Type:">The last byte is used to indicate
@@ -875,6 +875,12 @@ SRTP packets                 <------->      SRTP packets
         allocation of even values over odd ones until the even code
         points are consumed to avoid conflicts with pre standard
         versions of EKT that have been deployed.</t>
+
+        <t> All new EKT message MUST be defined to have a length as
+        second from the last element so that implementations that do
+        not understand the new extension can still skip over it when
+        parsing the message. <t>
+          
       </section>
       <section anchor="iana-ciphers" title="EKT Ciphers">
 
@@ -1155,7 +1161,7 @@ SRTP packets                 <------->      SRTP packets
           <author initials='P.' surname='Overell'
           fullname='P. Overell'>
             <organization />
-          </author>
+          </author><
           <date year='2008' month='January' />
           <abstract>
 
