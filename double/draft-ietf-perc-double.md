@@ -183,7 +183,8 @@ value.  In this case, the OHB has this form:
 ~~~~~
 
 Note that "R" indicates a reserved bit that MUST be set to zero when
-sending a packet and ignored upon receipt.
+sending a packet and ignored upon receipt. ID is the RTP Header
+Extension identifier negotiated in the SDP. 
 
 If the OHB is two octets in length, it contains the original RTP
 packet sequence number.  In this case, the OHB has this form:
@@ -512,7 +513,10 @@ transform and the second half is used for the outer (HBH) transform.
 
 # Acknowledgments
 
-Many thanks to review from Suhas Nandakumar, David Benham, Magnus
-Westerlund and significant text from Richard Barnes.
+Many thanks to Richard Barnes for sending significant text for this
+specification. Thank you for reviews and improvements from David
+Benham, Paul Jones, Suhas Nandakumar, Nils Ohlmeier, and Magnus
+Westerlund.
+
 
 {backmatter}
