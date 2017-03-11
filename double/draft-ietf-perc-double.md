@@ -175,11 +175,11 @@ value.  In this case, the OHB has this form:
 
 {align="left"}
 ~~~~~
- 0
- 0 1 2 3 4 5 6 7
-+---------------+
-|R|     PT      |
-+---------------+
+ 0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
++-+-+-+-+-+-+-+-+---------------+
+|  ID   | len=0 |R|     PT      |
++-+-+-+-+-+-+-+-+---------------+
 ~~~~~
 
 Note that "R" indicates a reserved bit that MUST be set to zero when
@@ -190,11 +190,11 @@ packet sequence number.  In this case, the OHB has this form:
 
 {align="left"}
 ~~~~~
- 0                   1 
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 
-+-------------------------------+
-|        Sequence Number        |
-+-------------------------------+
+ 0                   1                   2
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
++-+-+-+-+-+-+-+-+-------------------------------+
+|  ID   | len=1 |        Sequence Number        |
++-+-+-+-+-+-+-+-+-------------------------------+
 ~~~~~
 
 If the OHB is three octets in length, it contains the original PT
@@ -203,11 +203,11 @@ this form:
 
 {align="left"}
 ~~~~~
- 0                   1                   2
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
-+---------------+-------------------------------+
-|R|     PT      |        Sequence Number        |
-+---------------+-------------------------------+
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 6 4 5 6 7 8 9 1
++-+-+-+-+-+-+-+-+---------------+-------------------------------+
+|  ID   | len=2 |R|     PT      |        Sequence Number        |
++-+-+-+-+-+-+-+-+---------------+-------------------------------+
 ~~~~~
 
 If a Media Distributor modifies an original RTP header value, the
