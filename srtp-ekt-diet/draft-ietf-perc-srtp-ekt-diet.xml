@@ -876,10 +876,8 @@ SRTP packets                 <------->      SRTP packets
         points are consumed to avoid conflicts with pre standard
         versions of EKT that have been deployed.</t>
 
-        <t> All new EKT message MUST be defined to have a length as
-        second from the last element so that implementations that do
-        not understand the new extension can still skip over it when
-        parsing the message. <t>
+        <t> All new EKT messages MUST be defined to have a length as
+        second from the last element. <t>
           
       </section>
       <section anchor="iana-ciphers" title="EKT Ciphers">
