@@ -416,6 +416,11 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               needed by SRTP, then it is truncated by taking the first N bytes 
               from the srtp_master_salt field.</t>
 
+              <t> If the SSRC in the EKTPlaintext does not match the
+              SSRC of the SRTP packet, then all the information from
+              this EKTPlaintext MUST be discarded and the following
+              steps in this list are done. </t>
+
               <t>The SRTP Master Key, ROC, and SRTP Master Salt from
               the previous step are saved in a map indexed by the SSRC
               found in the EKTPlaintext and can be used for any future
