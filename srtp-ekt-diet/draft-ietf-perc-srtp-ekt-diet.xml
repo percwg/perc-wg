@@ -443,11 +443,11 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
             processed as well as packets sent during the time keys are
             changing.</t>
 
-            <t> When receiving a new EKTKey, implications need to use
-            the ekt_ttl to create a time after which this key can not
+            <t> When receiving a new EKTKey, implementations need to use
+            the ekt_ttl to create a time after which this key cannot
             be used and they also need to create a counter that keeps
             track of how many times the keys has been used to encrypt
-            data to ensure it does not exceed the T value that
+            data to ensure it does not exceed the T value for that
             cipher. If either of theses limits are exceeded, the key
             can no longer be used for encryption. At this point
             implementation need to either use the call signaling to
