@@ -326,7 +326,9 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
         inbound SRTP and SRTCP traffic.</t>
 
         <t>Either the FullEKTField or ShortEKTField is appended at the
-        tail end of all SRTP packets.</t>
+        tail end of all SRTP packets. The decision on which to send is
+        specified in <xref target="timing"/>. </t>
+        
         <section anchor="outbound" title="Outbound Processing">
 
           <t>See 
