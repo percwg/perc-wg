@@ -640,7 +640,7 @@ enum {
 } EKTCipherType;  
 
 struct {
-  EKTCipherType ekt_ciphers<1..254>;
+  EKTCipherType ekt_ciphers<1..255>;
 } SupportedEKTCiphers;
 
 struct {
