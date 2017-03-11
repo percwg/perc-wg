@@ -424,8 +424,11 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               place including replay protection.</t>
             </list>
           </t>
-          <section anchor="inbound_impl_notes"
-          title="Implementation Notes for Inbound Processing">
+        </section>
+      </section>
+
+      <section anchor="inbound_impl_notes"
+               title="Implementation Notes">
 
             <t>The value of the EKTCiphertext field is identical in
             successive packets protected by the same EKT parameter set
@@ -439,9 +442,22 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
             period of time, so that out of order packets can be
             processed as well as packets sent during the time keys are
             changing.</t>
-          </section>
-        </section>
+
+            <t> When receiving a new EKTKey, implications need to use
+            the ekt_ttl to create a time after which this key can not
+            be used and they also need to create a counter that keeps
+            track of how many times the keys has been used to encrypt
+            data to ensure it does not exceed the T value that
+            cipher. If either of theses limits are exceeded, the key
+            can no longer be used for encryption. At this point
+            implementation need to either use the call signaling to
+            renegotiation a new session or need to terminate the
+            existing session. Terminating the session is a reasonable
+            implementation choice because theses limits should not be
+            exceeded except under an attack or error condition.  </t>
+            
       </section>
+
       <section anchor="cipher" title="Ciphers">
 
         <t>EKT uses an authenticated cipher to encrypt and authenticate
