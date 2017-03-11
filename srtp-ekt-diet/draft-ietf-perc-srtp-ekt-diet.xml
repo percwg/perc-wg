@@ -845,8 +845,10 @@ SRTP packets                 <------->      SRTP packets
     <section anchor="iana" title="IANA Considerations">
       <section anchor="iana-ekt-msg-types" title="EKT Message Types">
 
-        <t>IANA is requested to create a new registry for "EKT Messages
-        Types". The initial values in this registry are:</t>
+        <t>IANA is requested to create a new table for "EKT Messages
+        Types" in the "Real-Time Transport Protocol (RTP) Parameters"
+        registry.
+        The initial values in this registry are:</t>
         <texttable anchor="EKTMsgTypeTable" title="EKT Messages Types">
           <ttcol align='left'>Message Type</ttcol>
           <ttcol align='right'>Value</ttcol>
@@ -881,8 +883,10 @@ SRTP packets                 <------->      SRTP packets
       </section>
       <section anchor="iana-ciphers" title="EKT Ciphers">
 
-        <t>IANA is requested to create a new registry for "EKT
-        Ciphers". The initial values in this registry are:</t>
+        <t>IANA is requested to create a new table for "EKT
+        Ciphers"  in the "Real-Time Transport Protocol (RTP) Parameters"
+        registry.
+        The initial values in this registry are:</t>
         <texttable anchor="EKTCipherTable" title="EKT Cipher Types">
           <ttcol align='left'>Name</ttcol>
           <ttcol align='right'>Value</ttcol>
