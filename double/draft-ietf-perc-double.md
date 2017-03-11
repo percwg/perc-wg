@@ -73,7 +73,7 @@ changed by the Media Distributor.  At the same time, a separate
 cryptographic context provides integrity and optional confidentiality
 for the media flowing between the Media Distributor and the endpoints.
 See the framework document that describes this concept in more detail
-in more detail in [@I-D.jones-perc-private-media-framework].
+in more detail in [@I-D.ietf-perc-private-media-framework].
 
 This specification RECOMMENDS the SRTP AES-GCM transform [@!RFC7714]
 to encrypt an RTP packet for the end-to-end cryptographic context.
@@ -144,7 +144,7 @@ context for the outer transform, but not the inner transform.  This
 document does not define how the Media Distributor should be
 provisioned with this information.  One possible way to provide keying
 material for the outer ("hop-by-hop") transform is to use
-[@I-D.jones-perc-dtls-tunnel].
+[@I-D.ietf-perc-dtls-tunnel].
 
 
 # Original Header Block
@@ -519,4 +519,20 @@ Benham, Paul Jones, Suhas Nandakumar, Nils Ohlmeier, and Magnus
 Westerlund.
 
 
+<reference anchor='I-D.ietf-perc-dtls-tunnel'>
+ <front>
+ <title>DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange</title>
+ <author initials='P' surname='Jones' fullname='Paul Jones'>
+    <organization />
+ </author>
+ <author initials='P' surname='Ellenbogen' fullname='Paul Ellenbogen'>
+    <organization />
+ </author>
+ <author initials='N' surname='Ohlmeier' fullname='Nils Ohlmeier'>
+    <organization />
+ </author>
+ <date month='March' day='11' year='2017' />
+ </front>
+</reference>
+ 
 {backmatter}
