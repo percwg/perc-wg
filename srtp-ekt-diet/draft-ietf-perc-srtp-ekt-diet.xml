@@ -452,14 +452,13 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
       <section anchor="cipher" title="Ciphers">
 
         <t>EKT uses an authenticated cipher to encrypt and authenticate
-        the EKTPlaintext. We first specify the interface to the
+        the EKTPlaintext. This specification defines the interface to the
         cipher, in order to abstract the interface away from the
-        details of that function. We then define the cipher that is
-        used in EKT by default. The default cipher described in 
+        details of that function. This specification also defines the
+        default cipher that is
+        used in EKT. The default cipher described in 
         <xref target="DefaultCipher"></xref> MUST be implemented, but
-        another cipher that conforms to this interface MAY be used, in
-        which case its use MUST be coordinated by external means (e.g.,
-        key management).</t>  
+        another cipher that conforms to this interface MAY be used.</t>  
 
         <t>An EKTCipher consists of an encryption function and a
         decryption function. The encryption function E(K, P) takes the
