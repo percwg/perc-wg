@@ -829,7 +829,7 @@ SRTP packets                 <------->      SRTP packets
 
       <t>Each EKT cipher specifies a value T that is the maximum number
       of times a given key can be used. An endpoint MUST NOT encrypt more
-      than T differnt Full EKT Field using the same EKTKey.
+      than T different Full EKT Field using the same EKTKey.
       In addition, the EKTKey MUST NOT be used beyond the lifetime
       provided by the TTL described in <xref
       target="dtls-srtp-extensions"/>. </t>
