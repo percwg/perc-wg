@@ -326,7 +326,9 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
         inbound SRTP and SRTCP traffic.</t>
 
         <t>Either the FullEKTField or ShortEKTField is appended at the
-        tail end of all SRTP packets.</t>
+        tail end of all SRTP packets. The decision on which to send is
+        specified in <xref target="timing"/>. </t>
+        
         <section anchor="outbound" title="Outbound Processing">
 
           <t>See 
@@ -431,8 +433,11 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               place including replay protection.</t>
             </list>
           </t>
-          <section anchor="inbound_impl_notes"
-          title="Implementation Notes for Inbound Processing">
+        </section>
+      </section>
+
+      <section anchor="inbound_impl_notes"
+               title="Implementation Notes">
 
             <t>The value of the EKTCiphertext field is identical in
             successive packets protected by the same EKT parameter set
@@ -446,9 +451,22 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
             period of time, so that out of order packets can be
             processed as well as packets sent during the time keys are
             changing.</t>
-          </section>
-        </section>
+
+            <t> When receiving a new EKTKey, implementations need to use
+            the ekt_ttl to create a time after which this key cannot
+            be used and they also need to create a counter that keeps
+            track of how many times the keys has been used to encrypt
+            data to ensure it does not exceed the T value for that
+            cipher. If either of theses limits are exceeded, the key
+            can no longer be used for encryption. At this point
+            implementation need to either use the call signaling to
+            renegotiation a new session or need to terminate the
+            existing session. Terminating the session is a reasonable
+            implementation choice because theses limits should not be
+            exceeded except under an attack or error condition.  </t>
+            
       </section>
+
       <section anchor="cipher" title="Ciphers">
 
         <t>EKT uses an authenticated cipher to encrypt and authenticate
@@ -486,7 +504,9 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
         concatenated with optional padding) for all values of K and P.
         Each cipher also has a limit T on the number of times that it
         can be used with any fixed key value. The EKTKey MUST NOT be
-        used more that T times.</t>
+        used for encryption more that T times. Note that if the same
+        EKT packet is retransmitted 3 times, that only counts as 1
+        encryption. </t>
 
         <t>Security requirements for EKT ciphers are discussed in 
         <xref target="sec" />.</t>
@@ -816,8 +836,8 @@ SRTP packets                 <------->      SRTP packets
       issue.</t>
 
       <t>Each EKT cipher specifies a value T that is the maximum number
-      of times a given key can be used. An endpoint MUST NOT send more
-      than T Full EKT Field using the same EKTKey.
+      of times a given key can be used. An endpoint MUST NOT encrypt more
+      than T different Full EKT Field using the same EKTKey.
       In addition, the EKTKey MUST NOT be used beyond the lifetime
       provided by the TTL described in <xref
       target="dtls-srtp-extensions"/>. </t>
@@ -946,14 +966,12 @@ SRTP packets                 <------->      SRTP packets
 
       <t>Thank you to Russ Housley provided detailed review and
       significant help with crafting text for this document. Thanks to
-      David Benham, Eddy Lem, Felix Wyss, Jonathan Lennox, Kai Fischer,
-      Lakshminath Dondeti, Magnus Westerlund, Michael Peck, Nermeen
-      Ismail, Paul Jones, Rob Raymond, and Yi Cheng for fruitful
-      discussions, comments, and contributions to this document.</t>
+      David Benham, Yi Cheng, Lakshminath Dondeti, Kai Fischer,
+      Nermeen Ismail, Paul Jones, Eddy Lem, Jonathan Lennox, Michael
+      Peck, Rob Raymond, Sean Turner, Magnus Westerlund, and Felix
+      Wyss for fruitful discussions, comments, and contributions to
+      this document.</t>
 
-      <t>This draft is a cut down version of
-      draft-ietf-avtcore-srtp-ekt-03 and much of the text here came
-      from that draft.</t>
     </section>
   </middle>
   <back>
