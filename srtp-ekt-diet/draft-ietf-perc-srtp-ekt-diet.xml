@@ -844,6 +844,14 @@ SRTP packets                 <------->      SRTP packets
       particular endpoint and that endpoint would keep sending media
       encrypted using the old key. To mitigate that risk, the lifetime
       of the EKTKey SHOULD be limited using the ekt_ttl.</t>
+
+      <t> Open Issue: If the attacker takes an old FullEKTField and
+      appends it to the end of a SRTP packet, what happens? Is the
+      current key over written with the old one? Could someone that
+      left a conference that was then rekeyed use this to get senders
+      to switch back to the old conference key? Is there a way to have
+      the SRTP integrity cover the EKT Field.</t>
+      
     </section>
     <section anchor="iana" title="IANA Considerations">
       <section anchor="iana-ekt-msg-types" title="EKT Message Types">
