@@ -797,7 +797,7 @@ SRTP packets                 <------->      SRTP packets
       <t>The EKT Cipher includes its own authentication/integrity
       check. For an attacker to successfully forge a full EKT packet,
       it would need to defeat the authentication mechanisms of the EKT
-      Cipher authentication mechanism.</t>
+      Cipher authentication mechanism. </t>
 
       <t>The presence of the SSRC in the EKTPlaintext ensures that an
       attacker cannot substitute an EKTCiphertext from one SRTP stream
@@ -820,7 +820,7 @@ SRTP packets                 <------->      SRTP packets
       than T Full EKT Field using the same EKTKey.
       In addition, the EKTKey MUST NOT be used beyond the lifetime
       provided by the TTL described in <xref
-      target="dtls-srtp-extensions"/>. </t>
+      target="dtls-srtp-extensions"/>.</t>
 
       <t>The confidentiality, integrity, and authentication of the EKT
       cipher MUST be at least as strong as the SRTP cipher and at least
