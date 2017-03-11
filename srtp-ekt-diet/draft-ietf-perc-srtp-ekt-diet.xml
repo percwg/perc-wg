@@ -938,10 +938,11 @@ SRTP packets                 <------->      SRTP packets
 
       <t>Thank you to Russ Housley provided detailed review and
       significant help with crafting text for this document. Thanks to
-      David Benham, Eddy Lem, Felix Wyss, Jonathan Lennox, Kai Fischer,
-      Lakshminath Dondeti, Magnus Westerlund, Michael Peck, Nermeen
-      Ismail, Paul Jones, Rob Raymond, and Yi Cheng for fruitful
-      discussions, comments, and contributions to this document.</t>
+      David Benham, Yi Cheng, Lakshminath Dondeti, Kai Fischer,
+      Nermeen Ismail, Paul Jones, Eddy Lem, Jonathan Lennox, Michael
+      Peck, Rob Raymond, Sean Turner, Magnus Westerlund, and Felix
+      Wyss for fruitful discussions, comments, and contributions to
+      this document.</t>
 
       <t>This draft is a cut down version of
       draft-ietf-avtcore-srtp-ekt-03 and much of the text here came
