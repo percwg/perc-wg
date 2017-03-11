@@ -944,9 +944,6 @@ SRTP packets                 <------->      SRTP packets
       Wyss for fruitful discussions, comments, and contributions to
       this document.</t>
 
-      <t>This draft is a cut down version of
-      draft-ietf-avtcore-srtp-ekt-03 and much of the text here came
-      from that draft.</t>
     </section>
   </middle>
   <back>
