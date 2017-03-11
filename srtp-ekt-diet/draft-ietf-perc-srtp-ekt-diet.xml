@@ -639,7 +639,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 enum {
   reserved(0),  
   aeskw_128(1),  
-  aeskw_256(3),  
+  aeskw_256(2),  
 } EKTCipherType;  
 
 struct {
@@ -891,7 +891,7 @@ SRTP packets                 <------->      SRTP packets
           <c>1</c>
           <c>RFCAAAA</c>
           <c>AESKW256</c>
-          <c>3</c>
+          <c>2</c>
           <c>RFCAAAA</c>
           <c>Reserved</c>
           <c>255</c>
