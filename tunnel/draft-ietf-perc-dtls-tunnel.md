@@ -565,8 +565,10 @@ The fields are described as follows:
 The `TunnelMessage` is encoded in binary following the procedures
 specified in [!@RFC5246].  This section provides an example of what
 the bits on the wire would look like for the `SupportedProfiles` message
-that advertises support for both SRTP_AEAD_AES_128_GCM and
-SRTP_AEAD_AES_256_GCM [@RFC7714].
+that advertises support for both
+DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM and
+DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM [@I-D.ietf-perc-double] if
+IANA assigned them values of 0x0009 and 0x000A respectively.
 
 {align="left"}
 ```
@@ -575,7 +577,7 @@ TunnelMessage:
          message_type: 0x01
     SupportedProfiles:
        protection_profiles:  0x0004 (length)
-                             0x00070008 (value)
+                             0x0009000A (value)
 ```
 
 Thus, the encoding on the wire presented here in network bytes order
@@ -583,7 +585,7 @@ would be this stream of octets:
 
 {align="left"}
 ```
-0x0001000400070008
+0x000100040009000A
 ```
 
 
