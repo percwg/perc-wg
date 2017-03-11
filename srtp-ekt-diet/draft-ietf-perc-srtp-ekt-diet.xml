@@ -480,7 +480,9 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
         concatenated with optional padding) for all values of K and P.
         Each cipher also has a limit T on the number of times that it
         can be used with any fixed key value. The EKTKey MUST NOT be
-        used more that T times.</t>
+        used for encryption more that T times. Note that if the same
+        EKT packet is retransmitted 3 times, that only counts as 1
+        encryption. </t>
 
         <t>Security requirements for EKT ciphers are discussed in 
         <xref target="sec" />.</t>
@@ -810,8 +812,8 @@ SRTP packets                 <------->      SRTP packets
       issue.</t>
 
       <t>Each EKT cipher specifies a value T that is the maximum number
-      of times a given key can be used. An endpoint MUST NOT send more
-      than T Full EKT Field using the same EKTKey.
+      of times a given key can be used. An endpoint MUST NOT encrypt more
+      than T differnt Full EKT Field using the same EKTKey.
       In addition, the EKTKey MUST NOT be used beyond the lifetime
       provided by the TTL described in <xref
       target="dtls-srtp-extensions"/>. </t>
