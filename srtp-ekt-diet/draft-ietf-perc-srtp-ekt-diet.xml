@@ -478,6 +478,9 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 
         <t>These functions have the property that D(K, E(K, P)) = ( P
         concatenated with optional padding) for all values of K and P.
+        The code using the decrypted values knows the length of and
+        can remove the padding thus there is no requirement for the
+        decryption operation to remove the padding. 
         Each cipher also has a limit T on the number of times that it
         can be used with any fixed key value. The EKTKey MUST NOT be
         used more that T times.</t>
