@@ -6,7 +6,7 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 #  mmark (https://github.com/miekg/mmark)
 mmark ?= mmark
 
-DRAFT = draft-perc-dtls-tunnel
+DRAFT = draft-ietf-perc-dtls-tunnel
 VERSION = 00
 
 .PHONY: all clean diff
