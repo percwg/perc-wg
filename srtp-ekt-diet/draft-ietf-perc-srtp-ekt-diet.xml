@@ -379,8 +379,8 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
         </section>
         <section anchor="inbound" title="Inbound Processing">
 
-          <t>When receiving a packet on a RTP stream where EKT was
-          negotiated, the following steps are applied for each received
+          <t>When receiving a packet on a RTP stream,
+          the following steps are applied for each received
           packet.</t>
 
           <t>
