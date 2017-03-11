@@ -299,10 +299,14 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           this length field and the following message type.</t>
           <t hangText="Message Type:">The last byte is used to indicate
           the type of the EKTField. This MUST be 2 in the FullEKTField
-          format and 0 in ShortEKTField format. Values less than 64 are
-          mandatory to understand and the whole EKTField SHOULD be
-          discarded if it contains message type value that is less than
-          64 and is not implemented.</t>
+          format and 0 in ShortEKTField format.
+          Values less than 64 are mandatory to understand while other
+          values are optional to understand.  A receiver SHOULD
+          discard the whole EKTField if it contains any message type value
+          that is less than 64 and that is not understood. Message
+          type values that are 64 or greater but not implemented or
+          understood can simply be ignored.
+          </t>
         </list></t>
       </section>
       <section anchor="processing"
