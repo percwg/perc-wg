@@ -567,8 +567,12 @@ specified in [!@RFC5246].  This section provides an example of what
 the bits on the wire would look like for the `SupportedProfiles` message
 that advertises support for both
 DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM and
-DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM [@I-D.ietf-perc-double] if
-IANA assigned them values of 0x0009 and 0x000A respectively.
+DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM [@I-D.ietf-perc-double].
+
+RFC Editor Note: Please replace the values of 0009 and 000A in the
+following example with whatever code points IANA assigned for
+DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM and
+DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM.
 
 {align="left"}
 ```
