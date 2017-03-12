@@ -184,7 +184,8 @@ value.  In this case, the OHB has this form:
 ~~~~~
 
 Note that "R" indicates a reserved bit that MUST be set to zero when
-sending a packet and ignored upon receipt.
+sending a packet and ignored upon receipt. ID is the RTP Header
+Extension identifier negotiated in the SDP. 
 
 If the OHB is two octets in length, it contains the original RTP
 packet sequence number.  In this case, the OHB has this form:
@@ -513,27 +514,27 @@ transform and the second half is used for the outer (HBH) transform.
 
 # Acknowledgments
 
-Many thanks to review from Suhas Nandakumar, David Benham, Magnus
-Westerlund and significant text from Richard Barnes.
+Many thanks to Richard Barnes for sending significant text for this
+specification. Thank you for reviews and improvements from David
+Benham, Paul Jones, Suhas Nandakumar, Nils Ohlmeier, and Magnus
+Westerlund.
 
 
 <reference anchor='I-D.ietf-perc-dtls-tunnel'>
-<front>
-<title>DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange</title>
-<author initials='P' surname='Jones' fullname='Paul Jones'>
+ <front>
+ <title>DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange</title>
+ <author initials='P' surname='Jones' fullname='Paul Jones'>
     <organization />
-</author>
-<author initials='P' surname='Ellenbogen' fullname='Paul Ellenbogen'>
+ </author>
+ <author initials='P' surname='Ellenbogen' fullname='Paul Ellenbogen'>
     <organization />
-</author>
-<author initials='N' surname='Ohlmeier' fullname='Nils Ohlmeier'>
+ </author>
+ <author initials='N' surname='Ohlmeier' fullname='Nils Ohlmeier'>
     <organization />
-</author>
-<date month='March' day='11' year='2017' />
-</front>
-<seriesInfo name='Internet-Draft' value='draft-ietf-perc-dtls-tunnel-00' />
+ </author>
+ <date month='March' day='12' year='2017' />
+ </front>
 </reference>
-
-
+ 
 {backmatter}
 
