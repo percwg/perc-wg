@@ -527,7 +527,9 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           is opaque to the other aspects of EKT processing. EKT ciphers
           are free to use this field in any way, but they SHOULD NOT
           use other EKT or SRTP fields as an input. The values of the
-          parameters L, and T MUST be defined by each EKTCipher.</t>
+          parameters L, and T MUST be defined by each EKTCipher. The
+          cipher MUST provide integrity protection. </t>
+          
         </section>
       </section>
       <section anchor="SynchronizingOperation"
