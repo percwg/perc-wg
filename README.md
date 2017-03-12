@@ -4,6 +4,8 @@ PERC WG Repo
 This is the working area for the [IETF PERC Working
 Group](https://datatracker.ietf.org/wg/perc/charter/) 
 
+[![Issues in Ready](https://badge.waffle.io/ietf/perc-wg.svg?label=ready&title=TODO)](http://waffle.io/ietf/perc-wg)
+
 
 Contributing
 ------------
