@@ -254,6 +254,9 @@ context.  The processes is as follows:
   be used when encrypting the RTP packet using the outer cryptographic
   context.
 
+When using EKT [@I-D.ietf-perc-srtp-ekt-diet], the EKT Field comes
+after the SRTP packet exactly like using EKT with any other SRTP
+transform.
 
 ## Relaying a Packet
 
