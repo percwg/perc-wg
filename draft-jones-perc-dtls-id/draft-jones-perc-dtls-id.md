@@ -65,7 +65,7 @@ DTLS [@!RFC6347] tunneling mechanism [@!I-D.perc-dtls-tunnel] that enables
 a media distributor to forward DTLS messages between an endpoint
 and a key distributor.  In the process, the media distributor
 is able to securely receive only the hop-by-hop keying material,
-while the endpoint is able to securely receive both end-to-end and
+while the endpoints are able to securely receive both end-to-end and
 hob-by-hop keying material.
 
 An open issue with the current design is how the key distributor
@@ -75,8 +75,8 @@ the DTLS tunnel is the endpoint's certificate.  However, the same certificate
 might be used to join several conferences in parallel, thus creating a
 need for additional information.
 
-[@!I-D.ietf-mmusic-dtls-sdp] defined an attribute in SDP [@!RFC4566] called
-the `dlts-id`.  The `dtls-id` presented in the endpoint's offer will be
+[@!I-D.ietf-mmusic-dtls-sdp] defines an attribute in SDP [@!RFC4566] called
+the `dlts-id`.  The `dtls-id` presented by the endpoint's in SDP will be
 unique for each DTLS association established using the same certificate.
 By signaling the certificate fingerprint and `dtls-id` in SDP, along with
 including the same in the DTLS signaling sent to the key distributor, it would
@@ -102,16 +102,14 @@ used in this document are introduced in
 The endpoint **MUST** include the `dtls_id` DTLS extension in the `ClientHello`
 message when establishing a DTLS tunnel in a PERC conference.  Likewise,
 the `dtls-id` SDP attribute **MUST** be included in SDP sent by the endpoint
-in both the offer and answer messages as per [@!I-D.ietf-mmusic-dtls-sdp].
+in both the offer and answer [@!RFC3264] messages as per
+[@!I-D.ietf-mmusic-dtls-sdp].
 
 When receiving a `dtls_id` value from the key distributor, the
 client **MUST** check to ensure that value matches the `dtls-id` value
 received in SDP.  If the values do not match, the endpoint **MUST**
 consider any received keying material to be invalid and terminate the
 DTLS association.
-
-> Editor's Note: Do we want to require the KDD to provide the `dtls-id`
-  via SDP?
 
 # Media distributor procedures
 
@@ -121,8 +119,8 @@ and the key distributor.
 
 # Key distributor procedures
 
-This draft assumes that, when the endpoint inserts the `dtls-id` into
-SDP, that information will be conveyed somehow to the key distributor.
+This draft assumes that when the endpoint inserts the `dtls-id` into
+SDP, the information will be conveyed in some way to the key distributor.
 The process through which the `dtls-id` in SDP is conveyed to
 the key distributor is outside the scope of this document.
 
@@ -139,23 +137,20 @@ deliver the correct conference key to the endpoint.
 
 When sending the `ServerHello` message, the key distributor **MUST**
 insert its own `dtls-id` value.  This value **MUST** also be conveyed back
-to the client in SDP messages.
+to the client via SDP.
 
 # The dtls_id TLS extension
 
 The `dtls_id` TLS extension may be used either with TLS [@!RFC5246] or
 DTLS.  It carries only `dtls-id` value defined in
 [@!I-D.ietf-mmusic-dtls-sdp] in the field called `dtls_id`.  The syntax
-is shown below.
+for the `dtls_id` extension is shown below.
 
 ~~~
     struct {
         opaque dtls_id<20..255>;
     } SdpDtlsIdData;
 ~~~
-
-Note: the maximum length of the dtls-id attribute was 256 and per recent
-discussion on the MMUSIC mailing list, it was agreed to change it to 255.
 
 # IANA Considerations
 
@@ -170,7 +165,7 @@ dlts_id   | Yes         | Encrypted | Yes
 
 # Security Considerations
 
-The dtls-id value is a random value that has no personal identifiable
+The `dtls-id` value is a random value that has no personal identifiable
 information associated with it.  Thus, the value does not expose such
 information.  It also has no particular security properties in and
 of itself, so being in plaintext in the `ClientHello` or `ServerHello` is
@@ -184,14 +179,16 @@ to receive the conference key or receive the wrong conference key.
 However, since Alice will only be provided keys for conferences for which
 she is authorized to join based on her client certificate, receiving the
 wrong key will not compromise the security of the conference.  However,
-receipt of the wrong key will deny Alice access to the plaintext
-media transmitted by other participants.  Further, if Alice transmits
+receipt of the wrong key will deny Alice access to the plaintext of
+media transmitted by other participants.  Additionally, if Alice transmits
 media using the wrong conference key, the media will be undecipherable
 by other conference participants.
 
-Likewise, if the `dtls_id` field transmitted from the key distributor to
-Alice is modified, Alice will tear down the DTLS association and fail to
-join the conference.  Again, the result is a denial of service for Alice.
+As prescribed in these procedures, if the `dtls_id` field transmitted from
+the key distributor to Alice is modified, Alice will tear down the DTLS
+association and fail to join the conference.  The result is a denial of
+service for Alice, but not worse than when any other part of the DTLS
+message is modified.
 
 # Acknowledgments
 
