@@ -837,15 +837,25 @@ SRTP packets                 <------->      SRTP packets
       <t>The EKT Cipher includes its own authentication/integrity
       check. For an attacker to successfully forge a full EKT packet,
       it would need to defeat the authentication mechanisms of the EKT
-      Cipher authentication mechanism.</t>
+      Cipher authentication mechanism. </t>
 
       <t>The presence of the SSRC in the EKTPlaintext ensures that an
       attacker cannot substitute an EKTCiphertext from one SRTP stream
       into another SRTP stream.</t>
 
-      <t>An attacker who tampers with the bits in FullEKTField can
-      prevent the intended receiver of that packet from being able to
-      decrypt it. This is a minor denial of service vulnerability.</t>
+     <t>An attacker who tampers with the bits in FullEKTField can
+     prevent the intended receiver of that packet from being able to
+     decrypt it. This is a minor denial of service
+     vulnerability. Similarly the attacker could take an old
+     FullEKTField from the same session and attach it to the
+     packet. The FullEKTField would correctly decode and pass
+     integrity but the key extracted from the FullEKTField , when used
+     to decrypt the SRTP payload, would be wrong and the SRTP
+     integrity check would fail. Note that the FullEKTField only
+     changes the decryption key and does not change the
+     encryption key. None of these are considered significant attacks
+     as any attacker that can modify the packets in transit and cause
+     the integrity check to fail. </t>
 
       <t>An attacker could send packets containing a Full EKT Field, in
       an attempt to consume additional CPU resources of the receiving
@@ -860,7 +870,7 @@ SRTP packets                 <------->      SRTP packets
       than T different Full EKT Field using the same EKTKey.
       In addition, the EKTKey MUST NOT be used beyond the lifetime
       provided by the TTL described in <xref
-      target="dtls-srtp-extensions"/>. </t>
+      target="dtls-srtp-extensions"/>.</t>
 
       <t>The confidentiality, integrity, and authentication of the EKT
       cipher MUST be at least as strong as the SRTP cipher and at least
@@ -884,6 +894,7 @@ SRTP packets                 <------->      SRTP packets
       particular endpoint and that endpoint would keep sending media
       encrypted using the old key. To mitigate that risk, the lifetime
       of the EKTKey SHOULD be limited using the ekt_ttl.</t>
+      
     </section>
     <section anchor="iana" title="IANA Considerations">
       <section anchor="iana-ekt-msg-types" title="EKT Message Types">
