@@ -531,7 +531,7 @@ Westerlund.
  <author initials='N' surname='Ohlmeier' fullname='Nils Ohlmeier'>
     <organization />
  </author>
- <date month='March' day='11' year='2017' />
+ <date month='March' day='12' year='2017' />
  </front>
 </reference>
  
