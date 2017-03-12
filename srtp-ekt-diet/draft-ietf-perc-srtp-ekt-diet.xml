@@ -812,11 +812,10 @@ SRTP packets                 <------->      SRTP packets
      integrity but the key extracted from the FullEKTField , when used
      to decrypt the SRTP payload, would be wrong and the SRTP
      integrity check would fail. Note that the FullEKTField only
-     changes the decryption key with and does not change the
+     changes the decryption key and does not change the
      encryption key. None of these are considered significant attacks
-     as any attacker that can modify the packets in transit, and cause
-     the integrity check to fail or the attacker could just drop the
-     packet. </t>
+     as any attacker that can modify the packets in transit and cause
+     the integrity check to fail. </t>
 
       <t>An attacker could send packets containing a Full EKT Field, in
       an attempt to consume additional CPU resources of the receiving
