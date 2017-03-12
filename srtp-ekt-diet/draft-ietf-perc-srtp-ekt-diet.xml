@@ -419,7 +419,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               <t> If the SSRC in the EKTPlaintext does not match the
               SSRC of the SRTP packet, then all the information from
               this EKTPlaintext MUST be discarded and the following
-              steps in this list are done. </t>
+              steps in this list are not done. </t>
 
               <t>The SRTP Master Key, ROC, and SRTP Master Salt from
               the previous step are saved in a map indexed by the SSRC
