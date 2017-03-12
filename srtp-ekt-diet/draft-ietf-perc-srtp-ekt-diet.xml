@@ -393,7 +393,17 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               ShortEKTField, the ShortEKTField is removed from the
               packet then normal SRTP or SRTCP processing occurs. If
               the packet contains a FullEKTField, then processing
-              continues as described below.</t>
+              continues as described below.
+              The reason for using the last byte of the packet to
+              indicate the type is that the length of the SRTP or
+              SRTCP part is not known until the decryption has
+              occurred. At this point in the processing, there is no
+              easy way to know where the EKT field would
+              start. However, the whole UDP packet has been received
+              so instead of the starting at the front of the packet,
+              the parsing works backwards off the end of the packet and
+              thus the type is put at the very end of the packet.
+              </t>
 
               <t>The Security Parameter Index (SPI) field is used to
               find which EKT parameter set to be used when
