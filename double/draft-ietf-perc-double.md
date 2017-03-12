@@ -15,10 +15,11 @@
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
-    
+
     [pi]
     symrefs = "yes"
     sortrefs = "yes"
+    compact = "yes"
 
     [[author]]
     initials = "C."
@@ -536,3 +537,4 @@ Westerlund.
 </reference>
  
 {backmatter}
+
