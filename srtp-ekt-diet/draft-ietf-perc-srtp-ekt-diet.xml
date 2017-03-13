@@ -336,7 +336,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 
           <t>See 
           <xref target="timing"></xref> which describes when to send an
-          EKT packet with a FullEKTField. If a FullEKTField is not
+          SRTP packet with a FullEKTField. If a FullEKTField is not
           being sent, then a ShortEKTField is sent so the
           receiver can correctly determine how to process the
           packet.</t>
@@ -475,12 +475,12 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
             be used and they also need to create a counter that keeps
             track of how many times the keys has been used to encrypt
             data to ensure it does not exceed the T value for that
-            cipher. If either of theses limits are exceeded, the key
+            cipher. If either of these limits are exceeded, the key
             can no longer be used for encryption. At this point
             implementation need to either use the call signaling to
             renegotiation a new session or need to terminate the
             existing session. Terminating the session is a reasonable
-            implementation choice because theses limits should not be
+            implementation choice because these limits should not be
             exceeded except under an attack or error condition.  </t>
             
       </section>
@@ -525,7 +525,7 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
         Each cipher also has a limit T on the number of times that it
         can be used with any fixed key value. The EKTKey MUST NOT be
         used for encryption more that T times. Note that if the same
-        EKT packet is retransmitted 3 times, that only counts as 1
+        FullEKTField is retransmitted 3 times, that only counts as 1
         encryption. </t>
 
         <t>Security requirements for EKT ciphers are discussed in 
@@ -838,7 +838,7 @@ SRTP packets                 <------->      SRTP packets
       other SRTP master keys.</t>
 
       <t>The EKT Cipher includes its own authentication/integrity
-      check. For an attacker to successfully forge a full EKT packet,
+      check. For an attacker to successfully forge a FullEKTField,
       it would need to defeat the authentication mechanisms of the EKT
       Cipher authentication mechanism. </t>
 
