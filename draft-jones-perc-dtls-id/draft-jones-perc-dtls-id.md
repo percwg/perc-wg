@@ -61,7 +61,7 @@ for use in the Session Description Protocol within TLS and DTLS.
 # Introduction
 
 The Privacy-Enhanced RTP Conferencing (PERC) working group specified a
-DTLS [@!RFC6347] tunneling mechanism [@!I-D.perc-dtls-tunnel] that enables
+DTLS [@!RFC6347] tunneling mechanism [@!I-D.ietf-perc-dtls-tunnel] that enables
 a media distributor to forward DTLS messages between an endpoint
 and a key distributor.  In the process, the media distributor
 is able to securely receive only the hop-by-hop keying material,
