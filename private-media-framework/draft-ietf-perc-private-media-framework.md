@@ -144,7 +144,7 @@ be co-resident with another entity trusted with E2E keying material.
 Conference: Two or more participants communicating via trusted endpoints
 to exchange RTP flows through one or more Media Distributor.
 
-Call Processing: All tusted endpoints in the conference connect to it by a call 
+Call Processing: All trusted endpoints in the conference connect to it by a call 
 processing dialog, such as with the Focus defined in the Framework for 
 Conferencing with SIP [@RFC4353].
 
@@ -215,7 +215,7 @@ An endpoint's ability to join a conference hosted by a Media Distributor **MUST 
 alone be interpreted as being authorized to have access to the E2E media
 encryption keys, as the Media Distributor does not have the ability to determine
 whether an endpoint is authorized.  Trusted endpoint authorization is described
-in WebRTC Signaling for PERC [@I-D.ietf-roach-perc-webrtc].
+in [@I-D.ietf-roach-perc-webrtc].
 
 A Media Distributor **MUST** perform its role in properly forwarding media packets
 while taking measures to mitigate the adverse effects of denial of
@@ -677,27 +677,11 @@ co-author.
 
 <reference anchor='I-D.ietf-roach-perc-webrtc'>
   <front>
-    <title>WebRTC Signaling for PERC</title>
+    <title>Using Privacy Enhanced Real-time Conferencing (PERC) in a WebRTC Context</title>
     <author initials='A' surname='Roach' fullname='Adam Roach'/>
     <date month='March' day='13' year='2017' />
   </front>
 </reference>
-
-<reference anchor='I-D.ietf-perc-dtls-tunnel'>
- <front>
- <title>DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange</title>
- <author initials='P' surname='Jones' fullname='Paul Jones'>
-    <organization />
- </author>
- <author initials='P' surname='Ellenbogen' fullname='Paul Ellenbogen'>
-    <organization />
- </author>
- <author initials='N' surname='Ohlmeier' fullname='Nils Ohlmeier'>
-    <organization />
- </author>
- <date month='March' day='11' year='2017' />
- </front>
- </reference>
 
 {backmatter}
 
