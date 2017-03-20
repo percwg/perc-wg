@@ -522,22 +522,6 @@ specification. Thank you for reviews and improvements from David
 Benham, Paul Jones, Suhas Nandakumar, Nils Ohlmeier, and Magnus
 Westerlund.
 
-
-<reference anchor='I-D.ietf-perc-dtls-tunnel'>
- <front>
- <title>DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange</title>
- <author initials='P' surname='Jones' fullname='Paul Jones'>
-    <organization />
- </author>
- <author initials='P' surname='Ellenbogen' fullname='Paul Ellenbogen'>
-    <organization />
- </author>
- <author initials='N' surname='Ohlmeier' fullname='Nils Ohlmeier'>
-    <organization />
- </author>
- <date month='March' day='12' year='2017' />
- </front>
-</reference>
  
 {backmatter}
 
