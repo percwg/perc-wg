@@ -345,7 +345,7 @@ belongs, it can pass the conference identifier to the key distributor
 using the `conf_id` field of the `TunneledDtls` message.
 
 > Editor's Note: if the PERC WG adopts the `dtls-id` concept presented
-  in [@I-D.jones-tls-perc-dtls-id], we can remove `conf_id` from this
+  in [@I-D.jones-perc-dtls-id], we can remove `conf_id` from this
   draft, since the `dtls-id` can convey enough information for the key
   distributor to determine the correct conference.
 
@@ -659,18 +659,5 @@ distributor and the key distributor.
 
 The author would like to thank David Benham and Cullen Jennings for
 reviewing this document and providing constructive comments.
-
-<reference anchor='I-D.jones-tls-perc-dtls-id' >
- <front>
-    <title>Transporting the SDP attribute 'dtls-id' in TLS and DTLS</title>
-    <author initials="P." surname="Jones" fullname="Paul E. Jones">
-      <organization/>
-    </author>
-   <author initials="N." surname="Ohlmeier" fullname="Nils H. Ohlmeier">
-       <organization/>
-    </author>
-    <date year="2017" month="March" day="12"/>
- </front>
-</reference>
 
 {backmatter}
