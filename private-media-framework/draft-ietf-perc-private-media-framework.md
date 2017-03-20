@@ -225,7 +225,7 @@ Distributor **MUST NOT** alone be interpreted as being authorized to
 have access to the E2E media encryption keys, as the Media Distributor
 does not have the ability to determine whether an endpoint is
 authorized.  Trusted endpoint authorization is described in
-[@I-D.ietf-roach-perc-webrtc].
+[@I-D.roach-perc-webrtc].
 
 A Media Distributor **MUST** perform its role in properly forwarding
 media packets while taking measures to mitigate the adverse effects of
@@ -708,14 +708,6 @@ The authors would like to thank Mo Zanaty and Christian Oien for
 invaluable input on this document.  Also, we would like to acknowledge
 Nermeen Ismail for serving on the initial versions of this document as
 a co-author.
-
-<reference anchor='I-D.ietf-roach-perc-webrtc'>
-  <front>
-    <title>Using Privacy Enhanced Real-time Conferencing (PERC) in a WebRTC Context</title>
-    <author initials='A' surname='Roach' fullname='Adam Roach'/>
-    <date month='March' day='13' year='2017' />
-  </front>
-</reference>
 
 {backmatter}
 
