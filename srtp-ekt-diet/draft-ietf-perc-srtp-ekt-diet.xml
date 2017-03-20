@@ -103,7 +103,7 @@ ipr="trust200902">
 
       <t>Real-time Transport Protocol (RTP) is designed to allow
       decentralized groups with minimal control to establish sessions,
-      such as for multimedia conferences. Unfortunately, Secure RTP (
+      such as for multimedia conferences. Unfortunately, Secure RTP ( 
       <xref target="RFC3711">SRTP</xref>) cannot be used in many
       minimal-control scenarios, because it requires that
       synchronization source (SSRC) values and other data be
@@ -153,27 +153,26 @@ ipr="trust200902">
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
         "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
         "OPTIONAL" in this document are to be interpreted as described
-        in 
-        <xref target="RFC2119"></xref>.</t>
+        in <xref target="RFC2119"></xref>.</t>
+        
       </section>
     </section>
     <section anchor="normative" title="Encrypted Key Transport">
 
       <t>EKT defines a new method of providing SRTP master keys to an
-      endpoint. In order to convey the ciphertext corresponding to the SRTP master
-      key, and other additional information, an additional EKT field is
-      added to SRTP packets. The EKT field appears at the end of the SRTP packet. 
-      The EKT field appears after the optional authentication tag if one is 
-      present, otherwise the EKT field appears after the ciphertext portion of 
-      the packet.</t>
+      endpoint. In order to convey the ciphertext corresponding to the
+      SRTP master key, and other additional information, an additional
+      EKT field is added to SRTP packets. The EKT field appears at the
+      end of the SRTP packet. The EKT field appears after the optional
+      authentication tag if one is present, otherwise the EKT field
+      appears after the ciphertext portion of the packet.</t>
 
       <t>EKT MUST NOT be used in conjunction with SRTP's MKI (Master
       Key Identifier) or with SRTP's &lt;From, To&gt; 
       <xref target="RFC3711"></xref>, as those SRTP features duplicate
-      some of the functions of EKT.
-      Senders MUST not include MKI when using EKT. Receivers SHOULD
-      simply ignore any MKI field received if EKT is in use. </t>
-      
+      some of the functions of EKT. Senders MUST not include MKI when
+      using EKT. Receivers SHOULD simply ignore any MKI field received
+      if EKT is in use.</t>
       <section anchor="EKT" title="EKT Field Formats">
 
         <t>The EKT Field uses the format defined below for the
@@ -208,16 +207,14 @@ ipr="trust200902">
 </artwork>
         </figure>
 
-        <t>The following shows the syntax of the EKTField expressed
-        in ABNF 
-        <xref target="RFC5234" />. The EKTField is added to the end of an
-        SRTP or SRTCP packet.
-        The EKTPlaintext is the concatenation of SRTPMasterKeyLength,
-        SRTPMasterKey, SSRC, and ROC in that order.
-        The EKTCiphertext is computed by
-        encrypting the EKTPlaintext using the EKTKey. Future extensions
-        to the EKTField MUST conform to the syntax of
-        ExtensionEKTField.</t>
+        <t>The following shows the syntax of the EKTField expressed in
+        ABNF 
+        <xref target="RFC5234" />. The EKTField is added to the end of
+        an SRTP or SRTCP packet. The EKTPlaintext is the concatenation
+        of SRTPMasterKeyLength, SRTPMasterKey, SSRC, and ROC in that
+        order. The EKTCiphertext is computed by encrypting the
+        EKTPlaintext using the EKTKey. Future extensions to the
+        EKTField MUST conform to the syntax of ExtensionEKTField.</t>
         <figure anchor="tag_formats" title="EKTField Syntax">
           <artwork align="left">
             <![CDATA[
@@ -261,13 +258,14 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           <t hangText="EKTCiphertext:">The data that is output from the
           EKT encryption operation, described in 
           <xref target="cipher"></xref>. This field is included in SRTP
-          packets when EKT is in use. The length of EKTCiphertext can be 
-          larger than the length of the EKTPlaintext that was encrypted.</t>
+          packets when EKT is in use. The length of EKTCiphertext can
+          be larger than the length of the EKTPlaintext that was
+          encrypted.</t>
           <t hangText="SRTPMasterKey:">On the sender side, the SRTP
           Master Key associated with the indicated SSRC.</t>
           <t hangText="SRTPMasterKeyLength:">The length of the
-          SRTPMasterKey in bytes. This depends on the cipher suite negotiated
-          for SRTP using 
+          SRTPMasterKey in bytes. This depends on the cipher suite
+          negotiated for SRTP using 
           <xref target="RFC3264" /> SDP Offer/Answer for the SRTP.</t>
           <t hangText="SSRC:">On the sender side, this field is the
           SSRC for this SRTP source. The length of this field is 32
@@ -289,27 +287,27 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
             <t>The EKT Key used to process the packet.</t>
 
             <t>The SRTP Master Salt associated with any Master Key
-            encrypted with this EKT Key. The Master Salt is communicated 
-            separately, via signaling, typically along with the EKTKey.</t>
-          </list>
-          Together, these data elements are called an EKT
+            encrypted with this EKT Key. The Master Salt is
+            communicated separately, via signaling, typically along
+            with the EKTKey.</t>
+          </list>Together, these data elements are called an EKT
           parameter set. Each distinct EKT parameter set that is used
           MUST be associated with a distinct SPI value to avoid
           ambiguity.</t>
-          <t hangText="EKTMsgLength:">All EKT message other that ShortEKTField 
-          have a length as second from the last element. This is the 
-          length in octets of either the FullEKTField/ExtensionEKTField including 
-          this length field and the following message type.</t>
+          <t hangText="EKTMsgLength:">All EKT message other that
+          ShortEKTField have a length as second from the last element.
+          This is the length in octets of either the
+          FullEKTField/ExtensionEKTField including this length field
+          and the following message type.</t>
           <t hangText="Message Type:">The last byte is used to indicate
           the type of the EKTField. This MUST be 2 in the FullEKTField
-          format and 0 in ShortEKTField format.
-          Values less than 64 are mandatory to understand while other
-          values are optional to understand.  A receiver SHOULD
-          discard the whole EKTField if it contains any message type value
-          that is less than 64 and that is not understood. Message
-          type values that are 64 or greater but not implemented or
-          understood can simply be ignored.
-          </t>
+          format and 0 in ShortEKTField format. Values less than 64 are
+          mandatory to understand while other values are optional to
+          understand. A receiver SHOULD discard the whole EKTField if
+          it contains any message type value that is less than 64 and
+          that is not understood. Message type values that are 64 or
+          greater but not implemented or understood can simply be
+          ignored.</t>
         </list></t>
       </section>
       <section anchor="processing"
@@ -330,21 +328,20 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 
         <t>Either the FullEKTField or ShortEKTField is appended at the
         tail end of all SRTP packets. The decision on which to send is
-        specified in <xref target="timing"/>. </t>
-        
+        specified in 
+        <xref target="timing" />.</t>
         <section anchor="outbound" title="Outbound Processing">
 
           <t>See 
           <xref target="timing"></xref> which describes when to send an
           SRTP packet with a FullEKTField. If a FullEKTField is not
-          being sent, then a ShortEKTField is sent so the
-          receiver can correctly determine how to process the
-          packet.</t>
+          being sent, then a ShortEKTField is sent so the receiver can
+          correctly determine how to process the packet.</t>
 
-          <t>When an SRTP packet is sent with a FullEKTField,
-          the EKTField for that packet is created as follows, or uses
-          an equivalent set of steps. The creation of the EKTField
-          MUST precede the normal SRTP packet processing.</t>
+          <t>When an SRTP packet is sent with a FullEKTField, the
+          EKTField for that packet is created as follows, or uses an
+          equivalent set of steps. The creation of the EKTField MUST
+          precede the normal SRTP packet processing.</t>
 
           <t>
             <list style="numbers">
@@ -365,28 +362,28 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               encryption process is detailed in 
               <xref target="cipher"></xref>.</t>
 
-              <t>Then the FullEKTField is formed using the EKTCiphertext and 
-              the SPI associated with the EKTKey used above. Also appended are
-              the Length and Message Type using the FullEKTField format.
+              <t>Then the FullEKTField is formed using the
+              EKTCiphertext and the SPI associated with the EKTKey used
+              above. Also appended are the Length and Message Type
+              using the FullEKTField format. 
               <list style="empty">
 
                 <t>Note: the value of the EKTCiphertext field is
                 identical in successive packets protected by the same
-                EKTKey and SRTP master key. This value MAY be cached by an
-                SRTP sender to minimize computational effort.</t>
-              </list>The computed value of the FullEKTField is
-              written into the packet.</t>
+                EKTKey and SRTP master key. This value MAY be cached by
+                an SRTP sender to minimize computational effort.</t>
+              </list>The computed value of the FullEKTField is written
+              into the packet.</t>
             </list>
           </t>
 
-          <t>When a packet is sent with the Short EKT Field, the ShortEKFField is 
-          simply appended to the packet.</t>
+          <t>When a packet is sent with the Short EKT Field, the
+          ShortEKFField is simply appended to the packet.</t>
         </section>
         <section anchor="inbound" title="Inbound Processing">
 
-          <t>When receiving a packet on a RTP stream,
-          the following steps are applied for each received
-          packet.</t>
+          <t>When receiving a packet on a RTP stream, the following
+          steps are applied for each received packet.</t>
 
           <t>
             <list style="numbers">
@@ -396,55 +393,54 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               ShortEKTField, the ShortEKTField is removed from the
               packet then normal SRTP or SRTCP processing occurs. If
               the packet contains a FullEKTField, then processing
-              continues as described below.
-              The reason for using the last byte of the packet to
-              indicate the type is that the length of the SRTP or
-              SRTCP part is not known until the decryption has
-              occurred. At this point in the processing, there is no
-              easy way to know where the EKT field would
-              start. However, the whole UDP packet has been received
-              so instead of the starting at the front of the packet,
-              the parsing works backwards off the end of the packet and
-              thus the type is put at the very end of the packet.
-              </t>
+              continues as described below. The reason for using the
+              last byte of the packet to indicate the type is that the
+              length of the SRTP or SRTCP part is not known until the
+              decryption has occurred. At this point in the processing,
+              there is no easy way to know where the EKT field would
+              start. However, the whole UDP packet has been received so
+              instead of the starting at the front of the packet, the
+              parsing works backwards off the end of the packet and
+              thus the type is put at the very end of the packet.</t>
 
               <t>The Security Parameter Index (SPI) field is used to
-              find which EKT parameter set to be used when
-              processing the packet. If there is no matching SPI, then
-              the verification function MUST return an indication of
+              find which EKT parameter set to be used when processing
+              the packet. If there is no matching SPI, then the
+              verification function MUST return an indication of
               authentication failure, and the steps described below are
-              not performed. The EKT parameter set contains the EKTKey, EKTCipher, and 
-              SRTP Master Salt.</t>
+              not performed. The EKT parameter set contains the EKTKey,
+              EKTCipher, and SRTP Master Salt.</t>
 
               <t>The EKTCiphertext authentication is checked and it is
               decrypted, as described in 
-              <xref target="cipher" />, using the EKTKey and EKTCipher 
+              <xref target="cipher" />, using the EKTKey and EKTCipher
               found in the previous step. If the EKT decryption
               operation returns an authentication failure, then the
               packet processing stops.</t>
 
               <t>The resulting EKTPlaintext is parsed as described in 
               <xref target="EKT" />, to recover the SRTP Master Key,
-              SSRC, and ROC fields. The SRTP Master Salt that is associated
-              with the EKTKey is also retrieved. If the value of the 
-              srtp_master_salt sent as part of the EKTkey is longer than 
-              needed by SRTP, then it is truncated by taking the first N bytes 
-              from the srtp_master_salt field.</t>
+              SSRC, and ROC fields. The SRTP Master Salt that is
+              associated with the EKTKey is also retrieved. If the
+              value of the srtp_master_salt sent as part of the EKTkey
+              is longer than needed by SRTP, then it is truncated by
+              taking the first N bytes from the srtp_master_salt
+              field.</t>
 
-              <t> If the SSRC in the EKTPlaintext does not match the
+              <t>If the SSRC in the EKTPlaintext does not match the
               SSRC of the SRTP packet, then all the information from
               this EKTPlaintext MUST be discarded and the following
-              steps in this list are not done. </t>
+              steps in this list are not done.</t>
 
               <t>The SRTP Master Key, ROC, and SRTP Master Salt from
               the previous step are saved in a map indexed by the SSRC
               found in the EKTPlaintext and can be used for any future
-              crypto operations on the inbound  packets with
-              that SSRC. Outbound packets SHOULD continue to use the
-              old SRTP Master Key for 250 ms after sending any new key. 
-              This gives all the receivers in the system time to
-              get the new key before they start receiving media
-              encrypted with the new key.</t>
+              crypto operations on the inbound packets with that SSRC.
+              Outbound packets SHOULD continue to use the old SRTP
+              Master Key for 250 ms after sending any new key. This
+              gives all the receivers in the system time to get the new
+              key before they start receiving media encrypted with the
+              new key.</t>
 
               <t>At this point, EKT processing has successfully
               completed, and the normal SRTP or SRTCP processing takes
@@ -453,48 +449,43 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           </t>
         </section>
       </section>
-
       <section anchor="inbound_impl_notes"
-               title="Implementation Notes">
+      title="Implementation Notes">
 
-            <t>The value of the EKTCiphertext field is identical in
-            successive packets protected by the same EKT parameter set
-            and the same SRTP master key, and ROC. This ciphertext
-            value MAY be cached by an SRTP receiver to minimize
-            computational effort by noting when the SRTP master key is
-            unchanged and avoiding repeating the above steps.</t>
+        <t>The value of the EKTCiphertext field is identical in
+        successive packets protected by the same EKT parameter set and
+        the same SRTP master key, and ROC. This ciphertext value MAY be
+        cached by an SRTP receiver to minimize computational effort by
+        noting when the SRTP master key is unchanged and avoiding
+        repeating the above steps.</t>
 
-            <t>The receiver may want to have a sliding window to retain
-            old SRTP master keys (and related context) for some brief
-            period of time, so that out of order packets can be
-            processed as well as packets sent during the time keys are
-            changing.</t>
+        <t>The receiver may want to have a sliding window to retain old
+        SRTP master keys (and related context) for some brief period of
+        time, so that out of order packets can be processed as well as
+        packets sent during the time keys are changing.</t>
 
-            <t> When receiving a new EKTKey, implementations need to use
-            the ekt_ttl to create a time after which this key cannot
-            be used and they also need to create a counter that keeps
-            track of how many times the keys has been used to encrypt
-            data to ensure it does not exceed the T value for that
-            cipher. If either of these limits are exceeded, the key
-            can no longer be used for encryption. At this point
-            implementation need to either use the call signaling to
-            renegotiation a new session or need to terminate the
-            existing session. Terminating the session is a reasonable
-            implementation choice because these limits should not be
-            exceeded except under an attack or error condition.  </t>
-            
+        <t>When receiving a new EKTKey, implementations need to use the
+        ekt_ttl to create a time after which this key cannot be used
+        and they also need to create a counter that keeps track of how
+        many times the keys has been used to encrypt data to ensure it
+        does not exceed the T value for that cipher. If either of these
+        limits are exceeded, the key can no longer be used for
+        encryption. At this point implementation need to either use the
+        call signaling to renegotiation a new session or need to
+        terminate the existing session. Terminating the session is a
+        reasonable implementation choice because these limits should
+        not be exceeded except under an attack or error condition.</t>
       </section>
-
       <section anchor="cipher" title="Ciphers">
 
         <t>EKT uses an authenticated cipher to encrypt and authenticate
-        the EKTPlaintext. This specification defines the interface to the
-        cipher, in order to abstract the interface away from the
+        the EKTPlaintext. This specification defines the interface to
+        the cipher, in order to abstract the interface away from the
         details of that function. This specification also defines the
-        default cipher that is
-        used in EKT. The default cipher described in 
+        default cipher that is used in EKT. The default cipher
+        described in 
         <xref target="DefaultCipher"></xref> MUST be implemented, but
-        another cipher that conforms to this interface MAY be used.</t>  
+        another cipher that conforms to this interface MAY be used.</t>
 
         <t>An EKTCipher consists of an encryption function and a
         decryption function. The encryption function E(K, P) takes the
@@ -504,7 +495,6 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           <t>a secret key K with a length of L bytes, and</t>
 
           <t>a plaintext value P with a length of M bytes.</t>
-          
         </list>The encryption function returns a ciphertext value C
         whose length is N bytes, where N may be larger than M. The
         decryption function D(K, C) takes the following inputs: 
@@ -513,20 +503,18 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           <t>a secret key K with a length of L bytes, and</t>
 
           <t>a ciphertext value C with a length of N bytes.</t>
-          
         </list>The decryption function returns a plaintext value P that
-        is M bytes long, or returns an indication that the
-        decryption operation failed because the ciphertext was invalid
-        (i.e. it was not generated by the encryption of plaintext with
-        the key K).</t>
+        is M bytes long, or returns an indication that the decryption
+        operation failed because the ciphertext was invalid (i.e. it
+        was not generated by the encryption of plaintext with the key
+        K).</t>
 
-        <t>These functions have the property that D(K, E(K, P)) = P
-        for all values of K and P.
-        Each cipher also has a limit T on the number of times that it
-        can be used with any fixed key value. The EKTKey MUST NOT be
-        used for encryption more that T times. Note that if the same
-        FullEKTField is retransmitted 3 times, that only counts as 1
-        encryption. </t>
+        <t>These functions have the property that D(K, E(K, P)) = P for
+        all values of K and P. Each cipher also has a limit T on the
+        number of times that it can be used with any fixed key value.
+        The EKTKey MUST NOT be used for encryption more that T times.
+        Note that if the same FullEKTField is retransmitted 3 times,
+        that only counts as 1 encryption.</t>
 
         <t>Security requirements for EKT ciphers are discussed in 
         <xref target="sec" />.</t>
@@ -557,7 +545,6 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           <t>As AES-128 is the mandatory to implement transform in 
           <xref target="RFC3711">SRTP</xref>, AESKW128 MUST be
           implemented for EKT and AESKW256 MAY be implemented.</t>
-          
         </section>
         <section title="Defining New EKT Ciphers">
 
@@ -572,20 +559,20 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           are free to use this field in any way, but they SHOULD NOT
           use other EKT or SRTP fields as an input. The values of the
           parameters L, and T MUST be defined by each EKTCipher. The
-          cipher MUST provide integrity protection. </t>
-          
+          cipher MUST provide integrity protection.</t>
         </section>
       </section>
       <section anchor="SynchronizingOperation"
       title="Synchronizing Operation">
 
-        <t>If a source has its EKTKey changed by the key management,
-        it MUST also change its SRTP master key, which will cause it to
+        <t>If a source has its EKTKey changed by the key management, it
+        MUST also change its SRTP master key, which will cause it to
         send out a new FullEKTField. This ensures that if key
         management thought the EKTKey needs changing (due to a
-        participant leaving or joining) and communicated that to a source, 
-        the source will also change its SRTP master key, so that traffic can be 
-        decrypted only by those who know the current EKTKey.</t>
+        participant leaving or joining) and communicated that to a
+        source, the source will also change its SRTP master key, so
+        that traffic can be decrypted only by those who know the
+        current EKTKey.</t>
       </section>
       <section anchor="srtp" title="Transport">
 
@@ -601,8 +588,8 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
 
         <t>A system using EKT learns the SRTP master keys distributed
         with FullEKTFields sent with the SRTP, rather than with call
-        signaling. A receiver can immediately decrypt an SRTP packet, provided
-        the SRTP packet contains a Full EKT Field.</t>
+        signaling. A receiver can immediately decrypt an SRTP packet,
+        provided the SRTP packet contains a Full EKT Field.</t>
 
         <t>This section describes how to reliably and expediently
         deliver new SRTP master keys to receivers.</t>
@@ -626,18 +613,18 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
           <t hangText="Rekey:">By sending EKT over SRTP, the rekeying
           event shares fate with the SRTP packets protected with that
           new SRTP master key. To accommodate packet loss, it is
-          RECOMMENDED that three consecutive packets contain the FullEKTField 
-          be transmitted.</t>
+          RECOMMENDED that three consecutive packets contain the
+          FullEKTField be transmitted.</t>
           <t hangText="New receiver:">When a new receiver joins a
           session it does not need to communicate its sending SRTP
           master key (because it is a receiver). When a new receiver
           joins a session the sender is generally unaware of the
           receiver joining the session. Thus, senders SHOULD
-          periodically transmit the FullEKTField. That interval
-          depends on how frequently new receivers join the session, the
+          periodically transmit the FullEKTField. That interval depends
+          on how frequently new receivers join the session, the
           acceptable delay before those receivers can start processing
-          SRTP packets, and the acceptable overhead of sending the FullEKT Field. 
-          If sending audio and video, the RECOMMENDED
+          SRTP packets, and the acceptable overhead of sending the
+          FullEKT Field. If sending audio and video, the RECOMMENDED
           frequency is the same as the rate of intra coded video
           frames. If only sending audio, the RECOMMENDED frequency is
           every 100ms.</t>
@@ -724,24 +711,24 @@ struct {
         message. If a DTLS client includes "srtp_ekt_key_transport" in
         its ClientHello, but does not receive "srtp_ekt_key_transport"
         in the ServerHello, the DTLS client MUST NOT send DTLS
-        EKTMessage messages. Also, the "srtp_ekt_key_transport" in the 
-        ServerHello MUST select one and only one EKTCipherType from the 
-        list provided by the client in the "srtp_ekt_key_transport" in the 
-        ClientHello.</t>
+        EKTMessage messages. Also, the "srtp_ekt_key_transport" in the
+        ServerHello MUST select one and only one EKTCipherType from the
+        list provided by the client in the "srtp_ekt_key_transport" in
+        the ClientHello.</t>
 
         <t>When a DTLS client sends the "srtp_ekt_key_transport" in its
         ClientHello message, it MUST include the SupportedEKTCiphers as
-        the extension_data for the extension, listing the EKTCipherTypes 
-        the client is willing to use in preference order, with
-        the most preferred version first. When the server responds in
-        the "srtp_ekt_key_transport" in its ServerHello message, it
-        MUST include a SupportedEKTCiphers list that selects a single
-        EKTCipherType to use (selected from the list provided by
-        the client) or it returns an empty list to indicate there is no
-        matching EKTCipherType in the clients list that the server is also
-        willing to use. The value to be used in the EKTCipherType for future
-        extensions that define new ciphers is the value from the "EKT
-        Ciphers Type" IANA registry defined in 
+        the extension_data for the extension, listing the
+        EKTCipherTypes the client is willing to use in preference
+        order, with the most preferred version first. When the server
+        responds in the "srtp_ekt_key_transport" in its ServerHello
+        message, it MUST include a SupportedEKTCiphers list that
+        selects a single EKTCipherType to use (selected from the list
+        provided by the client) or it returns an empty list to indicate
+        there is no matching EKTCipherType in the clients list that the
+        server is also willing to use. The value to be used in the
+        EKTCipherType for future extensions that define new ciphers is
+        the value from the "EKT Ciphers Type" IANA registry defined in 
         <xref target="iana-ciphers" />.</t>
 
         <t>The figure above defines the contents for a new TLS content
@@ -767,8 +754,8 @@ struct {
         <t>When the Server wishes to provide a new EKT Key, it can send
         EKTMessage containing an EKTKey with the new key information.
         The client MUST respond with an EKTMessage of type ekt_key_ack,
-        if the EKTKey was successfully processed and stored or
-        respond with the the ekt_key_error EKTMessage otherwise.</t>
+        if the EKTKey was successfully processed and stored or respond
+        with the the ekt_key_error EKTMessage otherwise.</t>
 
         <t>The diagram below shows a message flow of DTLS client and
         DTLS server using the DTLS-SRTP Key Transport extension.</t>
@@ -838,27 +825,26 @@ SRTP packets                 <------->      SRTP packets
       other SRTP master keys.</t>
 
       <t>The EKT Cipher includes its own authentication/integrity
-      check. For an attacker to successfully forge a FullEKTField,
-      it would need to defeat the authentication mechanisms of the EKT
-      Cipher authentication mechanism. </t>
+      check. For an attacker to successfully forge a FullEKTField, it
+      would need to defeat the authentication mechanisms of the EKT
+      Cipher authentication mechanism.</t>
 
       <t>The presence of the SSRC in the EKTPlaintext ensures that an
       attacker cannot substitute an EKTCiphertext from one SRTP stream
       into another SRTP stream.</t>
 
-     <t>An attacker who tampers with the bits in FullEKTField can
-     prevent the intended receiver of that packet from being able to
-     decrypt it. This is a minor denial of service
-     vulnerability. Similarly the attacker could take an old
-     FullEKTField from the same session and attach it to the
-     packet. The FullEKTField would correctly decode and pass
-     integrity but the key extracted from the FullEKTField , when used
-     to decrypt the SRTP payload, would be wrong and the SRTP
-     integrity check would fail. Note that the FullEKTField only
-     changes the decryption key and does not change the
-     encryption key. None of these are considered significant attacks
-     as any attacker that can modify the packets in transit and cause
-     the integrity check to fail. </t>
+      <t>An attacker who tampers with the bits in FullEKTField can
+      prevent the intended receiver of that packet from being able to
+      decrypt it. This is a minor denial of service vulnerability.
+      Similarly the attacker could take an old FullEKTField from the
+      same session and attach it to the packet. The FullEKTField would
+      correctly decode and pass integrity but the key extracted from
+      the FullEKTField , when used to decrypt the SRTP payload, would
+      be wrong and the SRTP integrity check would fail. Note that the
+      FullEKTField only changes the decryption key and does not change
+      the encryption key. None of these are considered significant
+      attacks as any attacker that can modify the packets in transit
+      and cause the integrity check to fail.</t>
 
       <t>An attacker could send packets containing a Full EKT Field, in
       an attempt to consume additional CPU resources of the receiving
@@ -869,11 +855,11 @@ SRTP packets                 <------->      SRTP packets
       issue.</t>
 
       <t>Each EKT cipher specifies a value T that is the maximum number
-      of times a given key can be used. An endpoint MUST NOT encrypt more
-      than T different Full EKT Field using the same EKTKey.
-      In addition, the EKTKey MUST NOT be used beyond the lifetime
-      provided by the TTL described in <xref
-      target="dtls-srtp-extensions"/>.</t>
+      of times a given key can be used. An endpoint MUST NOT encrypt
+      more than T different Full EKT Field using the same EKTKey. In
+      addition, the EKTKey MUST NOT be used beyond the lifetime
+      provided by the TTL described in 
+      <xref target="dtls-srtp-extensions" />.</t>
 
       <t>The confidentiality, integrity, and authentication of the EKT
       cipher MUST be at least as strong as the SRTP cipher and at least
@@ -897,15 +883,13 @@ SRTP packets                 <------->      SRTP packets
       particular endpoint and that endpoint would keep sending media
       encrypted using the old key. To mitigate that risk, the lifetime
       of the EKTKey SHOULD be limited using the ekt_ttl.</t>
-      
     </section>
     <section anchor="iana" title="IANA Considerations">
       <section anchor="iana-ekt-msg-types" title="EKT Message Types">
 
         <t>IANA is requested to create a new table for "EKT Messages
         Types" in the "Real-Time Transport Protocol (RTP) Parameters"
-        registry.
-        The initial values in this registry are:</t>
+        registry. The initial values in this registry are:</t>
         <texttable anchor="EKTMsgTypeTable" title="EKT Messages Types">
           <ttcol align='left'>Message Type</ttcol>
           <ttcol align='right'>Value</ttcol>
@@ -933,20 +917,18 @@ SRTP packets                 <------->      SRTP packets
         requestor needs to indicate if it is mandatory to understand or
         not. If it is mandatory to understand, IANA needs to allocate a
         value less than 64, if it is not mandatory to understand, a
-        value greater than or equal to 64 needs to be allocated. IANA SHOULD prefer
-        allocation of even values over odd ones until the even code
-        points are consumed to avoid conflicts with pre standard
-        versions of EKT that have been deployed.</t>
+        value greater than or equal to 64 needs to be allocated. IANA
+        SHOULD prefer allocation of even values over odd ones until the
+        even code points are consumed to avoid conflicts with pre
+        standard versions of EKT that have been deployed.</t>
 
-        <t> All new EKT messages MUST be defined to have a length as
-        second from the last element. </t>
-          
+        <t>All new EKT messages MUST be defined to have a length as
+        second from the last element.</t>
       </section>
       <section anchor="iana-ciphers" title="EKT Ciphers">
 
-        <t>IANA is requested to create a new table for "EKT
-        Ciphers"  in the "Real-Time Transport Protocol (RTP) Parameters"
-        registry.
+        <t>IANA is requested to create a new table for "EKT Ciphers" in
+        the "Real-Time Transport Protocol (RTP) Parameters" registry.
         The initial values in this registry are:</t>
         <texttable anchor="EKTCipherTable" title="EKT Cipher Types">
           <ttcol align='left'>Name</ttcol>
@@ -969,8 +951,9 @@ SRTP packets                 <------->      SRTP packets
         <t>New entries to this table can be added via "Specification
         Required" as defined in 
         <xref target="RFC5226" />. The expert SHOULD ensure the
-        specification defines the values for L and T as required in
-        <xref target="cipher"/> of RFCAAA. Allocated values MUST be in the range of 1 to 254.</t>
+        specification defines the values for L and T as required in 
+        <xref target="cipher" /> of RFCAAA. Allocated values MUST be in
+        the range of 1 to 254.</t>
       </section>
       <section anchor="iana-tls-ext" title="TLS Extensions">
 
@@ -1004,12 +987,11 @@ SRTP packets                 <------->      SRTP packets
 
       <t>Thank you to Russ Housley provided detailed review and
       significant help with crafting text for this document. Thanks to
-      David Benham, Yi Cheng, Lakshminath Dondeti, Kai Fischer,
-      Nermeen Ismail, Paul Jones, Eddy Lem, Jonathan Lennox, Michael
-      Peck, Rob Raymond, Sean Turner, Magnus Westerlund, and Felix
-      Wyss for fruitful discussions, comments, and contributions to
-      this document.</t>
-
+      David Benham, Yi Cheng, Lakshminath Dondeti, Kai Fischer, Nermeen
+      Ismail, Paul Jones, Eddy Lem, Jonathan Lennox, Michael Peck, Rob
+      Raymond, Sean Turner, Magnus Westerlund, and Felix Wyss for
+      fruitful discussions, comments, and contributions to this
+      document.</t>
     </section>
   </middle>
   <back>
