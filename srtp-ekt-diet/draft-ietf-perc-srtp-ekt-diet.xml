@@ -1006,16 +1006,9 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='1997' month='March' />
-          <abstract>
+       
 
-            <t>In many standards track documents several words are used
-            to signify the requirements in the specification. These
-            words are often capitalized. This document defines these
-            words as they should be interpreted in IETF documents. This
-            document specifies an Internet Best Current Practices for
-            the Internet Community, and requests discussion and
-            suggestions for improvements.</t>
-          </abstract>
+      
         </front>
         <seriesInfo name='BCP' value='14' />
         <seriesInfo name='RFC' value='2119' />
@@ -1045,15 +1038,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2004' month='March' />
-          <abstract>
-
-            <t>This document describes the Secure Real-time Transport
-            Protocol (SRTP), a profile of the Real-time Transport
-            Protocol (RTP), which can provide confidentiality, message
-            authentication, and replay protection to the RTP traffic
-            and to the control traffic for RTP, the Real-time Transport
-            Control Protocol (RTCP). [STANDARDS-TRACK]</t>
-          </abstract>
+       
         </front>
         <seriesInfo name='RFC' value='3711' />
         <seriesInfo name='DOI' value='10.17487/RFC3711' />
@@ -1075,34 +1060,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2005' month='June' />
-          <abstract>
-
-            <t>Security systems are built on strong cryptographic
-            algorithms that foil pattern analysis attempts. However,
-            the security of these systems is dependent on generating
-            secret quantities for passwords, cryptographic keys, and
-            similar quantities. The use of pseudo-random processes to
-            generate secret quantities can result in pseudo-security. A
-            sophisticated attacker may find it easier to reproduce the
-            environment that produced the secret quantities and to
-            search the resulting small set of possibilities than to
-            locate the quantities in the whole of the potential number
-            space.</t>
-
-            <t>Choosing random quantities to foil a resourceful and
-            motivated adversary is surprisingly difficult. This
-            document points out many pitfalls in using poor entropy
-            sources or traditional pseudo-random number generation
-            techniques for generating such quantities. It recommends
-            the use of truly random hardware techniques and shows that
-            the existing hardware on many systems can be used for this
-            purpose. It provides suggestions to ameliorate the problem
-            when a hardware solution is not available, and it gives
-            examples of how large such quantities need to be for some
-            applications. This document specifies an Internet Best
-            Current Practices for the Internet Community, and requests
-            discussion and suggestions for improvements.</t>
-          </abstract>
+       
         </front>
         <seriesInfo name='BCP' value='106' />
         <seriesInfo name='RFC' value='4086' />
@@ -1122,15 +1080,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2009' month='September' />
-          <abstract>
-
-            <t>This document specifies a padding convention for use
-            with the AES Key Wrap algorithm specified in RFC 3394. This
-            convention eliminates the requirement that the length of
-            the key to be wrapped be a multiple of 64 bits, allowing a
-            key of any practical length to be wrapped. This memo
-            provides information for the Internet community.</t>
-          </abstract>
+        
         </front>
         <seriesInfo name='RFC' value='5649' />
         <seriesInfo name='DOI' value='10.17487/RFC5649' />
@@ -1148,20 +1098,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2012' month='January' />
-          <abstract>
-
-            <t>This document specifies version 1.2 of the Datagram
-            Transport Layer Security (DTLS) protocol. The DTLS protocol
-            provides communications privacy for datagram protocols. The
-            protocol allows client/server applications to communicate
-            in a way that is designed to prevent eavesdropping,
-            tampering, or message forgery. The DTLS protocol is based
-            on the Transport Layer Security (TLS) protocol and provides
-            equivalent security guarantees. Datagram semantics of the
-            underlying transport are preserved by the DTLS protocol.
-            This document updates DTLS 1.0 to work with TLS version
-            1.2. [STANDARDS-TRACK]</t>
-          </abstract>
+        
         </front>
         <seriesInfo name='RFC' value='6347' />
         <seriesInfo name='DOI' value='10.17487/RFC6347' />
@@ -1179,15 +1116,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2008' month='August' />
-          <abstract>
-
-            <t>This document specifies Version 1.2 of the Transport
-            Layer Security (TLS) protocol. The TLS protocol provides
-            communications security over the Internet. The protocol
-            allows client/server applications to communicate in a way
-            that is designed to prevent eavesdropping, tampering, or
-            message forgery. [STANDARDS-TRACK]</t>
-          </abstract>
+         
         </front>
         <seriesInfo name='RFC' value='5246' />
         <seriesInfo name='DOI' value='10.17487/RFC5246' />
@@ -1224,15 +1153,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2010' month='May' />
-          <abstract>
-
-            <t>This document describes a Datagram Transport Layer
-            Security (DTLS) extension to establish keys for Secure RTP
-            (SRTP) and Secure RTP Control Protocol (SRTCP) flows. DTLS
-            keying happens on the media path, independent of any
-            out-of-band signalling channel present.
-            [STANDARDS-TRACK]</t>
-          </abstract>
+       
         </front>
         <seriesInfo name='RFC' value='5764' />
         <seriesInfo name='DOI' value='10.17487/RFC5764' />
@@ -1250,36 +1171,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2008' month='May' />
-          <abstract>
-
-            <t>Many protocols make use of identifiers consisting of
-            constants and other well-known values. Even after a
-            protocol has been defined and deployment has begun, new
-            values may need to be assigned (e.g., for a new option type
-            in DHCP, or a new encryption or authentication transform
-            for IPsec). To ensure that such quantities have consistent
-            values and interpretations across all implementations,
-            their assignment must be administered by a central
-            authority. For IETF protocols, that role is provided by the
-            Internet Assigned Numbers Authority (IANA).</t>
-
-            <t>In order for IANA to manage a given namespace prudently,
-            it needs guidelines describing the conditions under which
-            new values can be assigned or when modifications to
-            existing values can be made. If IANA is expected to play a
-            role in the management of a namespace, IANA must be given
-            clear and concise instructions describing that role. This
-            document discusses issues that should be considered in
-            formulating a policy for assigning values to a namespace
-            and provides guidelines for authors on the specific text
-            that must be included in documents that place demands on
-            IANA.</t>
-
-            <t>This document obsoletes RFC 2434. This document
-            specifies an Internet Best Current Practices for the
-            Internet Community, and requests discussion and suggestions
-            for improvements.</t>
-          </abstract>
+       
         </front>
         <seriesInfo name='BCP' value='26' />
         <seriesInfo name='RFC' value='5226' />
@@ -1301,21 +1193,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2002' month='June' />
-          <abstract>
-
-            <t>This document defines a mechanism by which two entities
-            can make use of the Session Description Protocol (SDP) to
-            arrive at a common view of a multimedia session between
-            them. In the model, one participant offers the other a
-            description of the desired session from their perspective,
-            and the other participant answers with the desired session
-            from their perspective. This offer/answer model is most
-            useful in unicast sessions where information from both
-            participants is needed for the complete view of the
-            session. The offer/answer model is used by protocols like
-            the Session Initiation Protocol (SIP).
-            [STANDARDS-TRACK]</t>
-          </abstract>
+        
         </front>
         <seriesInfo name='RFC' value='3264' />
         <seriesInfo name='DOI' value='10.17487/RFC3264' />
@@ -1344,20 +1222,7 @@ SRTP packets                 <------->      SRTP packets
             <organization />
           </author>
           <date year='2006' month='April' />
-          <abstract>
-
-            <t>This document describes extensions that may be used to
-            add functionality to Transport Layer Security (TLS). It
-            provides both generic extension mechanisms for the TLS
-            handshake client and server hellos, and specific extensions
-            using these generic mechanisms.</t>
-
-            <t>The extensions may be used by TLS clients and servers.
-            The extensions are backwards compatible: communication is
-            possible between TLS clients that support the extensions
-            and TLS servers that do not support the extensions, and
-            vice versa. [STANDARDS-TRACK]</t>
-          </abstract>
+     
         </front>
         <seriesInfo name='RFC' value='4366' />
         <seriesInfo name='DOI' value='10.17487/RFC4366' />
