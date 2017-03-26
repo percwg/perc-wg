@@ -584,7 +584,7 @@ The fields are described as follows:
 # Example Binary Encoding
 
 The `TunnelMessage` is encoded in binary following the procedures
-specified in [!@RFC5246].  This section provides an example of what
+specified in [@!RFC5246].  This section provides an example of what
 the bits on the wire would look like for the `SupportedProfiles`
 message that advertises support for both
 DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM and
