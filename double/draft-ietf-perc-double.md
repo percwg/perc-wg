@@ -135,9 +135,11 @@ steps:
   inner (end-to-end) and outer (hop-by-hop) transforms.
 
 * Assign the key and salt values generated for the inner (end-to-end)
-  transform.
+  transform to the first half of the key and salt for the double
+  transform. 
 
-* Assign the key and salt values for the outer (hop-by-hop) transform.
+* Assign the key and salt values for the outer (hop-by-hop) transform
+  to the second half of the key and salt for the double transfrom.
   
 Obviously, if the Media Distributor is to be able to modify header
 fields but not decrypt the payload, then it must have cryptographic
