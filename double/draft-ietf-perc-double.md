@@ -244,7 +244,8 @@ context.  The processes is as follows:
   modified by an Media Distributor, it MUST insert an OHB header
   extension at the end of any header extensions protected end-to-end
   (if any), then add any Media Distributor-modifiable header
-  extensions.  The OHB MUST replicate the information found in the RTP
+  extensions.  In other cases, the endpoint SHOULD still insert an OHB
+  header extension. The OHB MUST replicate the information found in the RTP
   header following the application of the inner cryptographic
   transform.  If not already set, the endpoint MUST set the X bit in
   the RTP header to 1 when introducing the OHB extension.
