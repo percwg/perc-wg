@@ -430,7 +430,7 @@ key. This HBH for the outgoing packet is typically different than the
 HBH key for the incoming packet.
 
 The receiver can check the authentication of the initial and extra
-envelope information.  This, along with the OBH, is used to construct
+envelope information.  This, along with the OHB, is used to construct
 a synthetic packet that is should be identical to one the sender
 created and the receiver can check that it is identical and then
 decrypt the original payload.
