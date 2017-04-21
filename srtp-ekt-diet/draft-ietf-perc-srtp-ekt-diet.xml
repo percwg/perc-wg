@@ -145,7 +145,7 @@ ipr="trust200902">
       distributor or conference bridge can not decrypt the media, such
       as the type defined for <xref
       target="I-D.ietf-perc-private-media-framework" />. It can also
-      be used in a for large scale conferences where the conference
+      be used for large scale conferences where the conference
       bridge or media distributor can decrypt all the media but wishes
       to encrypt the media it is sending just once then send the same
       encrypted media to a large number of participants. This reduces
