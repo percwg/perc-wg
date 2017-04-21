@@ -152,7 +152,27 @@ ipr="trust200902">
 
       <section title="Overview">
 
-        <t> TODO </t>
+        <t> This specification defines a way for the server in a
+        DTLS-SRTP negotiation to provide an ekt_key to the client
+        during the DTLS handshake. This ekt_key can be used to encrypt
+        the SRTP master key used to encrypt the media the endpoint
+        sends. This specification also defines a way to send the
+        encrypted SRTP master key along with the SRTP
+        packet. Endpoints that receive this and know the ekt_key can
+        use the ekt_key to decrypt the SRTP master key then use the
+        SRTP master key to decrypt the SRTP packet.
+        </t>
+
+        <t> One way to use this is used is described in the
+        architecture defined by <xref
+        target="I-D.ietf-perc-private-media-framework" />. Each
+        participants in the conference call forms a DTLS-SRTP
+        connection to a common key distributor that gives all the
+        endpoints the same ekt_key. Then each endpoint picks there own
+        SRTP master key for the media they send. When sending media,
+        the endpoint also includse the SRTP master key encrypted with
+        the ekt_key. This allows all the endpoints to decrypt the
+        media. </t>
         
       </section>
       
@@ -1186,6 +1206,33 @@ SRTP packets                 <------->      SRTP packets
       </reference>
     </references>
     <references title="Informative References">
+
+      <reference anchor='I-D.ietf-perc-private-media-framework'>
+        <front>
+          <title>A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing</title>
+          
+          <author initials='P' surname='Jones' fullname='Paul Jones'>
+            <organization />
+          </author>
+          
+          <author initials='D' surname='Benham' fullname='David Benham'>
+            <organization />
+          </author>
+          
+          <author initials='C' surname='Groves' fullname='Christian Groves'>
+            <organization />
+          </author>
+          
+          <date month='October' day='31' year='2016' />
+          
+        </front>
+        
+        <seriesInfo name='Internet-Draft' value='draft-ietf-perc-private-media-framework-02' />
+        <format type='TXT'
+        target='http://www.ietf.org/internet-drafts/draft-ietf-perc-private-media-framework-02.txt' />
+      </reference>
+      
+      
       <reference anchor='RFC3264'
       target='http://www.rfc-editor.org/info/rfc3264'>
         <front>
