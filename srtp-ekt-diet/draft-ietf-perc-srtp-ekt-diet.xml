@@ -141,6 +141,18 @@ ipr="trust200902">
       session. This data furnishes the information needed by the
       receiver to instantiate an SRTP/SRTCP receiver context.</t>
 
+      <t>EKT can be used in conferences where the central media
+      distributor or conference bridge can not decrypt the media, such
+      as the type defined for <xref
+      target="I-D.ietf-perc-private-media-framework" />. It can also
+      be used in a for large scale conferences where the conference
+      bridge or media distributor can decrypt all the media but wishes
+      to encrypt the media it is sending just once then send the same
+      encrypted media to a large number of participants. This reduces
+      the amount of CPU time needed for encryption and can be used
+      for some optimization to media sending that use source specific
+      multicast.</t>
+
       <t>EKT does not control the manner in which the SSRC is
       generated; it is only concerned with their secure transport.</t>
 
@@ -1179,6 +1191,34 @@ SRTP packets                 <------->      SRTP packets
       </reference>
     </references>
     <references title="Informative References">
+
+
+      <reference anchor='I-D.ietf-perc-private-media-framework'>
+        <front>
+          <title>A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing</title>
+          
+          <author initials='P' surname='Jones' fullname='Paul Jones'>
+            <organization />
+          </author>
+          
+          <author initials='D' surname='Benham' fullname='David Benham'>
+            <organization />
+          </author>
+          
+          <author initials='C' surname='Groves' fullname='Christian Groves'>
+            <organization />
+          </author>
+          
+          <date month='October' day='31' year='2016' />
+          
+        </front>
+        
+        <seriesInfo name='Internet-Draft' value='draft-ietf-perc-private-media-framework-02' />
+        <format type='TXT'
+                target='http://www.ietf.org/internet-drafts/draft-ietf-perc-private-media-framework-02.txt' />
+      </reference>
+      
+      
       <reference anchor='RFC3264'
       target='http://www.rfc-editor.org/info/rfc3264'>
         <front>
