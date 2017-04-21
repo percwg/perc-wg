@@ -76,7 +76,7 @@ for the media flowing between the Media Distributor and the endpoints.
 See the framework document that describes this concept in more detail
 in more detail in [@I-D.ietf-perc-private-media-framework].
 
-This specification RECOMMENDS the SRTP AES-GCM transform [@!RFC7714]
+This specification defines an SRTP transfrom that uses the AES-GCM transform [@!RFC7714]
 to encrypt an RTP packet for the end-to-end cryptographic context.
 The output of this is treated as an RTP packet and again encrypted
 with an SRTP transform used in the hop-by-hop cryptographic context
@@ -92,6 +92,10 @@ cryptographic transform and then replaces any parameters the Media
 Distributor changed using the information in the Original Header Block
 before decrypting and checking the end-to-end integrity.
 
+One can think of the double as a normal SRTP transfrom as encrypting
+the RTP in a way where things that only know half of the key, can
+decrypt and modify part of the RTP packet but not other parts of if
+including the media payload.
 
 # Terminology
 
@@ -122,10 +126,12 @@ This specification uses two cryptographic contexts: an inner
 consume media to ensure the integrity of media end-to-end, and an
 outer ("hop-by-hop") context that is used between endpoints and Media
 Distributors to ensure the integrity of media over a single hop and to
-enable a Media Distributor to modify certain RTP header fields.  RTCP
-is also encrypted using the hop-by-hop cryptographic context.  The
-RECOMMENDED cipher for the hop-by-hop and end-to-end contexts is
-AES-GCM.  Other combinations of SRTP ciphers that support the
+enable a Media Distributor to modify certain RTP header fields. Some
+packets can be encrypted with only the outer context my marking them
+for single encryption. Packets that cary payloads that are already end
+to end encrypted, such as RTX and FEC SHOULD be marked for single
+encryption. RTCP packets MUST be marked for single encryption.
+Other combinations of SRTP ciphers that support the
 procedures in this document can be added to the IANA registry.
 
 The keys and salt for these contexts are generated with the following
@@ -143,8 +149,9 @@ Obviously, if the Media Distributor is to be able to modify header
 fields but not decrypt the payload, then it must have cryptographic
 context for the outer transform, but not the inner transform.  This
 document does not define how the Media Distributor should be
-provisioned with this information.  One possible way to provide keying
-material for the outer ("hop-by-hop") transform is to use
+provisioned with this information.  One possible way to provide the
+half of the keying
+material that corresponds to the  the outer ("hop-by-hop") is to use
 [@I-D.ietf-perc-dtls-tunnel].
 
 
@@ -179,12 +186,11 @@ value.  In this case, the OHB has this form:
  0                   1
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
 +-+-+-+-+-+-+-+-+---------------+
-|  ID   | len=0 |R|     PT      |
+|  ID   | len=0 |S|     PT      |
 +-+-+-+-+-+-+-+-+---------------+
 ~~~~~
 
-Note that "R" indicates a reserved bit that MUST be set to zero when
-sending a packet and ignored upon receipt. ID is the RTP Header
+Note that "S" indicates the "single-encrypt" bit. ID is the RTP Header
 Extension identifier negotiated in the SDP. 
 
 If the OHB is two octets in length, it contains the original RTP
@@ -235,19 +241,24 @@ context.  The processes is as follows:
 * Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-* Apply the inner cryptographic transform to the RTP packet.  If
+* If the packet is not marked for single encryption,
+  apply the inner cryptographic transform to the RTP packet.  If
   encrypting RTP header extensions end-to-end, then [@!RFC6904] MUST
   be used when encrypting the RTP packet using the inner cryptographic
   context.
   
-* If the endpoint wishes to insert header extensions that can be
+* The next steps it to insert an OHB header extension.
+  If the endpoint wishes to insert header extensions that can be
   modified by an Media Distributor, it MUST insert an OHB header
   extension at the end of any header extensions protected end-to-end
   (if any), then add any Media Distributor-modifiable header
-  extensions.  The OHB MUST replicate the information found in the RTP
+  extensions after the OHB.
+  The OHB MUST replicate the information found in the RTP
   header following the application of the inner cryptographic
   transform.  If not already set, the endpoint MUST set the X bit in
-  the RTP header to 1 when introducing the OHB extension.
+  the RTP header to 1 when introducing the OHB extension. If the
+  packet was marked for single encryption, then the single-encrypt bit in the OBH
+  MUST be set to 1 and otherwise it MUST be set to zero. 
 
 * Apply the outer cryptographic transform to the RTP packet.  If
   encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
@@ -260,11 +271,9 @@ transform.
 
 ## Relaying a Packet
 
-The Media Distributor does not have a notion of outer or inner
-cryptographic contexts.  Rather, the Media Distributor has a single
-cryptographic context.  The cryptographic transform and key used to
-decrypt a packet and any encrypted RTP header extensions would be the
-same as those used in the endpoint's outer cryptographic context.
+The Media Distributor only has half the key so it only has data for
+the  the outer
+cryptographic contexts. 
 
 In order to modify a packet, the Media Distributor decrypts the
 packet, modifies the packet, updates the OHB with any modifications
@@ -341,7 +350,8 @@ cryptographic context.
 
   * Payload is the encrypted payload from the outer SRTP packet.
 
-* Apply the inner cryptographic transform to this synthetic SRTP
+* If the sinlge-encrypt" bit is not set in the OHB,
+  apply the inner cryptographic transform to this synthetic SRTP
   packet.  Note if the RTP Sequence Number was changed by the Media
   Distributor, the synthetic packet has the original Sequence
   Number. If the integrity check does not pass, discard the packet.
@@ -370,10 +380,8 @@ SRTP packet, they MAY be used:
 # RTCP Operations
 
 Unlike RTP, which is encrypted both hop-by-hop and end-to-end using
-two separate cryptographic contexts, RTCP is encrypted using only the
-outer (HBH) cryptographic context.  The procedures for RTCP encryption
-are specified in [@!RFC3711] and this document introduces no
-additional steps.
+two separate cryptographic contexts, RTCP MUST be marked for single
+encryption. 
 
 
 # Recommended Inner and Outer Cryptographic Transforms
