@@ -148,6 +148,14 @@ ipr="trust200902">
       mechanisms. Instead, it is used in conjunction with those
       methods, and it relieves those methods of the burden to deliver
       the context for each SRTP source to every SRTP participant.</t>
+      </section>
+
+      <section title="Overview">
+
+        <t> TODO </t>
+        
+      </section>
+      
       <section title="Conventions Used In This Document">
 
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
@@ -155,7 +163,6 @@ ipr="trust200902">
         "OPTIONAL" in this document are to be interpreted as described
         in <xref target="RFC2119"></xref>.</t>
         
-      </section>
     </section>
     <section anchor="normative" title="Encrypted Key Transport">
 
