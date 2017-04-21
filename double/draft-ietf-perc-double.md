@@ -351,7 +351,7 @@ cryptographic context.
 
 Once the packet has been successfully decrypted, the application needs
 to be careful about which information it uses to get the correct
-behavior.  The application MUST use only the information found in the
+behaviour.  The application MUST use only the information found in the
 synthetic SRTP packet and MUST NOT use the other data that was in the
 outer SRTP packet with the following exceptions:
 
