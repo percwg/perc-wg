@@ -11,7 +11,7 @@
     Title = "DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
-    docName = "draft-ietf-perc-dtls-tunnel-00"
+    docName = "draft-ietf-perc-dtls-tunnel-01"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
@@ -57,6 +57,14 @@
     # Revision History
     #   00 - Minor editorial corrections
     #        Draft re-named to be WG document
+    #   01 - Changes based on discussion at IETF 98
+    #          - Use tls-id and remove conf_id
+    #          - Move version field to SupportedProfiles
+    #          - Indicate highest supported version in UnsupportedVersion
+    #          - Change the association ID to be a UUID
+    #          - Insert a message length field after msg_type
+    #          - Allow the key distributor to send EndpointDisconnect
+    #        Editorial refinement
     #
 
 %%%
@@ -251,6 +259,18 @@ distributor acting as the server.  The endpoint does not need to be
 aware of the fact that DTLS messages it transmits toward the media
 distributor are being tunneled to the key distributor.
 
+The endpoint **MUST** include the `sdp_tls_id` DTLS extension
+[@!I-D.thomson-mmusic-sdp-uks] in the `ClientHello` message when
+establishing a DTLS association.  Likewise, the `tls-id` SDP [@RFC4566]
+attribute **MUST** be included in SDP sent by the endpoint in both the
+offer and answer [@!RFC3264] messages as per [@!I-D.ietf-mmusic-dtls-sdp].
+
+When receiving a `tls_id` value from the key distributor, the
+client **MUST** check to ensure that value matches the `tls-id` value
+received in SDP.  If the values do not match, the endpoint **MUST**
+consider any received keying material to be invalid and terminate the
+DTLS association.
+
 ## Tunnel Establishment Procedures
 
 Either the media distributor or key distributor initiates the
@@ -276,30 +296,6 @@ between itself and one or more key distributors.  When multiple
 tunnels are established, which tunnel or tunnels to use to send
 messages for a given conference is outside the scope of this document.
 
-## Versioning Considerations
-
-All messages for an established tunnel **MUST** utilize the same
-version value.  If the version of any subsequent message differs from
-that of the initial message, that message **MUST** be discarded and
-the tunnel connection closed.
-
-Since the media distributor sends the first message over the tunnel,
-it effectively establishes the version of the protocol to be used.  If
-that version is not supported by the key distributor, it **MUST**
-discard the message, transmit an `UnsupportedVersion` message, and
-close the TLS connection.
-
-The media distributor **MUST** take note of the version received in an
-`UnsupportedVersion` message and use that version when attempting to
-re-establish a failed tunnel connection.  Note that it is not
-necessary for the media distributor to understand the newer version of
-the protocol to understand that the first message received is
-`UnsupportedVersion`.  The media distributor can determine from the
-first two octets received what the version number is and that the
-message is `UnsupportedVersion`.  The rest of the data received, if
-any, would be discarded and the connection closed (if not already
-closed).
-
 ## Media Distributor Tunneling Procedures
 
 The first message transmitted over the tunnel is the
@@ -307,18 +303,9 @@ The first message transmitted over the tunnel is the
 the key distributor about which DTLS-SRTP profiles the media
 distributor supports.  This message **MUST** be sent each time a new
 tunnel connection is established or, in the case of connection loss,
-when a connection is re-established.
-
-The media distributor **MUST** forward all messages received from an
-endpoint for a given DTLS association through the same tunnel if more
-than one tunnel has been established between it and a key distributor.
-
->Editor's Note: Do we want to have the above requirement or would we
-prefer to allow the media distributor to send messages over more than
-one tunnel to more than one key distributor?  The latter would provide
-for higher availability, but at the cost of key distributor
-complexity. The former would allow the usage of a load distributor in
-front of the key distributor.
+when a connection is re-established.  The media distributor **MUST**
+support the same list of protection profiles for the duration of any
+endpoint-initiated DTLS association and tunnel connection.
 
 The media distributor **MUST** assign a unique association identifier
 for each endpoint-initiated DTLS association and include it in all
@@ -326,32 +313,15 @@ messages forwarded to the key distributor.  The key distributor will
 subsequently include this identifier in all messages it sends so that
 the media distributor can map messages received via a tunnel and
 forward those messages to the correct endpoint.  The association
-identifier **SHOULD** be randomly assigned and values not be re-used
-for a short period of time (e.g., five minutes) to ensure any residual
-state in the key distributor is clear and to ensure any packets
-already transmitted from the key distributor are not directed to the
-wrong endpoint.
-
-The tunnel protocol enables the key distributor to separately provide
-HBH keying material to the media distributor for each of the
-individual endpoint DTLS associations, though the media distributor
-cannot decrypt messages between the key distributor and endpoints.
+identifier **MUST** be randomly assigned UUID [@!RFC4122] value.
 
 When a DTLS message is received by the media distributor from an
 endpoint, it forwards the UDP payload portion of that message to the
-key distributor encapsulated in a `TuneledDtls` message.  If the media
-distributor knows the conference to which a given DTLS association
-belongs, it can pass the conference identifier to the key distributor
-using the `conf_id` field of the `TunneledDtls` message.
-
-> Editor's Note: if the PERC WG adopts the `dtls-id` concept presented
-  in [@I-D.jones-perc-dtls-id], we can remove `conf_id` from this
-  draft, since the `dtls-id` can convey enough information for the key
-  distributor to determine the correct conference.
-
-The media distributor **MUST** support the same list of protection
-profiles for the life of a given endpoint's DTLS association, which is
-represented by the association identifier.
+key distributor encapsulated in a `TuneledDtls` message.
+The media distributor is not required to forward all messages received
+from an endpoint for a given DTLS association through the same tunnel
+if more than one tunnel has been established between it and a key
+distributor.
 
 When a `MediaKeys` message is received, the media distributor **MUST**
 extract the cipher and keying material conveyed in order to
@@ -379,6 +349,9 @@ additional indicators to determine when an endpoint has disconnected.
 
 ## Key Distributor Tunneling Procedures
 
+Each TLS tunnel established between the media distributor and the
+key distributor **MUST** be mutually authenticated.
+
 When the media distributor relays a DTLS message from an endpoint, the
 media distributor will include an association identifier that is
 unique per endpoint-originated DTLS association.  The association
@@ -386,9 +359,37 @@ identifier remains constant for the life of the DTLS association.  The
 key distributor identifies each distinct endpoint-originated DTLS
 association by the association identifier.
 
+When processing an incoming endpoint association, the key distributor
+**MUST** extract the `tls_id` value transmitted in the `ClientHello`
+message and match that against `tls-id` value the endpoint transmitted
+via SDP.  If the values in SDP and the `ClientHello` do not match, the
+DTLS association **MUST** be rejected.
+
+The process through which the `tls-id` in SDP is conveyed to
+the key distributor is outside the scope of this document.
+
+Editor's Note: The above can be removed if we agree that the
+media distributor will always forward SDP to the key distributor.
+That said, should the media server take on this function
+or should some other call control function do this?
+The former assumes the media distributor always has the SDP.
+
+The key distributor **MUST** correlate the certificate fingerprint and
+`tls_id` received from endpoint's `ClientHello` message with the
+corresponding values received from the SDP transmitted by the endpoint.
+It is through this correlation that the key distributor can be sure to
+deliver the correct conference key to the endpoint.
+
+When sending the `ServerHello` message, the key distributor **MUST**
+insert its own `tls_id` value in the `sdp_tls_id` extension.  This value
+**MUST** also be conveyed back to the client via SDP as a `tls-id`
+attribute.
+
 The key distributor **MUST** encapsulate any DTLS message it sends to
 an endpoint inside a `TunneledDtls` message (see
-(#tunneling-protocol)).
+(#tunneling-protocol)).  The key distributor is not required to transmit
+all messages a given DTLS association through the same tunnel if more
+than one tunnel has been established between it and a media distributor.
 
 The key distributor **MUST** use the same association identifier in
 messages sent to an endpoint as was received in messages from that
@@ -407,20 +408,45 @@ distributor as soon as the HBH encryption key is computed and before
 it sends a DTLS `Finished` message to the endpoint.  The `MediaKeys`
 message includes the selected cipher (i.e. protection profile), MKI
 [@!RFC3711] value (if any), SRTP master keys, and SRTP master salt
-values. The key distributor **MUST** use the same association
+values.  The key distributor **MUST** use the same association
 identifier in the `MediaKeys` message as is used in the `TunneledDtls`
 messages for the given endpoint.
 
-The key distributor, can use the certificate of the endpoint and
-correlate that with signaling information to know which conference
-this session is associated with. The key distributor informs the media
-distributor of which conference this session is associated by sending
-a globally unique conference identifier in the `conf_id` attribute of
-the `MediaKeys`.
+The key distributor uses the certificate fingerprint of the endpoint
+along with the `tls_id` value received in the `sdp_tls_id` extension
+to determine which conference a given DTLS association is associated.
 
 The key distributor **MUST** select a cipher that is supported by both
 the endpoint and the media distributor to ensure proper HBH
 operations.
+
+When the DTLS association between the endpoint and the key distributor
+is terminated, regardless of which entity initiated the termination,
+the key distributor **MUST** send an `EndpointDisconnect` message
+with the association identifier assigned to the endpoint to the media
+distributor.
+
+## Versioning Considerations
+
+All messages for an established tunnel **MUST** utilize the same
+version value.
+
+Since the media distributor sends the first message over the tunnel,
+it effectively establishes the version of the protocol to be used.  If
+that version is not supported by the key distributor, it **MUST**
+discard the message, transmit an `UnsupportedVersion` message, and
+close the TLS connection.
+
+The media distributor **MUST** take note of the version received in an
+`UnsupportedVersion` message and use that version when attempting to
+re-establish a failed tunnel connection.  Note that it is not
+necessary for the media distributor to understand the newer version of
+the protocol to understand that the first message received is
+`UnsupportedVersion`.  The media distributor can determine from the
+first two octets received what the version number is and that the
+message is `UnsupportedVersion`.  The rest of the data received, if
+any, would be discarded and the connection closed (if not already
+closed).
 
 # Tunneling Protocol
 
@@ -451,20 +477,22 @@ specific type of message contained within `TunnelMessage`.
 {align="left"}
 ```
 enum {
-    unsupported_version(1),
-    supported_profiles(2),
+    supported_profiles(1),
+    unsupported_version(2),
     media_keys(3),
     tunneled_dtls(4),
     endpoint_disconnect(5),
     (255)
 } MsgType;
 
+opaque uuid[16];
+
 struct {
-    uint8 version;
     MsgType msg_type;
+    uint16 length;
     select (MsgType) {
-        case unsupported_version: UnsupportedVersion;
         case supported_profiles:  SupportedProfiles;
+        case unsupported_version: UnsupportedVersion;
         case media_keys:          MediaKeys;
         case tunneled_dtls:       TunneledDtls;
         case endpoint_disconnect: EndpointDisconnect;
@@ -474,19 +502,9 @@ struct {
 
 The elements of `TunnelMessage` include:
 
-* version: indicates the version of this protocol (0x00).
-
 * msg_type: the type of message contained within the structure `body`.
 
-The `UnsupportedVersion` message is defined as follows:
-
-{align="left"}
-```
-struct { } UnsupportedVersion;
-```
-
-The `UnsupportedVersion` message does not convey any additional
-information in the body.
+* length: the length in octets of the following `body` of the message.
 
 The `SupportedProfiles` message is defined as:
 
@@ -495,28 +513,43 @@ The `SupportedProfiles` message is defined as:
 uint8 SRTPProtectionProfile[2]; /* from RFC5764 */
 
 struct {
+  uint8 version;
   SRTPProtectionProfile protection_profiles<0..2^16-1>;
 } SupportedProfiles;
 ```
 
 This message contains this single element:
 
+* version: indicates the version of this protocol (0x00).
+
 * protection_profiles: The list of two-octet SRTP protection profile
   values as per [@!RFC5764] supported by the media distributor.
+
+The `UnsupportedVersion` message is defined as follows:
+
+{align="left"}
+```
+struct {
+    uint8 highest_version;
+} UnsupportedVersion;
+```
+
+The elements of `UnsupportedVersion` include:
+
+* highest_version: indicates the highest supported protocol version.
 
 The `MediaKeys` message is defined as:
 
 {align="left"}
 ```
 struct {
-    uint32 association_id;
+    uuid association_id;
     SRTPProtectionProfile protection_profile;
     opaque mki<0..255>;
     opaque client_write_SRTP_master_key<1..255>;
     opaque server_write_SRTP_master_key<1..255>;
     opaque client_write_SRTP_master_salt<1..255>;
     opaque server_write_SRTP_master_salt<1..255>;
-    opaque conf_id<0..255>;
 } MediaKeys;
 ```
 
@@ -542,16 +575,12 @@ The fields are described as follows:
 * server_write_SRTP_master_salt: The value of the SRTP master salt
   used by the server (media distributor).
 
-* conf_id: Identifier that uniquely specifies which conference the
-  media distributor should place this media flow in.
-
 The `TunneledDtls` message is defined as:
 
 {align="left"}
 ```
 struct {
-    uint32 association_id;
-    opaque conf_id<0..255>;
+    uuid association_id;
     opaque dtls_message<0..2^16-1>;
 } TunneledDtls;
 ```
@@ -561,9 +590,6 @@ The fields are described as follows:
 * association_id: An value that identifies a distinct DTLS association
   between an endpoint and the key distributor.
 
-* conf_id: Optional identifier that uniquely specifies which
-  conference this media flow is in.
-
 * dtls_message: the content of the DTLS message received by the
   endpoint or to be sent to the endpoint.
 
@@ -572,7 +598,7 @@ The `EndpointDisconect` message is defined as:
 {align="left"}
 ```
 struct {
-    uint32 association_id;
+    uuid association_id;
 } EndpointDisconnect;
 ```
 
@@ -598,9 +624,10 @@ DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM.
 {align="left"}
 ```
 TunnelMessage:
-              version: 0x00
          message_type: 0x01
+               length: 0x0007
     SupportedProfiles:
+                   version:  0x00
        protection_profiles:  0x0004 (length)
                              0x0009000A (value)
 ```
@@ -610,7 +637,7 @@ would be this stream of octets:
 
 {align="left"}
 ```
-0x000100040009000A
+0x0100070000040009000A
 ```
 
 # IANA Considerations
@@ -623,8 +650,8 @@ for future specifications:
 
 MsgType | Description
 --------|:----------------------------------------
-0x01    | Unsupported Version
-0x02    | Supported SRTP Protection Profiles
+0x01    | Supported SRTP Protection Profiles
+0x02    | Unsupported Version
 0x03    | Media Keys
 0x04    | Tunneled DTLS
 0x05    | Endpoint Disconnect
