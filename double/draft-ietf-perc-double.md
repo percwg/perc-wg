@@ -359,7 +359,10 @@ outer SRTP packet with the following exceptions:
   and codec selection.
 
 * The sequence number from the outer SRTP packet is used for normal
-  RTP ordering.
+RTP ordering.
+
+The PT and sequence number from the inner SRTP packet can be used for
+collection of varios statistics. 
 
 If any of the following RTP headers extensions are found in the outer
 SRTP packet, they MAY be used:
