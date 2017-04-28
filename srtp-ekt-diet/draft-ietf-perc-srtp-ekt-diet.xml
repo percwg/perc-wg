@@ -7,10 +7,10 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd"
 [ ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
-<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-03"
+<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-04"
 ipr="trust200902">
   <front>
-    <title abbrev="EKT SRTP">Encrypted Key Transport for Secure
+    <title abbrev="EKT SRTP">Encrypted Key Transport for DTLS and Secure
     RTP</title>
     <author fullname="Cullen Jennings" initials="C."
     surname="Jennings">
@@ -82,7 +82,7 @@ ipr="trust200902">
         <email>fandreas@cisco.com</email>
       </address>
     </author>
-    <date month="March" day="13" year="2017" />
+    <date month="April" day="21" year="2017" />
     <area>ART</area>
     <workgroup>PERC Working Group</workgroup>
     <keyword>RTP</keyword>
@@ -90,7 +90,7 @@ ipr="trust200902">
     <keyword>EKT</keyword>
     <abstract>
 
-      <t>Encrypted Key Transport (EKT) is an extension to Secure
+      <t>Encrypted Key Transport (EKT) is an extension to DTLS and  Secure
       Real-time Transport Protocol (SRTP) that provides for the secure
       transport of SRTP master keys, rollover counters, and other
       information within SRTP. This facility enables SRTP for
@@ -141,6 +141,18 @@ ipr="trust200902">
       session. This data furnishes the information needed by the
       receiver to instantiate an SRTP/SRTCP receiver context.</t>
 
+      <t>EKT can be used in conferences where the central media
+      distributor or conference bridge can not decrypt the media, such
+      as the type defined for <xref
+      target="I-D.ietf-perc-private-media-framework" />. It can also
+      be used for large scale conferences where the conference
+      bridge or media distributor can decrypt all the media but wishes
+      to encrypt the media it is sending just once then send the same
+      encrypted media to a large number of participants. This reduces
+      the amount of CPU time needed for encryption and can be used
+      for some optimization to media sending that use source specific
+      multicast.</t>
+
       <t>EKT does not control the manner in which the SSRC is
       generated; it is only concerned with their secure transport.</t>
 
@@ -148,6 +160,34 @@ ipr="trust200902">
       mechanisms. Instead, it is used in conjunction with those
       methods, and it relieves those methods of the burden to deliver
       the context for each SRTP source to every SRTP participant.</t>
+      </section>
+
+      <section title="Overview">
+
+        <t> This specification defines a way for the server in a
+        DTLS-SRTP negotiation to provide an ekt_key to the client
+        during the DTLS handshake. This ekt_key can be used to encrypt
+        the SRTP master key used to encrypt the media the endpoint
+        sends. This specification also defines a way to send the
+        encrypted SRTP master key along with the SRTP
+        packet. Endpoints that receive this and know the ekt_key can
+        use the ekt_key to decrypt the SRTP master key then use the
+        SRTP master key to decrypt the SRTP packet.
+        </t>
+
+        <t> One way to use this is used is described in the
+        architecture defined by <xref
+        target="I-D.ietf-perc-private-media-framework" />. Each
+        participants in the conference call forms a DTLS-SRTP
+        connection to a common key distributor that gives all the
+        endpoints the same ekt_key. Then each endpoint picks there own
+        SRTP master key for the media they send. When sending media,
+        the endpoint also includse the SRTP master key encrypted with
+        the ekt_key. This allows all the endpoints to decrypt the
+        media. </t>
+        
+      </section>
+      
       <section title="Conventions Used In This Document">
 
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
@@ -155,7 +195,6 @@ ipr="trust200902">
         "OPTIONAL" in this document are to be interpreted as described
         in <xref target="RFC2119"></xref>.</t>
         
-      </section>
     </section>
     <section anchor="normative" title="Encrypted Key Transport">
 
@@ -436,6 +475,15 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               the previous step are saved in a map indexed by the SSRC
               found in the EKTPlaintext and can be used for any future
               crypto operations on the inbound packets with that SSRC.
+              If the SRTP Master Key recovered from the EKTPlaintext
+              is longer than needed by SRTP transfrom in use, the
+              first bytes are used. If the SRTP Master Key recovered
+              from the EKTPlaintext is shorter than needed by SRTP
+              transfrom in use, then the bytes received replace the
+              first bytes in the existing key but the other bytes
+              after that remain the same as the old key. This allows
+              for replacing just half the key for transfroms such as
+              <xref target="I-D.ietf-perc-double"/>.
               Outbound packets SHOULD continue to use the old SRTP
               Master Key for 250 ms after sending any new key. This
               gives all the receivers in the system time to get the new
@@ -1179,6 +1227,59 @@ SRTP packets                 <------->      SRTP packets
       </reference>
     </references>
     <references title="Informative References">
+
+
+      <reference anchor='I-D.ietf-perc-double'>
+        <front>
+          <title>SRTP Double Encryption Procedures</title>
+          
+          <author initials='C' surname='Jennings' fullname='Cullen Jennings'>
+            <organization />
+          </author>
+          
+          <author initials='P' surname='Jones' fullname='Paul Jones'>
+            <organization />
+          </author>
+          
+          <author initials='A' surname='Roach' fullname='Adam Roach'>
+
+               <organization />
+          </author>
+          
+          <date month='October' day='31' year='2016' />
+          
+        </front>
+          <seriesInfo name='Internet-Draft' value='draft-ietf-perc-double-02' />
+        <format type='TXT'
+                target='http://www.ietf.org/internet-drafts/draft-ietf-perc-double-02.txt' />
+      </reference>
+      
+      <reference anchor='I-D.ietf-perc-private-media-framework'>
+        <front>
+          <title>A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing</title>
+          
+          <author initials='P' surname='Jones' fullname='Paul Jones'>
+            <organization />
+          </author>
+          
+          <author initials='D' surname='Benham' fullname='David Benham'>
+            <organization />
+          </author>
+          
+          <author initials='C' surname='Groves' fullname='Christian Groves'>
+            <organization />
+          </author>
+          
+          <date month='October' day='31' year='2016' />
+          
+        </front>
+
+        <seriesInfo name='Internet-Draft' value='draft-ietf-perc-private-media-framework-02' />
+        <format type='TXT'
+                target='http://www.ietf.org/internet-drafts/draft-ietf-perc-private-media-framework-02.txt' />
+      </reference>
+
+      
       <reference anchor='RFC3264'
       target='http://www.rfc-editor.org/info/rfc3264'>
         <front>
