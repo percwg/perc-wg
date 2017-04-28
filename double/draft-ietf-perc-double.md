@@ -76,7 +76,7 @@ for the media flowing between the Media Distributor and the endpoints.
 See the framework document that describes this concept in more detail
 in more detail in [@I-D.ietf-perc-private-media-framework].
 
-This specification defines an SRTP transfrom that uses the AES-GCM transform [@!RFC7714]
+This specification defines an SRTP transform that uses the AES-GCM transform [@!RFC7714]
 to encrypt an RTP packet for the end-to-end cryptographic context.
 The output of this is treated as an RTP packet and again encrypted
 with an SRTP transform used in the hop-by-hop cryptographic context
@@ -92,7 +92,7 @@ cryptographic transform and then replaces any parameters the Media
 Distributor changed using the information in the Original Header Block
 before decrypting and checking the end-to-end integrity.
 
-One can think of the double as a normal SRTP transfrom as encrypting
+One can think of the double as a normal SRTP transform as encrypting
 the RTP in a way where things that only know half of the key, can
 decrypt and modify part of the RTP packet but not other parts of if
 including the media payload.
@@ -143,7 +143,7 @@ steps:
   transform. 
 
 * Assign the key and salt values for the outer (hop-by-hop) transform
-  to the second half of the key and salt for the double transfrom.
+  to the second half of the key and salt for the double transform.
   
 Obviously, if the Media Distributor is to be able to modify header
 fields but not decrypt the payload, then it must have cryptographic
@@ -358,7 +358,7 @@ cryptographic context.
 
 Once the packet has been successfully decrypted, the application needs
 to be careful about which information it uses to get the correct
-behaviour.  The application MUST use only the information found in the
+behavior.  The application MUST use only the information found in the
 synthetic SRTP packet and MUST NOT use the other data that was in the
 outer SRTP packet with the following exceptions:
 
@@ -369,7 +369,7 @@ outer SRTP packet with the following exceptions:
 RTP ordering.
 
 The PT and sequence number from the inner SRTP packet can be used for
-collection of varios statistics. 
+collection of various statistics. 
 
 If any of the following RTP headers extensions are found in the outer
 SRTP packet, they MAY be used:
