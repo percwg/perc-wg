@@ -76,7 +76,7 @@ for the media flowing between the Media Distributor and the endpoints.
 See the framework document that describes this concept in more detail
 in more detail in [@I-D.ietf-perc-private-media-framework].
 
-This specification RECOMMENDS the SRTP AES-GCM transform [@!RFC7714]
+This specification defines an SRTP transfrom that uses the AES-GCM transform [@!RFC7714]
 to encrypt an RTP packet for the end-to-end cryptographic context.
 The output of this is treated as an RTP packet and again encrypted
 with an SRTP transform used in the hop-by-hop cryptographic context
@@ -92,6 +92,10 @@ cryptographic transform and then replaces any parameters the Media
 Distributor changed using the information in the Original Header Block
 before decrypting and checking the end-to-end integrity.
 
+One can think of the double as a normal SRTP transfrom as encrypting
+the RTP in a way where things that only know half of the key, can
+decrypt and modify part of the RTP packet but not other parts of if
+including the media payload.
 
 # Terminology
 
