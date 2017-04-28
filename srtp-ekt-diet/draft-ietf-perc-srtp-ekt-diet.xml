@@ -182,7 +182,7 @@ ipr="trust200902">
         connection to a common key distributor that gives all the
         endpoints the same ekt_key. Then each endpoint picks there own
         SRTP master key for the media they send. When sending media,
-        the endpoint also includse the SRTP master key encrypted with
+        the endpoint also includes the SRTP master key encrypted with
         the ekt_key. This allows all the endpoints to decrypt the
         media. </t>
         
@@ -476,13 +476,13 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               found in the EKTPlaintext and can be used for any future
               crypto operations on the inbound packets with that SSRC.
               If the SRTP Master Key recovered from the EKTPlaintext
-              is longer than needed by SRTP transfrom in use, the
+              is longer than needed by SRTP transform in use, the
               first bytes are used. If the SRTP Master Key recovered
               from the EKTPlaintext is shorter than needed by SRTP
-              transfrom in use, then the bytes received replace the
+              transform in use, then the bytes received replace the
               first bytes in the existing key but the other bytes
               after that remain the same as the old key. This allows
-              for replacing just half the key for transfroms such as
+              for replacing just half the key for transforms such as
               <xref target="I-D.ietf-perc-double"/>.
               Outbound packets SHOULD continue to use the old SRTP
               Master Key for 250 ms after sending any new key. This
