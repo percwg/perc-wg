@@ -246,7 +246,8 @@ context.  The processes is as follows:
   modified by an Media Distributor, it MUST insert an OHB header
   extension at the end of any header extensions protected end-to-end
   (if any), then add any Media Distributor-modifiable header
-  extensions.  The OHB MUST replicate the information found in the RTP
+  extensions.  In other cases, the endpoint SHOULD still insert an OHB
+  header extension. The OHB MUST replicate the information found in the RTP
   header following the application of the inner cryptographic
   transform.  If not already set, the endpoint MUST set the X bit in
   the RTP header to 1 when introducing the OHB extension.
@@ -435,7 +436,7 @@ key. This HBH for the outgoing packet is typically different than the
 HBH key for the incoming packet.
 
 The receiver can check the authentication of the initial and extra
-envelope information.  This, along with the OBH, is used to construct
+envelope information.  This, along with the OHB, is used to construct
 a synthetic packet that is should be identical to one the sender
 created and the receiver can check that it is identical and then
 decrypt the original payload.
