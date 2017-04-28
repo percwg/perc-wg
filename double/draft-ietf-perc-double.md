@@ -11,7 +11,7 @@
     Title = "SRTP Double Encryption Procedures"
     abbrev = "Double SRTP"
     category = "std"
-    docName = "draft-ietf-perc-double-03"
+    docName = "draft-ietf-perc-double-04"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
@@ -135,9 +135,11 @@ steps:
   inner (end-to-end) and outer (hop-by-hop) transforms.
 
 * Assign the key and salt values generated for the inner (end-to-end)
-  transform.
+  transform to the first half of the key and salt for the double
+  transform. 
 
-* Assign the key and salt values for the outer (hop-by-hop) transform.
+* Assign the key and salt values for the outer (hop-by-hop) transform
+  to the second half of the key and salt for the double transfrom.
   
 Obviously, if the Media Distributor is to be able to modify header
 fields but not decrypt the payload, then it must have cryptographic
@@ -244,7 +246,8 @@ context.  The processes is as follows:
   modified by an Media Distributor, it MUST insert an OHB header
   extension at the end of any header extensions protected end-to-end
   (if any), then add any Media Distributor-modifiable header
-  extensions.  The OHB MUST replicate the information found in the RTP
+  extensions.  In other cases, the endpoint SHOULD still insert an OHB
+  header extension. The OHB MUST replicate the information found in the RTP
   header following the application of the inner cryptographic
   transform.  If not already set, the endpoint MUST set the X bit in
   the RTP header to 1 when introducing the OHB extension.
@@ -359,7 +362,10 @@ outer SRTP packet with the following exceptions:
   and codec selection.
 
 * The sequence number from the outer SRTP packet is used for normal
-  RTP ordering.
+RTP ordering.
+
+The PT and sequence number from the inner SRTP packet can be used for
+collection of varios statistics. 
 
 If any of the following RTP headers extensions are found in the outer
 SRTP packet, they MAY be used:
@@ -430,7 +436,7 @@ key. This HBH for the outgoing packet is typically different than the
 HBH key for the incoming packet.
 
 The receiver can check the authentication of the initial and extra
-envelope information.  This, along with the OBH, is used to construct
+envelope information.  This, along with the OHB, is used to construct
 a synthetic packet that is should be identical to one the sender
 created and the receiver can check that it is identical and then
 decrypt the original payload.

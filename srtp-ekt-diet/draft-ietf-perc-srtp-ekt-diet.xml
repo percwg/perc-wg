@@ -7,7 +7,7 @@
 <!DOCTYPE rfc SYSTEM "rfc2629.dtd"
 [ ]>
 <?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
-<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-03"
+<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-04"
 ipr="trust200902">
   <front>
     <title abbrev="EKT SRTP">Encrypted Key Transport for Secure
@@ -82,7 +82,7 @@ ipr="trust200902">
         <email>fandreas@cisco.com</email>
       </address>
     </author>
-    <date month="March" day="13" year="2017" />
+    <date month="April" day="21" year="2017" />
     <area>ART</area>
     <workgroup>PERC Working Group</workgroup>
     <keyword>RTP</keyword>
@@ -140,6 +140,18 @@ ipr="trust200902">
       current SRTP rollover counter to the other participants in the
       session. This data furnishes the information needed by the
       receiver to instantiate an SRTP/SRTCP receiver context.</t>
+
+      <t>EKT can be used in conferences where the central media
+      distributor or conference bridge can not decrypt the media, such
+      as the type defined for <xref
+      target="I-D.ietf-perc-private-media-framework" />. It can also
+      be used for large scale conferences where the conference
+      bridge or media distributor can decrypt all the media but wishes
+      to encrypt the media it is sending just once then send the same
+      encrypted media to a large number of participants. This reduces
+      the amount of CPU time needed for encryption and can be used
+      for some optimization to media sending that use source specific
+      multicast.</t>
 
       <t>EKT does not control the manner in which the SSRC is
       generated; it is only concerned with their secure transport.</t>
@@ -463,6 +475,15 @@ EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
               the previous step are saved in a map indexed by the SSRC
               found in the EKTPlaintext and can be used for any future
               crypto operations on the inbound packets with that SSRC.
+              If the SRTP Master Key recovered from the EKTPlaintext
+              is longer than needed by SRTP transfrom in use, the
+              first bytes are used. If the SRTP Master Key recovered
+              from the EKTPlaintext is shorter than needed by SRTP
+              transfrom in use, then the bytes received replace the
+              first bytes in the existing key but the other bytes
+              after that remain the same as the old key. This allows
+              for replacing just half the key for transfroms such as
+              <xref target="I-D.ietf-perc-double"/>.
               Outbound packets SHOULD continue to use the old SRTP
               Master Key for 250 ms after sending any new key. This
               gives all the receivers in the system time to get the new
@@ -1207,6 +1228,32 @@ SRTP packets                 <------->      SRTP packets
     </references>
     <references title="Informative References">
 
+
+      <reference anchor='I-D.ietf-perc-double'>
+        <front>
+          <title>SRTP Double Encryption Procedures</title>
+          
+          <author initials='C' surname='Jennings' fullname='Cullen Jennings'>
+            <organization />
+          </author>
+          
+          <author initials='P' surname='Jones' fullname='Paul Jones'>
+            <organization />
+          </author>
+          
+          <author initials='A' surname='Roach' fullname='Adam Roach'>
+
+               <organization />
+          </author>
+          
+          <date month='October' day='31' year='2016' />
+          
+        </front>
+          <seriesInfo name='Internet-Draft' value='draft-ietf-perc-double-02' />
+        <format type='TXT'
+                target='http://www.ietf.org/internet-drafts/draft-ietf-perc-double-02.txt' />
+      </reference>
+      
       <reference anchor='I-D.ietf-perc-private-media-framework'>
         <front>
           <title>A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing</title>
@@ -1226,12 +1273,12 @@ SRTP packets                 <------->      SRTP packets
           <date month='October' day='31' year='2016' />
           
         </front>
-        
+
         <seriesInfo name='Internet-Draft' value='draft-ietf-perc-private-media-framework-02' />
         <format type='TXT'
-        target='http://www.ietf.org/internet-drafts/draft-ietf-perc-private-media-framework-02.txt' />
+                target='http://www.ietf.org/internet-drafts/draft-ietf-perc-private-media-framework-02.txt' />
       </reference>
-      
+
       
       <reference anchor='RFC3264'
       target='http://www.rfc-editor.org/info/rfc3264'>
