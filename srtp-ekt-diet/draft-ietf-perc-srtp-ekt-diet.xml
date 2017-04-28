@@ -10,7 +10,7 @@
 <rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-04"
 ipr="trust200902">
   <front>
-    <title abbrev="EKT SRTP">Encrypted Key Transport for Secure
+    <title abbrev="EKT SRTP">Encrypted Key Transport for DTLS and Secure
     RTP</title>
     <author fullname="Cullen Jennings" initials="C."
     surname="Jennings">
@@ -90,7 +90,7 @@ ipr="trust200902">
     <keyword>EKT</keyword>
     <abstract>
 
-      <t>Encrypted Key Transport (EKT) is an extension to Secure
+      <t>Encrypted Key Transport (EKT) is an extension to DTLS and  Secure
       Real-time Transport Protocol (SRTP) that provides for the secure
       transport of SRTP master keys, rollover counters, and other
       information within SRTP. This facility enables SRTP for
