@@ -160,6 +160,34 @@ ipr="trust200902">
       mechanisms. Instead, it is used in conjunction with those
       methods, and it relieves those methods of the burden to deliver
       the context for each SRTP source to every SRTP participant.</t>
+      </section>
+
+      <section title="Overview">
+
+        <t> This specification defines a way for the server in a
+        DTLS-SRTP negotiation to provide an ekt_key to the client
+        during the DTLS handshake. This ekt_key can be used to encrypt
+        the SRTP master key used to encrypt the media the endpoint
+        sends. This specification also defines a way to send the
+        encrypted SRTP master key along with the SRTP
+        packet. Endpoints that receive this and know the ekt_key can
+        use the ekt_key to decrypt the SRTP master key then use the
+        SRTP master key to decrypt the SRTP packet.
+        </t>
+
+        <t> One way to use this is used is described in the
+        architecture defined by <xref
+        target="I-D.ietf-perc-private-media-framework" />. Each
+        participants in the conference call forms a DTLS-SRTP
+        connection to a common key distributor that gives all the
+        endpoints the same ekt_key. Then each endpoint picks there own
+        SRTP master key for the media they send. When sending media,
+        the endpoint also includse the SRTP master key encrypted with
+        the ekt_key. This allows all the endpoints to decrypt the
+        media. </t>
+        
+      </section>
+      
       <section title="Conventions Used In This Document">
 
         <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
@@ -167,7 +195,6 @@ ipr="trust200902">
         "OPTIONAL" in this document are to be interpreted as described
         in <xref target="RFC2119"></xref>.</t>
         
-      </section>
     </section>
     <section anchor="normative" title="Encrypted Key Transport">
 
@@ -1201,6 +1228,7 @@ SRTP packets                 <------->      SRTP packets
     </references>
     <references title="Informative References">
 
+
       <reference anchor='I-D.ietf-perc-double'>
         <front>
           <title>SRTP Double Encryption Procedures</title>
@@ -1226,8 +1254,6 @@ SRTP packets                 <------->      SRTP packets
                 target='http://www.ietf.org/internet-drafts/draft-ietf-perc-double-02.txt' />
       </reference>
       
-
-
       <reference anchor='I-D.ietf-perc-private-media-framework'>
         <front>
           <title>A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing</title>
@@ -1241,7 +1267,6 @@ SRTP packets                 <------->      SRTP packets
           </author>
           
           <author initials='C' surname='Groves' fullname='Christian Groves'>
-
             <organization />
           </author>
           
@@ -1253,9 +1278,8 @@ SRTP packets                 <------->      SRTP packets
         <format type='TXT'
                 target='http://www.ietf.org/internet-drafts/draft-ietf-perc-private-media-framework-02.txt' />
       </reference>
-      
-      
 
+      
       <reference anchor='RFC3264'
       target='http://www.rfc-editor.org/info/rfc3264'>
         <front>
