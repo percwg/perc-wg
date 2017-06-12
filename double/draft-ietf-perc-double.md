@@ -265,7 +265,6 @@ extension.
 
 # RTP Operations
 
-
 ## Encrypting a Packet
 
 To encrypt a packet, the endpoint encrypts the packet using the inner
@@ -275,17 +274,21 @@ context.  The processes is as follows:
 * Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-* If any extensions are to be protected by the inner transform, insert an E2EEEL
-  extension at the beginning.
+* Apply the inner cryptographic transform to the RTP packet.  If
+  encrypting RTP header extensions end-to-end, then [@!RFC6904] MUST
+  be used when encrypting the RTP packet using the inner cryptographic
+  context.
 
-* Insert an OHB extension after the end-to-end protected extensions.  This OHB
-  MUST replicate the information found in the RTP header.
+* If the endpoint wishes to insert header extensions that can be
+  modified by an Media Distributor, it MUST insert an OHB header
+  extension at the end of any header extensions protected end-to-end
+  (if any), then add any Media Distributor-modifiable header
+  extensions.  In other cases, the endpoint SHOULD still insert an OHB
+  header extension. The OHB MUST replicate the information found in the RTP
+  header following the application of the inner cryptographic
+  transform.  If not already set, the endpoint MUST set the X bit in
+  the RTP header to 1 when introducing the OHB extension.
 
-* Apply the inner cryptographic transform to the RTP packet.  If encrypting RTP
-  header extensions end-to-end, then [@!RFC6904] MUST be used when encrypting
-  the RTP packet using the inner cryptographic context.  Extensions that are
-  not protected end-to-end are not included in the AAD for this transform.
-  
 * Apply the outer cryptographic transform to the RTP packet.  If
   encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
   be used when encrypting the RTP packet using the outer cryptographic
