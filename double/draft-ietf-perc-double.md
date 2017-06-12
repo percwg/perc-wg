@@ -272,7 +272,6 @@ OHB.  To properly preserve original RTP header values, a Media
 Distributor MUST NOT change a value already present in the OHB
 extension.
 
-
 # RTP Operations
 
 ## Additional Authenticated Data
