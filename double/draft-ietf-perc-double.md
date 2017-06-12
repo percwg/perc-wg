@@ -157,7 +157,7 @@ material for the outer ("hop-by-hop") transform is to use
 
 It is possible for the sender of an RTP packet to apply end-to-end protections
 to the first part of a block of extensions.  It does this by making the first
-extension in the packet an End-to-End Extensions Length (E2EEL) extension,
+extension in the packet an End-to-End Extensions Length (E2EEEL) extension,
 which specifies the length of the data in the extensions block that should
 receive end-to-end protections.  The end-to-end data MUST comprise a set of
 complete extensions; extensions MUST NOT be partially protected.
@@ -173,26 +173,19 @@ The extension is two octets long, with the following form:
 +-+-+-+-+-+-+-+-+-------------------------------+
 ~~~~~
 
-If included, the E2EEL extension MUST be the first extension in the extensions
-block.  If there are now end-to-end protected extensions (i.e., the length is
-zero), then the E2EEL extension MUST NOT be included.
+If included, the E2EEEL extension MUST be the first extension in the extensions
+block.  If there are no end-to-end protected extensions (i.e., the length is
+zero), then the E2EEEL extension MUST NOT be included.
 
 
 # Original Header Block
 
-Any SRTP packet processed following these procedures MAY contain an
-Original Header Block (OHB) RTP header extension.
+The OHB contains the original values of any modified header fields.
 
-The OHB contains the original values of any modified header fields and
-MUST be placed after any already-existing RTP header extensions.
-Placement of the OHB after any original header extensions is important
-so that the receiving endpoint can properly authenticate the original
-packet and any originally included RTP header extensions.  The
-receiving endpoint will authenticate the original packet by restoring
-the modified RTP header field values and header extensions.  It does
-this by copying the original values from the OHB and then removing the
-OHB extension and any other RTP header extensions that appear after
-the OHB extension.
+Any SRTP packet protected with this profile that has any extensions at all MUST
+have an OHB extension, even if no headers wer emodified.  In packet with no
+extensions (X=0), which clearly cannot have an OHB, all header fields MUST be
+unmodified from the values set by the sender.
 
 The Media Distributor is only permitted to modify the extension (X)
 bit, payload type (PT) field, and the RTP sequence number field.
@@ -208,13 +201,20 @@ value.  In this case, the OHB has this form:
  0                   1
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
 +-+-+-+-+-+-+-+-+---------------+
-|  ID   | len=0 |R|     PT      |
+|  ID   | len=0 |A|     PT      |
 +-+-+-+-+-+-+-+-+---------------+
 ~~~~~
 
-Note that "R" indicates a reserved bit that MUST be set to zero when
-sending a packet and ignored upon receipt. ID is the RTP Header
-Extension identifier negotiated in the SDP. 
+The "A" bit indicates whether the "PT" is to be applied.  If A=1, then the
+value of the PT field in the OHB contains the original PT field in the RTP
+header.  If A=0, then the value of the PT field MUST be zero; packets
+containing a non-zero value MUST be discarded as malformed.
+
+The "A" bit is necessary because an OHB must be included in any packet
+protected with this transform that has any header extension at all, even if
+there are no modifications to the RTP header.  If an entity adds extensions
+without changing the RTP header, then a one-octet OHB with A=0 is the smallest
+OHB it can add.
 
 If the OHB is three octets in length, it contains the original PT
 field value and RTP packet sequence number.  In this case, the OHB has
@@ -225,19 +225,26 @@ this form:
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 6 4 5 6 7 8 9 1
 +-+-+-+-+-+-+-+-+---------------+-------------------------------+
-|  ID   | len=2 |P|     PT      |        Sequence Number        |
+|  ID   | len=2 |A|     PT      |        Sequence Number        |
 +-+-+-+-+-+-+-+-+---------------+-------------------------------+
 ~~~~~
 
-Note that "P" indicates whether the PT value should be used.  If the "P" field
-is set to 1, then the "PT" value reflects the original value of the PT field.
-If the "P" field is set to 0, then the "PT" value is ignored by receivers and
-MUST be set to zero by senders.
+The interpretation of the "A" and "PT" fields is the same as in the one-octet
+version of the OHB.
 
 The OHB MUST be present in any double-encrypted packet. It MUST be the first
 extension following any end-to-end protected extensions.  If there are no
 end-to-end protected extensions, then the OHB MUST be the first extension in
 the packet.
+
+The placement of the OHB is important because it allows an SRTP library to
+recognize these extensions without needing to know the negotiated extension
+type values for these extensions.  The transform at the  
+receiving endpoint will authenticate the original packet by restoring
+the modified RTP header field values and header extensions.  It does
+this by copying the original values from the OHB and then removing the
+OHB extension and any other RTP header extensions that appear after
+the OHB extension.
 
 Note that the difference in lengths between the OHB and the E2EEL allows a
 receiver to easily tell whether a packet contains end-to-end protected
@@ -268,7 +275,7 @@ context.  The processes is as follows:
 * Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-* If any extensions are to be protected by the inner transform, insert an E2EEL
+* If any extensions are to be protected by the inner transform, insert an E2EEEL
   extension at the beginning.
 
 * Insert an OHB extension after the end-to-end protected extensions.  This OHB
