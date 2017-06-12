@@ -204,10 +204,10 @@ value.  In this case, the OHB has this form:
 
 {align="left"}
 ~~~~~
- 0               
- 0 1 2 3 4 5 6 7 
+ 0                   1
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
 +-+-+-+-+-+-+-+-+---------------+
-|  ID   | len=0 |A|     PT      |
+|  ID   | len=0 |R|     PT      |
 +-+-+-+-+-+-+-+-+---------------+
 ~~~~~
 
@@ -315,7 +315,7 @@ context.  The processes is as follows:
   encrypting RTP header extensions end-to-end, then [@!RFC6904] MUST
   be used when encrypting the RTP packet using the inner cryptographic
   context.
-
+  
 * If the endpoint wishes to insert header extensions that can be
   modified by an Media Distributor, it MUST insert an OHB header
   extension at the end of any header extensions protected end-to-end
