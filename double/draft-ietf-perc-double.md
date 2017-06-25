@@ -388,7 +388,8 @@ additional steps.
 # Use with Other RTP Mechanisms
 
 There are some RTP related extensions that need special consideration
-to be used by the relay due to the end-to-end protection of the RTP.
+to be used by a relay when using the double transform due to the
+end-to-end protection of the RTP.
 
 ## RTX
 
