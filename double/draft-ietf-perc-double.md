@@ -414,17 +414,15 @@ The algorithms recommended in [@I-D.ietf-rtcweb-fec] for audio work
 with no additional considerations.
 
 The algorithm recommend in [@I-D.ietf-rtcweb-fec] for video is Flex
-FEC [@I-D.ietf-payload-flexible-fec-scheme].
-
-Open Issue: The WG is currently considering how to handle Flex
-FEC. The main issue of concern is that the FEC Header, which is needed
-for repair, is part of the RTP payload. As explained in
-[@I-D.ietf-payload-flexible-fec-scheme], "the default order of
-operations for this FEC payload format SHALL be SRTP followed by FEC"
-which ensures that even if the relay can read the RTP payload for the
-FEC packets, that does not provide the relay with access to the
-original media. Additionally, [@I-D.ietf-rtcweb-fec] recommends not
-using additional FEC only m-line in SDP for the repair packets.
+FEC [@I-D.ietf-payload-flexible-fec-scheme]. When using Flex FEC, the
+repair packets MUST use the default order of operations defined in
+[@I-D.ietf-payload-flexible-fec-scheme] of SRTP followed by FEC. The
+repair packets MUST be handled like RTCP packets instead of RTP
+packets in that only the hop-by-hop cryptographic algorithms are
+applied when using the double transform and not the end-to-end
+algorithms. Note that for interoperability with WebRTC,
+[@I-D.ietf-rtcweb-fec] recommends not using additional FEC only m-line
+in SDP for the repair packets.
 
 # Recommended Inner and Outer Cryptographic Transforms
 
