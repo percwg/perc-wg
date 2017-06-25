@@ -839,6 +839,15 @@ SRTP packets                 <------->      SRTP packets
 ]]>
 </artwork>
         </figure>
+
+        <t>Note that when used in PERC <xref
+        target="I-D.ietf-perc-private-media-framework"/>, the Server
+        is actually split between the Media Distrbutor and Key
+        Distributor. The messages in the above figure that are "SRTP
+        packets" will not got to the Key Distributor but the oter
+        packets will be relayed by the Media Distributor to the Key
+        Distributor. </t>
+
       </section>
       <section title="Offer/Answer Considerations">
 
