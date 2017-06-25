@@ -52,7 +52,7 @@
 In some conferencing scenarios, it is desirable for an intermediary to
 be able to manipulate some RTP parameters, while still providing
 strong end-to-end security guarantees.  This document defines SRTP
-procedures that use two separate but related cryptographic contexts to
+procedures that use two separate but related cryptographic operations to
 provide hop-by-hop and end-to-end security guarantees.  Both the
 end-to-end and hop-by-hop cryptographic algorithms can utilize an
 authenticated encryption with associated data scheme or take advantage
@@ -67,31 +67,32 @@ Cloud conferencing systems that are based on switched conferencing
 have a central Media Distributor device that receives media from
 endpoints and distributes it to other endpoints, but does not need to
 interpret or change the media content.  For these systems, it is
-desirable to have one cryptographic context from the sending endpoint
+desirable to have one cryptographic key from the sending endpoint
 to the receiving endpoint that can encrypt and authenticate the media
 end-to-end while still allowing certain RTP header information to be
 changed by the Media Distributor.  At the same time, a separate
-cryptographic context provides integrity and optional confidentiality
+cryptographic key provides integrity and optional confidentiality
 for the media flowing between the Media Distributor and the endpoints.
 See the framework document that describes this concept in more detail
 in more detail in [@I-D.ietf-perc-private-media-framework].
 
 This specification defines an SRTP transform that uses the AES-GCM
-algorithm [@!RFC7714] to encrypt an RTP packet for the end-to-end
-cryptographic context as well as a hop-by-hop cryptographic context
-between the endpoint and the Media Distributor.  The Media Distributor
-decrypts and checks integrity of the hop-by-hop security.  The Media
-Distributor MAY change some of the RTP header information that would
-impact the end-to-end integrity.  The original value of any RTP header
-field that is changed is included in a new RTP header extension called
-the Original Header Block.  The new RTP packet is encrypted with the
+algorithm [@!RFC7714] to provide encryption and integrity for an RTP
+packet for the end-to-end cryptographic key as well as a hop-by-hop
+cryptographic encryption and integrity between the endpoint and the
+Media Distributor.  The Media Distributor decrypts and checks
+integrity of the hop-by-hop security.  The Media Distributor MAY
+change some of the RTP header information that would impact the
+end-to-end integrity.  The original value of any RTP header field that
+is changed is included in a new RTP header extension called the
+Original Header Block.  The new RTP packet is encrypted with the
 hop-by-hop cryptographic algorithm before it is sent.  The receiving
 endpoint decrypts and checks integrity using the hop-by-hop
 cryptographic algorithm and then replaces any parameters the Media
 Distributor changed using the information in the Original Header Block
 before decrypting and checking the end-to-end integrity.
 
-One can think of the double as a normal SRTP transform as encrypting
+One can think of the double as a normal SRTP transform for encrypting
 the RTP in a way where things that only know half of the key, can
 decrypt and modify part of the RTP packet but not other parts of if
 including the media payload.
@@ -118,20 +119,20 @@ Terms used throughout this document include:
   by a Media Distributor.
 
 
-# Cryptographic Contexts
+# Cryptographic Context
 
-This specification uses two cryptographic contexts: an inner
-(end-to-end) context that is used by endpoints that originate and
+This specification uses a cryptographic context with two parts: an inner
+(end-to-end) part that is used by endpoints that originate and
 consume media to ensure the integrity of media end-to-end, and an
-outer (hop-by-hop) context that is used between endpoints and Media
+outer (hop-by-hop) part that is used between endpoints and Media
 Distributors to ensure the integrity of media over a single hop and to
 enable a Media Distributor to modify certain RTP header fields.  RTCP
-is also encrypted using the hop-by-hop cryptographic context.  The
-RECOMMENDED cipher for the hop-by-hop and end-to-end contexts is
+is also handled using the hop-by-hop cryptographic part.  The
+RECOMMENDED cipher for the hop-by-hop and end-to-end algorithm is
 AES-GCM.  Other combinations of SRTP ciphers that support the
 procedures in this document can be added to the IANA registry.
 
-The keys and salt for these contexts are generated with the following
+The keys and salt for these algorithms are generated with the following
 steps:
 
 * Generate key and salt values of the length required for the combined
@@ -142,11 +143,15 @@ steps:
   algorithm. 
 
 * Assign the key and salt values for the outer (hop-by-hop) algorithm
-  to the second half of the key and salt for the double algorithm.
+  to the second half of the key and salt for the double algorithm. The
+  first half of the key is revered to as the inner key while the
+  second out half is referred to as the outer key. When a key is used
+  by a cryptographic algorithm, the salt used is the part of the salt
+  generated with that key.
   
 Obviously, if the Media Distributor is to be able to modify header
 fields but not decrypt the payload, then it must have cryptographic
-context for the outer algorithm, but not the inner (end-to-end) algorithm.  This
+key for the outer algorithm, but not the inner (end-to-end) algorithm.  This
 document does not define how the Media Distributor should be
 provisioned with this information.  One possible way to provide keying
 material for the outer (hop-by-hop) algorithm is to use
@@ -234,17 +239,12 @@ extension.
 ## Encrypting a Packet
 
 To encrypt a packet, the endpoint encrypts the packet using the inner (end-to-end)
-cryptographic context and then encrypts using the outer (hop-by-hop) cryptographic
-context.  The processes is as follows:
+cryptographic key and then encrypts using the outer (hop-by-hop) cryptographic
+key.  The processes is as follows:
 
 * Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-* Apply the inner cryptographic algorithm to the RTP packet.  If
-  encrypting RTP header extensions end-to-end, then [@!RFC6904] MUST
-  be used when encrypting the RTP packet using the inner cryptographic
-  context.
-  
 * If the endpoint wishes to insert header extensions that can be
   modified by an Media Distributor, it MUST insert an OHB header
   extension at the end of any header extensions protected end-to-end
@@ -255,10 +255,15 @@ context.  The processes is as follows:
   algorithm.  If not already set, the endpoint MUST set the X bit in
   the RTP header to 1 when introducing the OHB extension.
 
+* Apply the inner cryptographic algorithm to the RTP packet.  If 
+  encrypting RTP header extensions end-to-end, then [@!RFC6904] MUST 
+  be used when encrypting the RTP packet using the inner cryptographic 
+  key. 
+  
 * Apply the outer cryptographic algorithm to the RTP packet.  If
   encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
   be used when encrypting the RTP packet using the outer cryptographic
-  context.
+  key.
 
 When using EKT [@I-D.ietf-perc-srtp-ekt-diet], the EKT Field comes
 after the SRTP packet exactly like using EKT with any other SRTP
@@ -266,21 +271,23 @@ transform.
 
 ## Relaying a Packet
 
-The Media Distributor does not have a notion of outer (hop-by-hop) or inner (end-to-end)
-cryptographic algorithm.  Rather, the Media Distributor has a single
+The Media Distributor does has the part of the key for the outer
+(hop-by-hop) but does not have the part of the key for the  (end-to-end)
 cryptographic algorithm.  The cryptographic algorithm and key used to
 decrypt a packet and any encrypted RTP header extensions would be the
-same as those used in the endpoint's outer cryptographic context.
+same as those used in the endpoint's outer algorithm and key.
 
 In order to modify a packet, the Media Distributor decrypts the
 packet, modifies the packet, updates the OHB with any modifications
 not already present in the OHB, and re-encrypts the packet using the
-cryptographic context used for next hop.
+cryptographic using the outer (hop-by-hop) key.
 
-* Apply the cryptographic algorithm to the packet.  If decrypting RTP
-  header extensions hop-by-hop, then [@!RFC6904] MUST be used.
+* Apply the outer (bop-by-hop) cryptographic algorithm to decrypt the
+  packet.  If decrypting RTP header extensions hop-by-hop, then
+  [@!RFC6904] MUST be used.
 
-* Change any required parameters
+* Change any parts of the RTP packet that the relay wishes to change
+  and are allowed to be changed. 
 
 * If a changed RTP header field is not already in the OHB, add it with
   its original value to the OHB.  A Media Distributor can add
@@ -315,7 +322,7 @@ cryptographic context used for next hop.
   after the OHB, but MUST NOT modify header extensions that are
   present before the OHB.
 
-* Apply the cryptographic algorithm to the packet. If the RTP Sequence
+* Apply the outer (hop-by-hop) cryptographic algorithm to the packet. If the RTP Sequence
   Number has been modified, SRTP processing happens as defined in SRTP
   and will end up using the new Sequence Number. If encrypting RTP
   header extensions hop-by-hop, then [@!RFC6904] MUST be used.
@@ -323,15 +330,15 @@ cryptographic context used for next hop.
 ## Decrypting a Packet
 
 To decrypt a packet, the endpoint first decrypts and verifies using
-the outer (hop-by-hop) cryptographic context, then uses the OHB to reconstruct the
-original packet, which it decrypts and verifies with the inner (end-to-end)
-cryptographic context.
+the outer (hop-by-hop) cryptographic key, then uses the OHB to
+reconstruct the original packet, which it decrypts and verifies with
+the inner (end-to-end) cryptographic key.
 
 * Apply the outer cryptographic algorithm to the packet.  If the
   integrity check does not pass, discard the packet.  The result of
   this is referred to as the outer SRTP packet.  If decrypting RTP
   header extensions hop-by-hop, then [@!RFC6904] MUST be used when
-  decrypting the RTP packet using the outer cryptographic context.
+  decrypting the RTP packet using the outer cryptographic key.
 
 * Form a new synthetic SRTP packet with:
 
@@ -353,11 +360,11 @@ cryptographic context.
   Number. If the integrity check does not pass, discard the packet.
   If decrypting RTP header extensions end-to-end, then [@!RFC6904]
   MUST be used when decrypting the RTP packet using the inner
-  cryptographic context.
+  cryptographic key.
 
 Once the packet has been successfully decrypted, the application needs
 to be careful about which information it uses to get the correct
-behavior.  The application MUST use only the information found in the
+behaviour.  The application MUST use only the information found in the
 synthetic SRTP packet and MUST NOT use the other data that was in the
 outer SRTP packet with the following exceptions:
 
@@ -379,8 +386,8 @@ SRTP packet, they MAY be used:
 # RTCP Operations
 
 Unlike RTP, which is encrypted both hop-by-hop and end-to-end using
-two separate cryptographic contexts, RTCP is encrypted using only the
-outer (hop-by-hop) cryptographic context.  The procedures for RTCP encryption
+two separate cryptographic key, RTCP is encrypted using only the
+outer (hop-by-hop) cryptographic key.  The procedures for RTCP encryption
 are specified in [@!RFC3711] and this document introduces no
 additional steps.
 
