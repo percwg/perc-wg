@@ -418,13 +418,10 @@ FEC [@I-D.ietf-payload-flexible-fec-scheme].
 
 Open Issue: The WG is currently considering how to handle Flex
 FEC. The main issue of concern is that the FEC Header, which is needed
-for repair, is part of the RTP payload. As explained in
-[@I-D.ietf-payload-flexible-fec-scheme], "the default order of
-operations for this FEC payload format SHALL be SRTP followed by FEC"
-which ensures that even if the relay can read the RTP payload for the
-FEC packets, that does not provide the relay with access to the
-original media. Additionally, [@I-D.ietf-rtcweb-fec] recommends not
-using additional FEC only m-line in SDP for the repair packets.
+for repair, is part of the RTP payload. Flex FEC and be done before or
+after the SRTP process with the order controlled by signalling.
+[@I-D.ietf-rtcweb-fec] recommends not using additional FEC only m-line
+in SDP for the repair packets.
 
 # Recommended Inner and Outer Cryptographic Transforms
 
