@@ -391,6 +391,43 @@ outer (hop-by-hop) cryptographic key.  The procedures for RTCP encryption
 are specified in [@!RFC3711] and this document introduces no
 additional steps.
 
+# Use with Other RTP Mechanisms
+
+There are some RTP related extensions that need special consideration
+to be used by a relay when using the double transform due to the
+end-to-end protection of the RTP.
+
+## RTX
+
+RTX  [@RFC4588] is not useable by the relay for hop-by-hop repair. Some
+modification or extension would be need to be made to RTX before it
+could be used in this way. The problem in using RTX is that the
+relay would need to be able to read the first two byes of the payload
+of the retransmissions packet which contain the original sequence
+number. However, this data is end-to-end encrypted so the relay
+can not read it. 
+
+## DTMF
+
+When DTMF is sent with [@RFC4733], it is end-to-end encrypted and the
+relay can not read it so it can not be used to controll the
+relay. Other out of band methods to controll the relay can be used
+instead.
+
+## FEC
+
+The algorithms recommended in [@I-D.ietf-rtcweb-fec] for audio work
+with no additional considerations.
+
+The algorithm recommend in [@I-D.ietf-rtcweb-fec] for video is Flex
+FEC [@I-D.ietf-payload-flexible-fec-scheme].
+
+Open Issue: The WG is currently considering how to handle Flex
+FEC. The main issue of concern is that the FEC Header, which is needed
+for repair, is part of the RTP payload. Flex FEC and be done before or
+after the SRTP process with the order controlled by signalling.
+[@I-D.ietf-rtcweb-fec] recommends not using additional FEC only m-line
+in SDP for the repair packets.
 
 # Recommended Inner and Outer Cryptographic Algorithms
 
@@ -531,7 +568,6 @@ DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM
 
 The first half of the key and salt is used for the inner (end-to-end)
 algorithm and the second half is used for the outer (hop-by-hop) algorithm.
-
 
 # Acknowledgments
 
