@@ -419,17 +419,17 @@ instead.
 The algorithms recommended in [@I-D.ietf-rtcweb-fec] for audio work
 with no additional considerations.
 
-The algorithm recommend in [@I-D.ietf-rtcweb-fec] for video is Flex
-FEC [@I-D.ietf-payload-flexible-fec-scheme].  The repair packets for
-Flex FEC MUST be handled like RTCP packets instead of RTP packets in
-that only the hop-by-hop cryptographic algorithms are applied when
-using the double transform and not the end-to-end algorithms.  When
-using Flex FEC, the negotiation of double for the crypto is the out of
-band signaling that indicates that repair packets MUST use the order
-of operations that, when encrypting, do SRTP followed by FEC. This is
-to ensure that the original media is not reveled to the Media
-Distributor but at the same time allow the Media Distributor to use
-Flex FEC based to repair media.
+The algorithm recommend in [@I-D.ietf-rtcweb-fec] for repair of video
+is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  The repair
+packets for Flex FEC MUST be handled like RTCP packets instead of RTP
+packets in that only the hop-by-hop cryptographic algorithms are
+applied when using the double transform and not the end-to-end
+algorithms.  When using Flex FEC, the negotiation of double for the
+crypto is the out of band signaling that indicates that the repair
+packets MUST use the order of operations of SRTP followed by FEC when
+encrypting. This is to ensure that the original media is not reveled
+to the Media Distributor but at the same time allow the Media
+Distributor to repair media.
 
 Note that for interoperability with WebRTC, [@I-D.ietf-rtcweb-fec]
 recommends not using additional FEC only m-line in SDP for the repair
