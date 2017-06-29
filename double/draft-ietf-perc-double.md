@@ -424,7 +424,7 @@ FEC [@I-D.ietf-payload-flexible-fec-scheme].  The repair packets for
 Flex FEC MUST be handled like RTCP packets instead of RTP packets in
 that only the hop-by-hop cryptographic algorithms are applied when
 using the double transform and not the end-to-end algorithms.  When
-using Flex FEC, the negotiation of double for the crypto is an out of
+using Flex FEC, the negotiation of double for the crypto is the out of
 band signaling that indicates that repair packets MUST use the order
 of operations that, when encrypting, do SRTP followed by FEC. This is
 to ensure that the original media is not reveled to the Media
