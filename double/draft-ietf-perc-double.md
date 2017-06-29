@@ -271,8 +271,8 @@ transform.
 
 ## Relaying a Packet
 
-The Media Distributor does has the part of the key for the outer
-(hop-by-hop) but does not have the part of the key for the  (end-to-end)
+The Media Distributor has the part of the key for the outer
+(hop-by-hop), but it does not have the part of the key for the (end-to-end)
 cryptographic algorithm.  The cryptographic algorithm and key used to
 decrypt a packet and any encrypted RTP header extensions would be the
 same as those used in the endpoint's outer algorithm and key.
