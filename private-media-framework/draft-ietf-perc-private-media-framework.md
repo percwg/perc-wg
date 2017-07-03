@@ -8,7 +8,7 @@
     Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-ietf-perc-private-media-framework-03"
+    docName = "draft-ietf-perc-private-media-framework-04"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "Private Media Framework", "conferencing"]
@@ -312,11 +312,12 @@ received by a Media Distributor or an endpoint are authenticated
 hop-by-hop.
 
 To enable all of the above, this framework defines the use of two
-security contexts and two associated encryption keys; an "inner" key
-(E2E Key(i); i={a given endpoint}) for authenticated encryption of RTP
-media between endpoints and an "outer" key (HBH Key(j); j={a given
-hop}) for the hop between an endpoint and a Media Distributor or
-between Media Distributor.  Reference the following figure.
+security contexts and two associated encryption keys: an "inner" key
+(an E2E key distinct for each transmitted media flow) for authenticated
+encryption of RTP media between endpoints and an "outer" key (HBH key)
+known only to media distributor and the adjacent endpoint)
+for the hop between an endpoint and a Media Distributor or between Media
+Distributor.  Reference the following figure.
 
 ~~~
 +-------------+                                +-------------+
@@ -339,7 +340,7 @@ between Media Distributor.  Reference the following figure.
 ~~~
 Figure: E2E and HBH Keys Used for Authenticated Encryption
 
-The PERC Double draft specification [@!I-D.ietf-perc-double] uses
+The PERC Double specification [@!I-D.ietf-perc-double] uses
 standard SRTP keying material and recommended cryptographic
 transform(s) to first form the inner, end-to-end SRTP cryptographic
 context.  That end-to-end SRTP cryptographic context **MAY** be used
@@ -347,7 +348,9 @@ to encrypt some RTP header extensions along with RTP media content.
 The output of this is treated like an RTP packet and encrypted again
 using the outer hop-by-hop cryptographic context.  The endpoint
 executes the entire Double operation while the Media Distributor just
-performs the outer, hop-by-hop operation.
+performs the outer, hop-by-hop operation.  (See [@keyinventory] for a
+description of the keys used in PERC and [@packetformat] for an
+overview of how the packet appears on the wire.)
 
 RTCP can only be encrypted hop-by-hop, not end-to-end.  This framework
 introduces no additional step for RTCP authenticated encryption, so
@@ -360,28 +363,16 @@ described above.
 To ensure the confidentiality of E2E keys shared between endpoints,
 endpoints will make use of a common Key Encryption Key (KEK) that is
 known only by the trusted entities in a conference.  That KEK, defined
-in the PERC EKT [@!I-D.ietf-perc-srtp-ekt-diet] as the EKTKey, will be
-used to subsequently encrypt SRTP master keys used for E2E
-authenticated encryption (E2E Key(i); i={a given endpoint}) of media
-sent by a given endpoint.
-
-{#fig-who-has-what-key align="center"}
-~~~
-+----------------------+------------+-------+-------+------------+
-| Key     /    Entity  | Endpoint A |  MD X |  MD Y | Endpoint B |
-+----------------------+------------+-------+-------+------------+
-| KEK                  |    Yes     |  No   |  No   |     Yes    |
-+----------------------+------------+-------+-------+------------+
-| E2E Key (i)          |    Yes     |  No   |  No   |     Yes    |
-+----------------------+------------+-------+-------+------------+
-| HBH Key (A<=>MD X)   |    Yes     |  Yes  |  No   |     No     |
-+----------------------+------------+-------+-------+------------+
-| HBH Key (B<=>MD Y)   |    No      |  No   |  Yes  |     Yes    |
-+----------------------+------------+---------------+------------+
-| HBH Key (MD X<=>MD Y)|    No      |  Yes  |  Yes  |     No     |
-+----------------------+------------+---------------+------------+
-~~~
-Figure: Keys per Entity
+in the PERC EKT [@!I-D.ietf-perc-srtp-ekt-diet] as the EKT Key, will be
+used to subsequently encrypt the SRTP master key used for E2E
+authenticated encryption of media sent by a given endpoint.
+Each endpoint in the conference will create a random SRTP master
+key for E2E authenticated encryption, thus participants in the conference
+**MUST** keep track of the E2E keys received via the Full EKT Field for
+each distinct SSRC in the conference so that it can properly decrypt
+received media.  Note, too, that an endpoint may change its E2E key at any
+time and advertise that new key to the conference as specified in
+[@!I-D.ietf-perc-srtp-ekt-diet].
 
 ## E2E Keys and Endpoint Operations
 
@@ -390,18 +381,18 @@ might send more than one at a time and change the mix of media flows
 transmitted during the life of a conference.
 
 Thus, endpoints **MUST** maintain a list of SSRCs from received RTP
-flows and each SSRC's associated E2E Key(i) information.  Following a
-change of the KEK (i.e., EKTKey), prior E2E Key(i) information
-**SHOULD** be retained for a period long enough to ensure that
-late-arriving or out-of-order packets from other endpoints can be
-successfully decrypted. The endpoint **MUST** discard the E2E Key(i)
-and KEK information no later than when it leaves the conference.
+flows and each SSRC's associated E2E key information.  Following a
+change in an E2E key, prior E2E keys **SHOULD** be retained by receivers
+for a period long enough to ensure that late-arriving or out-of-order
+packets from the endpoint can be successfully decrypted.  Receiving
+endpoints **MUST** discard old E2E keys no later than when it leaves the
+conference.
 
 If there is a need to encrypt one or more RTP header extensions
 end-to-end, an encryption key is derived from the end-to-end SRTP
 master key to encrypt header extensions as per [@!RFC6904].  The Media
 Distributor will not be able use the information contained in those
-header extensions encrypted with E2E keys.
+header extensions encrypted with an E2E key.
 
 ## HBH Keys and Hop Operations
 
@@ -410,9 +401,8 @@ requires that every packet be authenticated hop-by-hop (HBH) between
 an endpoint and a Media Distributor, as well between Media
 Distributors.  The authentication key used for hop-by-hop
 authentication is derived from an SRTP master key shared only on the
-respective hop (HBH Key(j); j={a given hop}).  Each HBH Key(j) is
-distinct per hop and no two hops ever intentionally use the same SRTP
-master key.
+respective hop.  Each HBH key is distinct per hop and no two hops ever
+intentionally use the same SRTP master key.
 
 Using hop-by-hop authentication gives the Media Distributor the
 ability to change certain RTP header values.  Which values the Media
@@ -447,9 +437,9 @@ DTLS association to endpoints via procedures defined in PERC EKT
 [I-D.ietf-perc-srtp-ekt-diet].
 
 Media Distributors use DTLS-SRTP [@!RFC5764] directly with a peer
-Media Distributor to establish HBH keys for transmitting RTP and RTCP
+Media Distributor to establish the HBH key for transmitting RTP and RTCP
 packets to that peer Media Distributor.  The Key Distributor does not
-facilitate establishing HBH keys for use between Media Distributors.
+facilitate establishing a HBH key for use between Media Distributors.
 
 ### Initial Key Exchange and Key Distributor
 
@@ -461,7 +451,7 @@ a secure DTLS association between each endpoint and the Key
 Distributor as shown the following figure.  The DTLS association
 between endpoints and the Key Distributor will enable each endpoint to
 receive E2E key information, Key Encryption Key (KEK) information
-(i.e., EKTKey), and HBH key information.  At the same time, the Key
+(i.e., EKT Key), and HBH key information.  At the same time, the Key
 Distributor can securely provide the HBH key information to the Media
 Distributor.  The key information summarized here may include the SRTP
 master key, SRTP master salt, and the negotiated cryptographic
@@ -470,7 +460,7 @@ transform.
 {#fig-initial-key-exchange align="center"}
 ~~~
 
-                          +-----------+ 
+                          +-----------+
                  KEK info |    Key    | HBH Key info to
              to Endpoints |Distributor| Endpoints & Media Distributor
                           +-----------+
@@ -480,7 +470,7 @@ transform.
 +-----------+             +-----------+             +-----------+
 | Endpoint  |   DTLS      |   Media   |   DTLS      | Endpoint  |
 |    KEK    |<------------|Distributor|------------>|    KEK    |
-| HBH Key(j)| to Key Dist | HBH Keys  | to Key Dist | HBH Key(j)|
+|  HBH Key  | to Key Dist | HBH Keys  | to Key Dist |  HBH Key  |
 +-----------+             +-----------+             +-----------+
 
 ~~~
@@ -500,29 +490,29 @@ additional protocol or interface is required.
 ### Key Exchange during a Conference
 
 Following the initial key information exchange with the Key
-Distributor, endpoints will be able to encrypt media end-to-end with
-their E2E Key(i), sending that E2E Key(i) to other endpoints encrypted
-with KEK, and will be able to encrypt and authenticate RTP packets
-using local HBH Key(j).  The procedures defined do not allow the Media
+Distributor, an endpoints will be able to encrypt media end-to-end with
+an E2E key, sending that E2E key to other endpoints encrypted with the
+KEK, and will be able to encrypt and authenticate RTP packets
+using a HBH key.  The procedures defined do not allow the Media
 Distributor to gain access to the KEK information, preventing it from
 gaining access to any endpoint's E2E key and subsequently decrypting
 media.
 
-The KEK (i.e., EKTKey) may need to change from time-to-time during the
+The KEK (i.e., EKT Key) may need to change from time-to-time during the
 life of a conference, such as when a new participant joins or leaves a
 conference.  Dictating if, when or how often a conference is to be
 re-keyed is outside the scope of this document, but this framework
 does accommodate re-keying during the life of a conference.
 
-When a Key Distributor decides to rekey a conference, it transmits a
+When a Key Distributor decides to re-key a conference, it transmits a
 specific message defined in PERC EKT [I-D.ietf-perc-srtp-ekt-diet] to
 each of the conference participants.  The endpoint **MUST** create a
 new SRTP master key and prepare to send that key inside a Full EKT
-Field using the new EKTKey. Since it may take some time for all of the
+Field using the new EKTKey.  Since it may take some time for all of the
 endpoints in conference to finish re-keying, senders **MUST** delay a
 short period of time before sending media encrypted with the new
 master key, but it **MUST** be prepared to make use of the information
-from a new inbound EKTKey immediately. See Section 2.2.2 of
+from a new inbound EKT Key immediately. See Section 2.2.2 of
 [@!I-D.ietf-perc-srtp-ekt-diet].
 
 # Entity Trust
@@ -619,13 +609,13 @@ Media Distributor instead of the correct one.  The deceived sending
 endpoints could incorrectly assuming their packets have been delivered
 to endpoints when they in fact have not.  Further, the false Media
 Distributor may cascade to another legitimate Media Distributor
-creating a false version of the real conference. 
+creating a false version of the real conference.
 
 This attack can be mitigated by the false Media Distributor not being
 authenticated by the Key Distributor during PERC Tunnel
 establishment. Without the tunnel in place, endpoints will not
 establish secure associations with the Key Distributor and
-receive the KEK, causing the conference to not proceed. 
+receive the KEK, causing the conference to not proceed.
 
 ##   Media Distributor Attacks
 
@@ -711,3 +701,211 @@ a co-author.
 
 {backmatter}
 
+# PERC Key Inventory {#keyinventory}
+
+PERC specifies the use of a number of different keys and, understandably,
+it looks complicated or confusing on the surface.  This section summarizes
+the various keys used in the system, how they are generated, and what
+purpose they serve.
+
+The keys are described in the order in which they would typically be
+acquired.
+
+The various keys used in PERC are shown in
+[@key-inventory-table] below.
+
+{#key-inventory-table align="center"}
+~~~
++-----------+----------------------------------------------------+
+| Key       | Description                                        |
++-----------+----------------------------------------------------+
+| KEK       | Key shared by all endpoints and used to encrypt    |
+| (EKT Key) | each endpoint's SRTP master key so receiving       |
+|           | endpoints can decrypt media.                       |
++-----------+----------------------------------------------------+
+| HBH Key   | Key used to encrypt media hop-by-hop.              |
++-----------+----------------------------------------------------+
+| E2E Key   | Key used to encrypt media end-to-end.              |
++-----------+----------------------------------------------------+
+~~~
+Figure: Key Inventory
+
+As you can see, the number key types is very small.  However, what
+can be challenging is keeping track of all of the distinct E2E keys as
+the conference grows in size.  With 1,000 participants in a conference,
+there will be 1,000 distinct SRTP master keys, all of which share the
+same master salt.  Each of those keys are passed through the KDF defined
+in [@RFC3711] to produce the actual encryption and authentication keys.
+Complicating key management is the fact that the KEK can change and,
+when it does, the endpoints generate new SRTP master keys.  And, of
+course, there is a new SRTP master salt to go with those keys.
+Endpoints have to retain old keys for a period of time to ensure they
+can properly decrypt late-arriving or out-of-order packets.
+
+The time required to retain old keys (either EKT Keys or SRTP master keys)
+is not specified, but they should be retained at least for the period of
+time required to re-key the conference or handle late-arriving or
+out-of-order packets.  A period of 60s should be considered a
+generous retention period, but endpoints may keep old keys on hand
+until the end of the conference.
+
+Or more detailed explanation of each of the keys follows.
+
+## DTLS-SRTP Exchange Yields HBH Keys
+
+The first set of keys acquired are for hop-by-hop encryption and
+decryption.  Assuming the use of Double [@!I-D.ietf-perc-double], the
+endpoint would perform DTLS-SRTP exchange with the key distributor
+and receive a key that is, in fact, "double" the size that is needed.
+Per the Double specification, the E2E part is the first half of the key,
+so the endpoint will just discard that information in PERC.  It is not
+used.  The second half of the key material is for HBH operations, so
+that half of the key (corresponding to the least significant bits) is
+assigned internally as the HBH key.
+
+The media distributor doesn't perform DTLS-SRTP, but it is at this point
+that the key distributor will inform the media distributor of the HBH key
+value via the tunnel protocol ([@!I-D.ietf-perc-dtls-tunnel]).  The key
+distributor will send the least significant bits corresponding to the
+half of the keying material determined through DTLS-SRTP with the endpoint
+to the media distributor via the tunnel protocol.  There is a salt
+generated along with the HBH key.  The salt is also longer than needed
+for HBH operations, thus only the least significant bits of the required
+length (i.e., half of the generated salt material) are sent to the media
+distributor via the tunnel protocol.
+
+No two endpoints will have the same HBH key, thus the media distributor
+must keep track each distinct HBH key (and the corresponding salt) and
+use it only for the specified hop.
+
+This key is also used for HBH encryption of RTCP.  RTCP is not
+end-to-end encrypted in PERC.
+
+## The Key Distributor Transmits the KEK (EKT Key)
+
+Via the aforementioned DTLS-SRTP association, the key distributor will
+send the endpoint the KEK (i.e., EKT Key per
+[@!I-D.ietf-perc-srtp-ekt-diet]).  This key is known only to
+the key distributor and endpoints.  This key is the most important to
+protect since having knowledge of this key (and the SRTP master salt
+transmitted as a part of the same message) will allow an entity to
+decrypt any media packet in the conference.
+
+Note that the key distributor can send any number of EKT Keys to
+endpoints.  This can be used to re-key the entire conference.  Each
+key is identified by a "Security Parameter Index" (SPI) value.
+Endpoints should expect that a conference might be re-keyed
+when a new participant joins a conference or when a participant
+leaves a conference in order to protect the confidentiality of
+the conversation before and after such events.
+
+The SRTP master salt to be used by the endpoint is transmitted along
+with the EKT Key.  All endpoints in the conference utilize
+the same SRTP master salt that corresponds with a given EKT Key.
+
+The EKT Field in media packets is encrypted using a cipher specified
+via the EKTKey message (e.g., AES Key Wrap with a 128-bit key).  This
+cipher is different than the cipher used to protect media and is only
+used to encrypt the endpoint's SRTP master key (and other EKT Field data
+as per [@!I-D.ietf-perc-srtp-ekt-diet]).
+
+The media distributor is not given the KEK (i.e., EKT Key).
+
+## Endpoints fabricate an SRTP Master Key
+
+As stated earlier, the E2E key determined via DTLS-SRTP is discarded.
+While it could have been used, the fact that endpoints may need to
+change the SRTP master key periodically or are forced to change the
+SRTP master key as a result of the EKT key changing means using it has
+only limited utility.  To reduce complexity, PERC prescribes that
+endpoints manufacturer random SRTP master keys locally to be used for E2E
+encryption.
+
+This locally-generated SRTP master key is used along with the master salt
+transmitted to the endpoint from the key distributor via the EKTKey
+message to encrypt media end-to-end.
+
+Since the media distributor is not involved in E2E functions, it will not
+create this key nor have access to any endpoint's E2E key.  Note, too,
+that even the key distributor is unaware of the locally-generated E2E keys
+used by each endpoint.
+
+The endpoint will transmit its E2E key to other endpoints in the conference
+by periodically including it in SRTP packets in a Full EKT Field.  When
+placed in the Full EKT Field, it is encrypted using the EKT Key provided
+by the key distributor.  The master salt is not transmitted, though,
+since all endpoints will have received the same master salt via the EKTKey
+message.  The recommended frequency with which an endpoint transmits its
+SRTP master key is specified in [@!I-D.ietf-perc-srtp-ekt-diet].
+
+## Who has What Key
+
+All endpoints have knowledge of the KEK.
+
+Every HBH key is distinct for a given endpoint, thus Endpoint A and
+endpoint B do not have knowledge of the other's HBH key.
+
+Each endpoint generates its own E2E Key (SRTP master key), thus the
+key distinct per endpoint.  This key is transmitted (encrypted) via
+the EKT Field to other endpoints.  Endpoints that receive media from
+a given transmitting endpoint will therefore have knowledge of the
+transmitter's E2E key.
+
+To summarize the various keys and which entity is in possession
+of a given key, refer to [@fig-who-has-what-key].
+
+{#fig-who-has-what-key align="center"}
+~~~
++----------------------+------------+-------+-------+------------+
+| Key     /    Entity  | Endpoint A |  MD X |  MD Y | Endpoint B |
++----------------------+------------+-------+-------+------------+
+| KEK                  |    Yes     |  No   |  No   |     Yes    |
++----------------------+------------+-------+-------+------------+
+| E2E Key (A and B)    |    Yes     |  No   |  No   |     Yes    |
++----------------------+------------+-------+-------+------------+
+| HBH Key (A<=>MD X)   |    Yes     |  Yes  |  No   |     No     |
++----------------------+------------+-------+-------+------------+
+| HBH Key (B<=>MD Y)   |    No      |  No   |  Yes  |     Yes    |
++----------------------+------------+---------------+------------+
+| HBH Key (MD X<=>MD Y)|    No      |  Yes  |  Yes  |     No     |
++----------------------+------------+---------------+------------+
+~~~
+Figure: Keys per Entity
+
+# PERC Packet Format {#packetformat}
+
+[@fig-perc-packet-format] presents a complete picture of what a PERC
+packet looks like when transmitted over the wire.
+
+{#fig-perc-packet-format align="center"}
+~~~
+   0                   1                   2                   3
+   0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+A |V=2|P|X|  CC   |M|     PT      |       sequence number         |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+A |                           timestamp                           |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+A |           synchronization source (SSRC) identifier            |
+  +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+A |            contributing source (CSRC) identifiers             |
+A |                               ....                            |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+A |                    RTP extension (OPTIONAL)                   |
+A |                      (including the OHB)                      |
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+C :                                                               :
+C :                       Ciphertext Payload                      :
+C :                                                               :
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+R :                                                               :
+R :                        EKT Field                              :
+R :                                                               :
+  +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+
+             C = Ciphertext (encrypted and authenticated)
+             A = Associated Data (authenticated only)
+             R = neither encrypted nor authenticated, added
+                 after Authenticated Encryption completed
+~~~
+Figure: PERC Packet Format

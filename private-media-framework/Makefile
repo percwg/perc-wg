@@ -7,12 +7,12 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 mmark ?= mmark
 
 DRAFT = draft-ietf-perc-private-media-framework
-VERSION = 03
+VERSION = 04
 
 .PHONY: all clean diff
 .PRECIOUS: %.xml
 
-all: $(DRAFT)-$(VERSION).txt $(DRAFT)-$(VERSION).html 
+all: $(DRAFT)-$(VERSION).txt $(DRAFT)-$(VERSION).html
 
 diff: $(DRAFT).diff.html
 
@@ -25,10 +25,10 @@ clean:
 %.html: %.xml
 	$(xml2rfc) $< -o $@ --html
 
-$(DRAFT)-$(VERSION).xml: $(DRAFT).md 
-	mmark -xml2 -page $^ $@ 
+$(DRAFT)-$(VERSION).xml: $(DRAFT).md
+	mmark -xml2 -page $^ $@
 
-$(DRAFT).diff.html: $(DRAFT)-$(VERSION).txt $(DRAFT)-old.txt 
+$(DRAFT).diff.html: $(DRAFT)-$(VERSION).txt $(DRAFT)-old.txt
 	htmlwdiff   $(DRAFT)-old.txt   $(DRAFT)-$(VERSION).txt >   $(DRAFT).diff.html
 
 
