@@ -399,8 +399,10 @@ end-to-end protection of the RTP.
 
 ## RTX
 
-TODO - Add text to explain how to use RTX as described in Option A of
-slides presented at IETF 99.
+When using RTX (TODO REF) with double, the cached payloads MUST be the
+encrypted packets with the bits that are sent over the wire to the
+other side. When encrypting a retransmission packet, it MUST be
+encrypted in the single mode.
 
 ## RED
 
