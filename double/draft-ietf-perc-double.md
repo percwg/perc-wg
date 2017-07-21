@@ -413,6 +413,22 @@ TODO - Add text to explain how to use FlexFEC
 [@I-D.ietf-payload-flexible-fec-scheme] as described in Option A of
 slides presented at IETF 99.
 
+The algorithm recommend in [@I-D.ietf-rtcweb-fec] for video is Flex
+FEC.
+
+TODO - find other text from other PR
+
+When using Flex FEC  [@I-D.ietf-payload-flexible-fec-scheme], the
+repair packets MUST use the default order of operations defined in
+[@I-D.ietf-payload-flexible-fec-scheme] of SRTP followed by FEC. The
+repair packets MUST be handled like RTCP packets instead of RTP
+packets in that only the hop-by-hop cryptographic algorithms are
+applied when using the double transform and not the end-to-end
+algorithms. Note that for interoperability with WebRTC,
+[@I-D.ietf-rtcweb-fec] recommends not using additional FEC only m-line
+in SDP for the repair packets.
+
+
 ## DTMF
 
 When DTMF is sent with [@RFC4733], it is end-to-end encrypted and the
