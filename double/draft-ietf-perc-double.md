@@ -409,24 +409,19 @@ slides presented at IETF 99.
 
 ## FEC
 
-TODO - Add text to explain how to use FlexFEC
-[@I-D.ietf-payload-flexible-fec-scheme] as described in Option A of
-slides presented at IETF 99.
+When using Flex FEC [@I-D.ietf-payload-flexible-fec-scheme] with
+double, the negotiation of double for the crypto is the out of band
+signaling that indicates that the repair packets MUST use the order of
+operations of SRTP followed by FEC when encrypting. This is to ensure
+that the original media is not reveled to the Media Distributor but at
+the same time allow the Media Distributor to repair media.  When
+encrypting a packet that contains the Flex FEC data, which is already
+encrypted, it MUST be encrypted in the single mode.
 
-The algorithm recommend in [@I-D.ietf-rtcweb-fec] for video is Flex
-FEC.
-
-TODO - find other text from other PR
-
-When using Flex FEC  [@I-D.ietf-payload-flexible-fec-scheme], the
-repair packets MUST use the default order of operations defined in
-[@I-D.ietf-payload-flexible-fec-scheme] of SRTP followed by FEC. The
-repair packets MUST be handled like RTCP packets instead of RTP
-packets in that only the hop-by-hop cryptographic algorithms are
-applied when using the double transform and not the end-to-end
-algorithms. Note that for interoperability with WebRTC,
-[@I-D.ietf-rtcweb-fec] recommends not using additional FEC only m-line
-in SDP for the repair packets.
+The algorithm recommend in [@I-D.ietf-rtcweb-fec] for repair of video
+is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  Note that for
+interoperability with WebRTC, [@I-D.ietf-rtcweb-fec] recommends not
+using additional FEC only m-line in SDP for the repair packets.
 
 
 ## DTMF
