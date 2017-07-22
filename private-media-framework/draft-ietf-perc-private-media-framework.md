@@ -215,8 +215,8 @@ The Media Distributor may need access to one or more RTP headers or
 header extensions, potentially adding or modifying a certain subset.
 The Media Distributor will also relay secured messaging between the
 endpoints and the Key Distributor and will acquire per-hop key
-information from the Key Distributor.  The actual media content **MUST
-NOT** not be decryptable by a Media Distributor, so it is untrusted to
+information from the Key Distributor.  The actual media content
+**MUST NOT** not be decryptable by a Media Distributor, so it is untrusted to
 have access to the E2E media encryption keys, which this framework's
 key exchange mechanisms will prevent.
 

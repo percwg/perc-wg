@@ -11,7 +11,7 @@
     Title = "DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
-    docName = "draft-ietf-perc-dtls-tunnel-01"
+    docName = "draft-ietf-perc-dtls-tunnel-02"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
@@ -65,7 +65,10 @@
     #          - Insert a message length field after msg_type
     #          - Allow the key distributor to send EndpointDisconnect
     #        Editorial refinement
-    #
+    #   02 - Changes based on agreements at IETF99
+    #          - Remived editor's note about how key distributor gets
+    #            The dtls-id from SDP
+    #
 
 %%%
 
@@ -367,12 +370,6 @@ DTLS association **MUST** be rejected.
 
 The process through which the `tls-id` in SDP is conveyed to
 the key distributor is outside the scope of this document.
-
-Editor's Note: The above can be removed if we agree that the
-media distributor will always forward SDP to the key distributor.
-That said, should the media server take on this function
-or should some other call control function do this?
-The former assumes the media distributor always has the SDP.
 
 The key distributor **MUST** correlate the certificate fingerprint and
 `tls_id` received from endpoint's `ClientHello` message with the
