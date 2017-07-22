@@ -157,29 +157,51 @@ provisioned with this information.  One possible way to provide keying
 material for the outer (hop-by-hop) algorithm is to use
 [@I-D.ietf-perc-dtls-tunnel].
 
+# Requirements for RTP packets
 
-# Original Header Block
+The input to the double transform is an RTP packet.  This packet must contain
+certain extensions in order to encode any differences between the inner and
+outer transforms.
 
-Any SRTP packet processed following these procedures MAY contain an
-Original Header Block (OHB) RTP header extension.
+## End-to-End Extensions Length
 
-The OHB contains the original values of any modified header fields and
-MUST be placed after any already-existing RTP header extensions.
-Placement of the OHB after any original header extensions is important
-so that the receiving endpoint can properly authenticate the original
-packet and any originally included RTP header extensions.  The
-receiving endpoint will authenticate the original packet by restoring
-the modified RTP header field values and header extensions.  It does
-this by copying the original values from the OHB and then removing the
-OHB extension and any other RTP header extensions that appear after
-the OHB extension.
+It is possible for the sender of an RTP packet to apply end-to-end protections
+to the first part of a block of extensions.  It does this by making the first
+extension in the packet an End-to-End Extensions Length (E2EEEL) extension,
+which specifies the length of the data in the extensions block that should
+receive end-to-end protections.  The end-to-end data MUST comprise a set of
+complete extensions; extensions MUST NOT be partially protected.
+
+The extension is two octets long, with the following form:
+
+{align="left"}
+~~~~~
+ 0                   1                   2
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
++-+-+-+-+-+-+-+-+-------------------------------+
+|  ID   | len=1 |     E2E Extensions Length     |
++-+-+-+-+-+-+-+-+-------------------------------+
+~~~~~
+
+If included, the E2EEEL extension MUST be the first extension in the extensions
+block.  If there are no end-to-end protected extensions (i.e., the length is
+zero), then the E2EEEL extension MUST NOT be included.
+
+
+## Original Header Block
+
+The OHB contains the original values of any modified header fields.
+
+Any SRTP packet protected with this profile that has any extensions at all MUST
+have an OHB extension, even if no headers were modified.  In packet with no
+extensions (X=0), which clearly cannot have an OHB, all header fields MUST be
+unmodified from the values set by the sender.
 
 The Media Distributor is only permitted to modify the extension (X)
 bit, payload type (PT) field, and the RTP sequence number field.
 
-The OHB extension is either one octet in length, two octets in length,
-or three octets in length.  The length of the OHB indicates what data
-is contained in the extension.
+The OHB extension is either one octet in length or three octets in length.  The
+length of the OHB indicates what data is contained in the extension.
 
 If the OHB is one octet in length, it contains the original PT field
 value.  In this case, the OHB has this form:
@@ -191,22 +213,6 @@ value.  In this case, the OHB has this form:
 +-+-+-+-+-+-+-+-+---------------+
 |  ID   | len=0 |R|     PT      |
 +-+-+-+-+-+-+-+-+---------------+
-~~~~~
-
-Note that "R" indicates a reserved bit that MUST be set to zero when
-sending a packet and ignored upon receipt. ID is the RTP Header
-Extension identifier negotiated in the SDP. 
-
-If the OHB is two octets in length, it contains the original RTP
-packet sequence number.  In this case, the OHB has this form:
-
-{align="left"}
-~~~~~
- 0                   1                   2
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
-+-+-+-+-+-+-+-+-+-------------------------------+
-|  ID   | len=1 |        Sequence Number        |
-+-+-+-+-+-+-+-+-+-------------------------------+
 ~~~~~
 
 If the OHB is three octets in length, it contains the original PT
@@ -222,6 +228,43 @@ this form:
 +-+-+-+-+-+-+-+-+---------------+-------------------------------+
 ~~~~~
 
+Note that "R" indicates a reserved bit that MUST be set to zero when
+sending a packet and verified to be zero upon receipt. ID is the RTP Header
+Extension identifier negotiated in the SDP. 
+
+
+## Placement of Extensions
+
+If an RTP packet would not otherwise have extensions, then it MUST NOT have an
+E2EEL extension.  If an RTP packet has extensions, then the sender specifies
+whether they receive hop-by-hop or end-to-end integrity protection.
+
+In a packet with only hop-by-hop extensions, the first extension in the
+packet MUST be an OHB extension.  The OHB MUST be present even if no
+modifications have been made; in this case, the header field values in the OHB
+will match those in the RTP header itself.
+
+If any extension are to receive end-to-end integrity protection, then the first
+extension in the packet MUST be an E2EEL extension specifying the length of
+these headers.  The end-to-end extensions MUST immediately follow the E2EEL
+extension, and the OHB extension MUST be the first extension after the
+end-to-end extensions.  Hop-by-hop extensions may then follow the OHB in any
+order.
+
+The placement of the E2EEL and OHB is important because it allows an SRTP
+library to recognize these extensions without needing to know the negotiated
+extension type values for these extensions.  The transform at the  receiving
+endpoint will authenticate the original packet by restoring the modified RTP
+header field values and header extensions.  It does this by copying the
+original values from the OHB and then removing the OHB extension and any other
+RTP header extensions that appear after the OHB extension.
+
+Note that the difference in lengths between the OHB and the E2EEL allows a
+receiver to easily tell whether a packet contains end-to-end protected
+extensions, regardless of the negotiated extension IDs.  If the first extension
+is two octets long, then it is an E2EEL.  If it is one octet or three octets
+long, it is an OHB.
+
 If a Media Distributor modifies an original RTP header value, the
 Media Distributor MUST include the OHB extension to reflect the
 changed value, setting the X bit in the RTP header to 1 if no header
@@ -234,6 +277,32 @@ Distributor MUST NOT change a value already present in the OHB
 extension.
 
 # RTP Operations
+
+## Additional Authenticated Data
+
+In the base GCM transform, the Additional Authenticated Data (AAD) supplied to
+the GCM algorithm comprises the RTP header and all extensions present.  In the
+double transform, the AAD for the outer transform is the same as for GCM, while
+the AAD for the inner transform reflects header for the original packet (before
+any modifications) and any end-to-end protected extensions.  To reconstruct the
+inner AAD from a packet:
+
+* If there are no extensions then the AAD is the RTP header provided.
+
+* If the first extension is two octets long, then interpret it as an E2EEL
+  extension.
+
+  * Extend the AAD with the 4-octet extension header, the E2EEL extension, and
+    the number of bytes indicated in the E2EEL extension.
+
+  * Reset the length field in the 4-octet extension header in the AAD to the
+    smallest value that covers the E2E extensions.
+
+* If there are no E2E extensions, then unset the X bit in the header.
+
+* If there are any extensions after the E2E extensions, interpret the first
+  non-E2E extension as an OHB and update the relevant RTP header fields
+  in the AAD accordingly.
 
 
 ## Encrypting a Packet
