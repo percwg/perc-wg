@@ -256,7 +256,7 @@ key.  The processes is as follows:
 1. Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-2. If the first half of the key is zero, skip to step 6.
+2. If the packet carries repair data, skip to step 6.
 
 3. Form a synthetic RTP packet with the following contents:
   * Header: The RTP header of the original packet with the following
@@ -329,7 +329,7 @@ the inner (end-to-end) cryptographic key.
   header extensions hop-by-hop, then [@!RFC6904] MUST be used when
   decrypting the RTP packet using the outer cryptographic key.
 
-2. If the first half of the key is zero, skip the rest of the steps.
+2. If the packet carries repair data, skip the rest of the steps.
 
 3. Remove the inner authentication tag and the OHB from the end of the payload
   of the outer SRTP packet.
@@ -396,7 +396,7 @@ wire.
 When using RTX [@RFC4588] with double, the cached payloads MUST be the
 encrypted packets with the bits that are sent over the wire to the
 other side. When encrypting a retransmission packet, it MUST be
-encrypted using a crypto context with a null E2E key.
+encrypted as a repair packet.
 
 ## RED
 
@@ -412,7 +412,7 @@ operations of SRTP followed by FEC when encrypting. This is to ensure
 that the original media is not reveled to the Media Distributor but at
 the same time allow the Media Distributor to repair media.  When
 encrypting a packet that contains the Flex FEC data, which is already
-encrypted, it MUST be encrypted using a crypto context with a null E2E key.
+encrypted, it MUST be encrypted as a repair packet.
 
 The algorithm recommend in [@I-D.ietf-rtcweb-fec] for repair of video
 is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  Note that for
