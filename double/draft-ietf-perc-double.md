@@ -256,20 +256,22 @@ key.  The processes is as follows:
 1. Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-2. Form a synthetic RTP packet with the following contents:
+2. If the first half of the key is zero, skip to step 6.
+
+3. Form a synthetic RTP packet with the following contents:
   * Header: The RTP header of the original packet with the following
     modifications:
     * The X bit is set to zero
     * The header is truncated to remove any extensions (12 + 4 * CC bytes)
   * Payload: The RTP payload of the original packet
 
-3. Apply the inner cryptographic algorithm to the RTP packet.
+4. Apply the inner cryptographic algorithm to the RTP packet.
 
-4. Replace the header of the protected RTP packet with the header of the
+5. Replace the header of the protected RTP packet with the header of the
   original packet, and append to the payload of the packet (1) the
   authentication tag from the original transform, and (2) an empty OHB (0x00).
   
-5. Apply the outer cryptographic algorithm to the RTP packet.  If
+6. Apply the outer cryptographic algorithm to the RTP packet.  If
   encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
   be used when encrypting the RTP packet using the outer cryptographic
   key.
@@ -327,10 +329,12 @@ the inner (end-to-end) cryptographic key.
   header extensions hop-by-hop, then [@!RFC6904] MUST be used when
   decrypting the RTP packet using the outer cryptographic key.
 
-2. Remove the inner authentication tag and the OHB from the end of the payload
+2. If the first half of the key is zero, skip the rest of the steps.
+
+3. Remove the inner authentication tag and the OHB from the end of the payload
   of the outer SRTP packet.
 
-3. Form a new synthetic SRTP packet with:
+4. Form a new synthetic SRTP packet with:
 
   * Header = Received header, with the following modifications:
     * Header fields replaced with values from OHB (if any)
@@ -343,7 +347,7 @@ the inner (end-to-end) cryptographic key.
   * Authentication tag is the inner authentication tag from the outer SRTP
     packet.
 
-4. Apply the inner cryptographic algorithm to this synthetic SRTP
+5. Apply the inner cryptographic algorithm to this synthetic SRTP
   packet.  Note if the RTP Sequence Number was changed by the Media
   Distributor, the synthetic packet has the original Sequence
   Number. If the integrity check does not pass, discard the packet.
