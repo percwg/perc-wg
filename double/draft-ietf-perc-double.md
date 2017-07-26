@@ -253,23 +253,23 @@ To encrypt a packet, the endpoint encrypts the packet using the inner (end-to-en
 cryptographic key and then encrypts using the outer (hop-by-hop) cryptographic
 key.  The processes is as follows:
 
-* Form an RTP packet.  If there are any header extensions, they MUST
+1. Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-* Form a synthetic RTP packet with the following contents:
+2. Form a synthetic RTP packet with the following contents:
   * Header: The RTP header of the original packet with the following
     modifications:
     * The X bit is set to zero
     * The header is truncated to remove any extensions (12 + 4 * CC bytes)
   * Payload: The RTP payload of the original packet
 
-* Apply the inner cryptographic algorithm to the RTP packet.
+3. Apply the inner cryptographic algorithm to the RTP packet.
 
-* Replace the header of the protected RTP packet with the header of the
+4. Replace the header of the protected RTP packet with the header of the
   original packet, and append to the payload of the packet (1) the
   authentication tag from the original transform, and (2) an empty OHB (0x00).
   
-* Apply the outer cryptographic algorithm to the RTP packet.  If
+5. Apply the outer cryptographic algorithm to the RTP packet.  If
   encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
   be used when encrypting the RTP packet using the outer cryptographic
   key.
@@ -291,25 +291,25 @@ packet, modifies the packet, updates the OHB with any modifications
 not already present in the OHB, and re-encrypts the packet using the
 cryptographic using the outer (hop-by-hop) key.
 
-* Apply the outer (hop-by-hop) cryptographic algorithm to decrypt the
+1. Apply the outer (hop-by-hop) cryptographic algorithm to decrypt the
   packet.  If decrypting RTP header extensions hop-by-hop, then
   [@!RFC6904] MUST be used.  Note that the RTP payload produced by this
   decryption operation contains the original encrypted payload with the tag
   from the inner transofrm and the OHB appended.
 
-* Change any parts of the RTP packet that the relay wishes to change
+2. Change any parts of the RTP packet that the relay wishes to change
   and are allowed to be changed. 
 
-* If a changed RTP header field is not already in the OHB, add it with
+2. If a changed RTP header field is not already in the OHB, add it with
   its original value to the OHB.  A Media Distributor can add
   information to the OHB, but MUST NOT change existing information in
   the OHB.
 
-* If the Media Distributor resets a parameter to its original value,
+4. If the Media Distributor resets a parameter to its original value,
   it MAY drop it from the OHB. Note that this might result in a
   decrease in the size of the OHB.
 
-* Apply the outer (hop-by-hop) cryptographic algorithm to the packet. If the RTP Sequence
+5. Apply the outer (hop-by-hop) cryptographic algorithm to the packet. If the RTP Sequence
   Number has been modified, SRTP processing happens as defined in SRTP
   and will end up using the new Sequence Number. If encrypting RTP
   header extensions hop-by-hop, then [@!RFC6904] MUST be used.
@@ -321,16 +321,16 @@ the outer (hop-by-hop) cryptographic key, then uses the OHB to
 reconstruct the original packet, which it decrypts and verifies with
 the inner (end-to-end) cryptographic key.
 
-* Apply the outer cryptographic algorithm to the packet.  If the
+1. Apply the outer cryptographic algorithm to the packet.  If the
   integrity check does not pass, discard the packet.  The result of
   this is referred to as the outer SRTP packet.  If decrypting RTP
   header extensions hop-by-hop, then [@!RFC6904] MUST be used when
   decrypting the RTP packet using the outer cryptographic key.
 
-* Remove the inner authentication tag and the OHB from the end of the payload
+2. Remove the inner authentication tag and the OHB from the end of the payload
   of the outer SRTP packet.
 
-* Form a new synthetic SRTP packet with:
+3. Form a new synthetic SRTP packet with:
 
   * Header = Received header, with the following modifications:
     * Header fields replaced with values from OHB (if any)
@@ -343,7 +343,7 @@ the inner (end-to-end) cryptographic key.
   * Authentication tag is the inner authentication tag from the outer SRTP
     packet.
 
-* Apply the inner cryptographic algorithm to this synthetic SRTP
+4. Apply the inner cryptographic algorithm to this synthetic SRTP
   packet.  Note if the RTP Sequence Number was changed by the Media
   Distributor, the synthetic packet has the original Sequence
   Number. If the integrity check does not pass, discard the packet.
