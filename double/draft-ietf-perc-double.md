@@ -114,7 +114,7 @@ Terms used throughout this document include:
 * hop-by-hop: meaning the link from the endpoint to or from the
   Media Distributor.
 
-* OHB: Original Header Block is an RTP header extension that contains
+* OHB: Original Header Block is an octet string that contains
   the original values from the RTP header that might have been changed
   by a Media Distributor.
 
@@ -145,7 +145,7 @@ steps:
 * Assign the key and salt values for the outer (hop-by-hop) algorithm
   to the second half of the key and salt for the double algorithm. The
   first half of the key is referred to as the inner key while the
-  second out half is referred to as the outer key. When a key is used
+  second half is referred to as the outer key. When a key is used
   by a cryptographic algorithm, the salt used is the part of the salt
   generated with that key.
   
@@ -185,9 +185,9 @@ OHB = ?PT ?SEQ Config
 ~~~~~
 
 If present, the PT and SEQ parts of the OHB contain the original payload type
-and sequence number fields, respectively. The final octet of the OHB specifies
-whether these fields are present, and the original value of the marker bit (if
-necessary):
+and sequence number fields, respectively. The final "config" octet of the OHB
+specifies whether these fields are present, and the original value of the
+marker bit (if necessary):
 
 {align="left"}
 ~~~~~
@@ -201,8 +201,8 @@ necessary):
 * M: Marker bit is present
 * B: Value of marker bit
 
-In particular, an all-zero OHB (0x00) indicates that there have been no
-modifications from the original header.
+In particular, an all-zero OHB config octet (0x00) indicates that there have
+been no modifications from the original header.
 
 # RTP Operations
 
@@ -227,11 +227,9 @@ O I |                               | RTP padding   | RTP pad count | I O
 O +>+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O
 O | |                    E2E authentication tag                     | | O
 O | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | O
-O | ~                            OHB ...                            ~ | O
+O | |                            OHB ...                            | | O
 +>| +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |<+
-| | ~                     SRTP MKI (OPTIONAL)                       ~ | | 
-| | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | |
-| | :                    HBH authentication tag                     : | | 
+| | |                    HBH authentication tag                     | | | 
 | | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | |
 | |                                                                   | |
 | +- E2E Encrypted Portion               E2E Authenticated Portion ---+ |
@@ -259,7 +257,7 @@ key.  The processes is as follows:
 
 * Replace the header of the protected RTP packet with the header of the
   original packet, and append to the payload of the packet (1) the
-  authentication tag from the original transofmr, and (2) an empty OHB (0x00).
+  authentication tag from the original transform, and (2) an empty OHB (0x00).
   
 * Apply the outer cryptographic algorithm to the RTP packet.  If
   encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
