@@ -367,7 +367,7 @@ wire.
 When using RTX [@RFC4588] with double, the cached payloads MUST be the
 encrypted packets with the bits that are sent over the wire to the
 other side. When encrypting a retransmission packet, it MUST be
-encrypted as a repair mode packet.
+encrypted in repair mode packet.
 
 ## RED
 
@@ -383,7 +383,7 @@ operations of SRTP followed by FEC when encrypting. This is to ensure
 that the original media is not reveled to the Media Distributor but at
 the same time allow the Media Distributor to repair media.  When
 encrypting a packet that contains the Flex FEC data, which is already
-encrypted, it MUST be encrypted as a repair mode packet.
+encrypted, it MUST be encrypted in repair mode packet.
 
 The algorithm recommend in [@I-D.ietf-rtcweb-fec] for repair of video
 is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  Note that for
