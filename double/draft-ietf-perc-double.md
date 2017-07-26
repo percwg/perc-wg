@@ -160,78 +160,52 @@ material for the outer (hop-by-hop) algorithm is to use
 
 # Original Header Block
 
-Any SRTP packet processed following these procedures MAY contain an
-Original Header Block (OHB) RTP header extension.
+Any SRTP packet processed following these procedures will contain an
+Original Header Block (OHB) in the authentication tag.
 
-The OHB contains the original values of any modified header fields and
-MUST be placed after any already-existing RTP header extensions.
-Placement of the OHB after any original header extensions is important
-so that the receiving endpoint can properly authenticate the original
-packet and any originally included RTP header extensions.  The
+The
 receiving endpoint will authenticate the original packet by restoring
 the modified RTP header field values and header extensions.  It does
 this by copying the original values from the OHB and then removing the
 OHB extension and any other RTP header extensions that appear after
 the OHB extension.
 
-The Media Distributor is only permitted to modify the extension (X)
-bit, payload type (PT) field, and the RTP sequence number field.
-
-The OHB extension is either one octet in length, two octets in length,
-or three octets in length.  The length of the OHB indicates what data
-is contained in the extension.
-
-If the OHB is one octet in length, it contains the original PT field
-value.  In this case, the OHB has this form:
+The OHB has the following syntax (in ABNF):
 
 {align="left"}
 ~~~~~
- 0                   1
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5
-+-+-+-+-+-+-+-+-+---------------+
-|  ID   | len=0 |R|     PT      |
-+-+-+-+-+-+-+-+-+---------------+
+BYTE = %x00-FF
+
+PT = BYTE
+SEQ = 2BYTE
+Config = BYTE
+
+OHB = ?PT ?SEQ Config
 ~~~~~
 
-Note that "R" indicates a reserved bit that MUST be set to zero when
-sending a packet and ignored upon receipt. ID is the RTP Header
-Extension identifier negotiated in the SDP. 
-
-If the OHB is two octets in length, it contains the original RTP
-packet sequence number.  In this case, the OHB has this form:
-
-{align="left"}
-~~~~~
- 0                   1                   2
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3
-+-+-+-+-+-+-+-+-+-------------------------------+
-|  ID   | len=1 |        Sequence Number        |
-+-+-+-+-+-+-+-+-+-------------------------------+
-~~~~~
-
-If the OHB is three octets in length, it contains the original PT
-field value and RTP packet sequence number.  In this case, the OHB has
-this form:
+If present, the PT and SEQ parts of the OHB contain the original
+payload type and sequence number fields, respectively.  The final
+octet of the OHB specifies whether these fields are present, and the
+original value of the marker bit (if necessary):
 
 {align="left"}
 ~~~~~
- 0                   1                   2                   3
- 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 6 4 5 6 7 8 9 1
-+-+-+-+-+-+-+-+-+---------------+-------------------------------+
-|  ID   | len=2 |R|     PT      |        Sequence Number        |
-+-+-+-+-+-+-+-+-+---------------+-------------------------------+
++-+-+-+-+-+-+-+-+
+|R R R B M P Q E|
++-+-+-+-+-+-+-+-+
 ~~~~~
+
+* P: PT is present
+* Q: SEQ is present
+* M: Marker bit is present
+* B: Value of marker bit
+
+In particular, an all-zero OHB (0x00) indicates that there have been no
+modifications from the original header.
 
 If a Media Distributor modifies an original RTP header value, the
-Media Distributor MUST include the OHB extension to reflect the
-changed value, setting the X bit in the RTP header to 1 if no header
-extensions were originally present.  If another Media Distributor
-along the media path makes additional changes to the RTP header and
-any original value is already present in the OHB, the Media
-Distributor must extend the OHB by adding the changed value to the
-OHB.  To properly preserve original RTP header values, a Media
-Distributor MUST NOT change a value already present in the OHB
-extension.
+Media Distributor MUST include the OHB  to reflect the
+changed value. 
 
 # RTP Operations
 
@@ -245,15 +219,7 @@ key.  The processes is as follows:
 * Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-* If the endpoint wishes to insert header extensions that can be
-  modified by an Media Distributor, it MUST insert an OHB header
-  extension at the end of any header extensions protected end-to-end
-  (if any), then add any Media Distributor-modifiable header
-  extensions.  In other cases, the endpoint SHOULD still insert an OHB
-  header extension. The OHB MUST replicate the information found in the RTP
-  header following the application of the inner cryptographic
-  algorithm.  If not already set, the endpoint MUST set the X bit in
-  the RTP header to 1 when introducing the OHB extension.
+* Set the OHB to 0x00 (no change).
 
 * Apply the inner cryptographic algorithm to the RTP packet.  If 
   encrypting RTP header extensions end-to-end, then [@!RFC6904] MUST 
@@ -264,6 +230,10 @@ key.  The processes is as follows:
   encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
   be used when encrypting the RTP packet using the outer cryptographic
   key.
+
+* Append an authentication tag created by apending the tag from the
+  inner cryptographic algorithm followed by the OHB followed by the
+  tag from the outer cryptographic algorithm.
 
 When using EKT [@I-D.ietf-perc-srtp-ekt-diet], the EKT Field comes
 after the SRTP packet exactly like using EKT with any other SRTP
@@ -289,19 +259,13 @@ cryptographic using the outer (hop-by-hop) key.
 * Change any parts of the RTP packet that the relay wishes to change
   and are allowed to be changed. 
 
+* TODO - deal with what happens to OHB if header extensions changes
+  are made
+
 * If a changed RTP header field is not already in the OHB, add it with
   its original value to the OHB.  A Media Distributor can add
   information to the OHB, but MUST NOT change existing information in
   the OHB.
-
-* If the Media Distributor resets a parameter to its original value,
-  it MAY drop it from the OHB as long as there are no other header
-  extensions following the OHB. Note that this might result in a
-  decrease in the size of the OHB.  It is also possible for the Media
-  Distributor to remove the OHB entirely if all parameters in the RTP
-  header are reset to their original values and no other header
-  extensions follow the OHB.  If the OHB is removed and no other
-  extension is present, the X bit in the RTP header MUST be set to 0.
 
 * The Media Distributor MUST NOT delete any header extensions before
   the OHB, but MAY add, delete, or modify any that follow the OHB.
@@ -499,24 +463,6 @@ The security properties for both the inner (end-to-end) and outer
 classic SRTP.
 
 # IANA Considerations
-
-## RTP Header Extension
-
-This document defines a new extension URI in the RTP Compact Header
-Extensions part of the Real-Time Transport Protocol (RTP) Parameters
-registry, according to the following data:
-
-Extension URI: urn:ietf:params:rtp-hdrext:ohb
-
-Description:   Original Header Block
-
-Contact: Cullen Jennings <fluffy@iii.ca>
-
-Reference:     RFCXXXX
-
-Note to RFC Editor: Replace RFCXXXX with the RFC number of this
-specification.
-      
 
 ## DTLS-SRTP
 
