@@ -297,7 +297,7 @@ cryptographic using the outer (hop-by-hop) key.
   packet.  If decrypting RTP header extensions hop-by-hop, then
   [@!RFC6904] MUST be used.  Note that the RTP payload produced by this
   decryption operation contains the original encrypted payload with the tag
-  from the inner transofrm and the OHB appended.
+  from the inner transform and the OHB appended.
 
 2. Change any parts of the RTP packet that the relay wishes to change
   and are allowed to be changed. 
