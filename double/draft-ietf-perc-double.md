@@ -200,6 +200,7 @@ marker bit (if necessary):
 * Q: SEQ is present
 * M: Marker bit is present
 * B: Value of marker bit
+* R: Reserved, MUST be set to 0
 
 In particular, an all-zero OHB config octet (0x00) indicates that there have
 been no modifications from the original header.
