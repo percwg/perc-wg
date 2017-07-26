@@ -416,7 +416,7 @@ operations of SRTP followed by FEC when encrypting. This is to ensure
 that the original media is not reveled to the Media Distributor but at
 the same time allow the Media Distributor to repair media.  When
 encrypting a packet that contains the Flex FEC data, which is already
-encrypted, it MUST be encrypted in the single mode.
+encrypted, it MUST be encrypted using a crypto context with a null E2E key.
 
 The algorithm recommend in [@I-D.ietf-rtcweb-fec] for repair of video
 is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  Note that for
