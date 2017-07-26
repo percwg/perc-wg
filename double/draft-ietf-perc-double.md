@@ -464,24 +464,6 @@ classic SRTP.
 
 # IANA Considerations
 
-## RTP Header Extension
-
-This document defines a new extension URI in the RTP Compact Header
-Extensions part of the Real-Time Transport Protocol (RTP) Parameters
-registry, according to the following data:
-
-Extension URI: urn:ietf:params:rtp-hdrext:ohb
-
-Description:   Original Header Block
-
-Contact: Cullen Jennings <fluffy@iii.ca>
-
-Reference:     RFCXXXX
-
-Note to RFC Editor: Replace RFCXXXX with the RFC number of this
-specification.
-      
-
 ## DTLS-SRTP
 
 We request IANA to add the following values to defines a DTLS-SRTP
