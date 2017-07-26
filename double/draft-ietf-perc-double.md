@@ -381,6 +381,11 @@ additional steps.
 There are some RTP related extensions that need special consideration
 to be used by a relay when using the double transform due to the
 end-to-end protection of the RTP.
+The repair mechanism, when used with double, typically operate on the
+double encrypted data then take the results of theses operations and
+encrypted them using only the HBH key. This results in three
+cryptography operation happening to the repair data sent over the
+wire.
 
 ## RTX
 
