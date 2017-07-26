@@ -216,47 +216,18 @@ been no modifications from the original header.
 
 # RTP Operations
 
-~~~~~
-       0                   1                   2                   3
-     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+<+
-    |V=2|P|X|  CC   |M|     PT      |       sequence number         | I O
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ I O
-    |                           timestamp                           | I O
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ I O
-    |           synchronization source (SSRC) identifier            | I O
-    +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+ I O
-    |            contributing source (CSRC) identifiers             | I O
-    |                               ....                            | I O
-    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O
-    |                    RTP extension (OPTIONAL) ...               | | O
-+>+>+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O
-O I |                          payload  ...                         | I O
-O I |                               +-------------------------------+ I O
-O I |                               | RTP padding   | RTP pad count | I O
-O +>+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O
-O | |                    E2E authentication tag                     | | O
-O | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | O
-O | |                            OHB ...                            | | O
-+>| +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |<+
-| | |                    HBH authentication tag                     | | | 
-| | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | |
-| |                                                                   | |
-| +- E2E Encrypted Portion               E2E Authenticated Portion ---+ |
-|                                                                       |
-+--- HBH Encrypted Portion               HBH Authenticated Portion -----+
-~~~~~
-
 ## Encrypting a Packet
 
-To encrypt a packet, the endpoint encrypts the packet using the inner (end-to-end)
-cryptographic key and then encrypts using the outer (hop-by-hop) cryptographic
-key.  The processes is as follows:
+To encrypt a packet, the endpoint encrypts the packet using the inner
+(end-to-end) cryptographic key and then encrypts using the outer
+(hop-by-hop) cryptographic key.  The encryption also supports a mode
+for repair packets that only does the outer (hop-by-hop) encryption.
+The processes is as follows:
 
 1. Form an RTP packet.  If there are any header extensions, they MUST
   use [@!RFC5285].
 
-2. If the packet carries repair data, skip to step 6.
+2. If the packet is for repair mode data, skip to step 6.
 
 3. Form a synthetic RTP packet with the following contents:
   * Header: The RTP header of the original packet with the following
@@ -329,7 +300,7 @@ the inner (end-to-end) cryptographic key.
   header extensions hop-by-hop, then [@!RFC6904] MUST be used when
   decrypting the RTP packet using the outer cryptographic key.
 
-2. If the packet carries repair data, skip the rest of the steps.
+2. If the packet is for repair mode data, skip the rest of the steps.
 
 3. Remove the inner authentication tag and the OHB from the end of the payload
   of the outer SRTP packet.
@@ -396,7 +367,7 @@ wire.
 When using RTX [@RFC4588] with double, the cached payloads MUST be the
 encrypted packets with the bits that are sent over the wire to the
 other side. When encrypting a retransmission packet, it MUST be
-encrypted as a repair packet.
+encrypted as a repair mode packet.
 
 ## RED
 
@@ -412,7 +383,7 @@ operations of SRTP followed by FEC when encrypting. This is to ensure
 that the original media is not reveled to the Media Distributor but at
 the same time allow the Media Distributor to repair media.  When
 encrypting a packet that contains the Flex FEC data, which is already
-encrypted, it MUST be encrypted as a repair packet.
+encrypted, it MUST be encrypted as a repair mode packet.
 
 The algorithm recommend in [@I-D.ietf-rtcweb-fec] for repair of video
 is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  Note that for
@@ -577,4 +548,42 @@ Westerlund.
 
  
 {backmatter}
+
+# Encryption Overview
+
+The following figure shows a double encrypted SRTP packet. The sides
+indicate the parts of the packet that are encrypted and authenticated
+by the hob-by-hop and end-to-end operations. 
+
+
+~~~~~
+       0                   1                   2                   3 
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+<+
+    |V=2|P|X|  CC   |M|     PT      |       sequence number         | I O 
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ I O 
+    |                           timestamp                           | I O 
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ I O 
+    |           synchronization source (SSRC) identifier            | I O 
+    +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+ I O 
+    |            contributing source (CSRC) identifiers             | I O 
+    |                               ....                            | I O 
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O 
+    |                    RTP extension (OPTIONAL) ...               | | O 
++>+>+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O 
+O I |                          payload  ...                         | I O 
+O I |                               +-------------------------------+ I O 
+O I |                               | RTP padding   | RTP pad count | I O 
+O +>+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O 
+O | |                    E2E authentication tag                     | | O 
+O | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | O 
+O | |                            OHB ...                            | | O 
++>| +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |<+
+| | |                    HBH authentication tag                     | | | 
+| | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | |
+| |                                                                   | |
+| +- E2E Encrypted Portion               E2E Authenticated Portion ---+ |
+|                                                                       |
++--- HBH Encrypted Portion               HBH Authenticated Portion -----+
+~~~~~
 
