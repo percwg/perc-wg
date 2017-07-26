@@ -38,12 +38,21 @@
       email = "paulej@packetizer.com"
 
     [[author]]
+    initials = "R."
+    surname = "Barnes"
+    fullname = "Richard Barnes"
+    organization = "Cisco Systems"
+      [author.address]
+      email = "rlb@ipv.sx"
+
+    [[author]]
     initials = "A.B."
     surname = "Roach"
     fullname = "Adam Roach"
     organization = "Mozilla"
       [author.address]
       email = "adam@nostrum.com"
+
 
 %%%
 
