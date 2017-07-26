@@ -144,7 +144,7 @@ steps:
 
 * Assign the key and salt values for the outer (hop-by-hop) algorithm
   to the second half of the key and salt for the double algorithm. The
-  first half of the key is revered to as the inner key while the
+  first half of the key is referred to as the inner key while the
   second out half is referred to as the outer key. When a key is used
   by a cryptographic algorithm, the salt used is the part of the salt
   generated with that key.
@@ -185,11 +185,9 @@ OHB = ?PT ?SEQ Config
 ~~~~~
 
 If present, the PT and SEQ parts of the OHB contain the original payload type
-and sequence number fields, respectively.  The E2EExtLen portion represents the
-number of octets in the RTP header extension (following the length field) that
-should receive E2E protection, as an unsigned integer in network byte order.
-The final octet of the OHB specifies whether these fields are present, and the
-original value of the marker bit (if necessary):
+and sequence number fields, respectively. The final octet of the OHB specifies
+whether these fields are present, and the original value of the marker bit (if
+necessary):
 
 {align="left"}
 ~~~~~
@@ -285,7 +283,7 @@ packet, modifies the packet, updates the OHB with any modifications
 not already present in the OHB, and re-encrypts the packet using the
 cryptographic using the outer (hop-by-hop) key.
 
-* Apply the outer (bop-by-hop) cryptographic algorithm to decrypt the
+* Apply the outer (hop-by-hop) cryptographic algorithm to decrypt the
   packet.  If decrypting RTP header extensions hop-by-hop, then
   [@!RFC6904] MUST be used.  Note that the RTP payload produced by this
   decryption operation contains the original encrypted payload with the tag
@@ -300,8 +298,7 @@ cryptographic using the outer (hop-by-hop) key.
   the OHB.
 
 * If the Media Distributor resets a parameter to its original value,
-  it MAY drop it from the OHB as long as there are no other header
-  extensions following the OHB. Note that this might result in a
+  it MAY drop it from the OHB. Note that this might result in a
   decrease in the size of the OHB.
 
 * Apply the outer (hop-by-hop) cryptographic algorithm to the packet. If the RTP Sequence
@@ -362,7 +359,6 @@ If any of the following RTP headers extensions are found in the outer
 SRTP packet, they MAY be used:
 
 * Mixer-to-client audio level indicators (See [@RFC6465])
-
 
 # RTCP Operations
 
