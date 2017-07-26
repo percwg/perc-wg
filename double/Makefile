@@ -7,7 +7,7 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 mmark ?= mmark
 
 DRAFT = draft-ietf-perc-double
-VERSION = 05
+VERSION = 06
 
 .PHONY: all clean diff
 .PRECIOUS: %.xml
@@ -17,7 +17,7 @@ all: $(DRAFT)-$(VERSION).txt $(DRAFT)-$(VERSION).html
 diff: $(DRAFT).diff.html
 
 clean:
-	-rm -f $(DRAFT)-$(VERSION).{txt,html,xml,pdf} $(DRAFT).diff.html
+	-rm -f $(DRAFT)-??.{txt,html,xml,pdf} $(DRAFT).diff.html
 
 %.txt: %.xml
 	$(xml2rfc) $< -o $@ --text
