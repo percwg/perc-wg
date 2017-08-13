@@ -541,9 +541,11 @@ algorithm and the second half is used for the outer (hop-by-hop) algorithm.
 
 # Acknowledgments
 
-Thank you for reviews and improvements to this specification from
-David Benham, Magnus Westerlund, Nils Ohlmeier, Paul Jones, Roni Even,
-and Suhas Nandakumar.
+Thank you for reviews and improvements to this specification from Alex
+Gouaillard, David Benham, Magnus Westerlund, Nils Ohlmeier, Paul
+Jones, Roni Even, and Suhas Nandakumar. In addition, thank you to
+Sergio Garcia Murillo proposed the change of transporting the OHB
+information in the RTP payload instead of the RTP header.
 
 {backmatter}
 
