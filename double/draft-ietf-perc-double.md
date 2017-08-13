@@ -541,12 +541,10 @@ algorithm and the second half is used for the outer (hop-by-hop) algorithm.
 
 # Acknowledgments
 
-Many thanks to Richard Barnes for sending significant text for this
-specification. Thank you for reviews and improvements from David
-Benham, Paul Jones, Suhas Nandakumar, Nils Ohlmeier, and Magnus
-Westerlund.
+Thank you for reviews and improvements to this specification from
+David Benham, Magnus Westerlund, Nils Ohlmeier, Paul Jones, Roni Even,
+and Suhas Nandakumar.
 
- 
 {backmatter}
 
 # Encryption Overview
