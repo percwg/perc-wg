@@ -378,9 +378,9 @@ slides presented at IETF 99.
 
 When using Flex FEC [@I-D.ietf-payload-flexible-fec-scheme] with
 double, the negotiation of double for the crypto is the out of band
-signaling that indicates that the repair packets MUST use the order of
+signalling that indicates that the repair packets MUST use the order of
 operations of SRTP followed by FEC when encrypting. This is to ensure
-that the original media is not reveled to the Media Distributor but at
+that the original media is not revealed to the Media Distributor but at
 the same time allow the Media Distributor to repair media.  When
 encrypting a packet that contains the Flex FEC data, which is already
 encrypted, it MUST be encrypted in repair mode packet.
@@ -394,8 +394,8 @@ using additional FEC only m-line in SDP for the repair packets.
 ## DTMF
 
 When DTMF is sent with [@RFC4733], it is end-to-end encrypted and the
-relay can not read it so it can not be used to controll the
-relay. Other out of band methods to controll the relay need to be used
+relay can not read it so it can not be used to control the
+relay. Other out of band methods to control the relay need to be used
 instead.
 
 
