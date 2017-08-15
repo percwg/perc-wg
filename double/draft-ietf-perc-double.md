@@ -399,7 +399,7 @@ relay. Other out of band methods to control the relay need to can be
 used instead.  One way to do this is with out of band REST calls API
 call or [@RFC4730] which will be sent in the signalling thus allowing
 the relay to read the DTMF. Another way would be to send DTMF with
-[@RFC6086] using the info package defined in 3GPP 24.229 v12.16.0 [@SDO-3GPP.24.229]
+[@RFC6086] using the info package defined in [@SDO-3GPP.24.229].
 
 
 
