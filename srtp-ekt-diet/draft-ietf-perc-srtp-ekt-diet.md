@@ -226,7 +226,7 @@ EKTMsgTypeExtension = %x03-FF
 EKTMsgLength = 2BYTE;
 
 SRTPMasterKeyLength = BYTE 
-SRTPMasterKey = 1*256BYTE 
+SRTPMasterKey = 1\*256BYTE 
 SSRC = 4BYTE; SSRC from RTP 
 ROC = 4BYTE ; ROC from SRTP FOR THE GIVEN SSRC
 
@@ -597,38 +597,35 @@ frames. If only sending audio, the RECOMMENDED frequency is every
 
 # Use of EKT with DTLS-SRTP {#dtls-srtp-kt}
 
-This document defines an extension to DTLS-SRTP called SRTP EKT Key
-Transport which enables secure transport of EKT keying material from
-one DTLS-SRTP peer to another. This allows those peers to process EKT
-keying material in SRTP (or SRTCP) and retrieve the embedded SRTP
-keying material. This combination of protocols is valuable because it
-combines the advantages of DTLS, which has strong authentication of
-the endpoint and flexibility, along with allowing secure multiparty
-RTP with loose coordination and efficient communication of per-source
-keys.
+This document defines an extension to DTLS-SRTP called SRTP EKT Key Transport
+which enables secure transport of EKT keying material from one DTLS-SRTP peer
+to another. This allows those peers to process EKT keying material in SRTP (or
+SRTCP) and retrieve the embedded SRTP keying material. This combination of
+protocols is valuable because it combines the advantages of DTLS, which has
+strong authentication of the endpoint and flexibility, along with allowing
+secure multiparty RTP with loose coordination and efficient communication of
+per-source keys.
 
 
 ## DTLS-SRTP Recap
 
-DTLS-SRTP [@!RFC5764] uses an extended DTLS exchange between two peers
-to exchange keying material, algorithms, and parameters for SRTP. The
-SRTP flow operates over the same transport as the DTLS-SRTP exchange
-(i.e., the same 5-tuple). DTLS-SRTP combines the performance and
-encryption flexibility benefits of SRTP with the flexibility and
-convenience of DTLS-integrated key and association
-management. DTLS-SRTP can be viewed in two equivalent ways: as a new
-key management method for SRTP, and a new RTP-specific data format for
+DTLS-SRTP [@!RFC5764] uses an extended DTLS exchange between two peers to
+exchange keying material, algorithms, and parameters for SRTP. The SRTP flow
+operates over the same transport as the DTLS-SRTP exchange (i.e., the same
+5-tuple). DTLS-SRTP combines the performance and encryption flexibility
+benefits of SRTP with the flexibility and convenience of DTLS-integrated key
+and association management. DTLS-SRTP can be viewed in two equivalent ways: as
+a new key management method for SRTP, and a new RTP-specific data format for
 DTLS.
   
 
 ## SRTP EKT Key Transport Extensions to DTLS-SRTP {#dtls-srtp-extensions}
       
 This document defines a new TLS negotiated extension called
-"srtp\_ekt\_key\_transport" and a new TLS content type called
-EKTMessage.
+"srtp\_ekt\_key\_transport" and a new TLS content type called EKTMessage.
 
-Using the syntax described in DTLS [@!RFC6347], the following
-structures are used:
+Using the syntax described in DTLS [@!RFC6347], the following structures are
+used:
 
 {#tls-datastructure}
 ~~~
@@ -667,52 +664,48 @@ struct {
 ~~~
 Figure: Additional TLS Data Structures
 
-If a DTLS client includes srtp\_ekt\_key\_transport in its ClientHello,
-then a DTLS server that supports this extensions will includes
-srtp\_ekt\_key\_transport in its ServerHello message. If a DTLS client
-includes srtp\_ekt\_key\_transport in its ClientHello, but does not
-receive srtp\_ekt\_key\_transport in the ServerHello, the DTLS client
-MUST NOT send DTLS EKTMessage messages. Also, the
-srtp\_ekt\_key\_transport in the ServerHello MUST select one and only
-one EKTCipherType from the list provided by the client in the
-srtp\_ekt\_key\_transport in the ClientHello.
+If a DTLS client includes `srtp_ekt_key_transport` in its ClientHello, then a
+DTLS server that supports this extensions will includes
+`srtp_ekt_key_transport` in its ServerHello message. If a DTLS client includes
+`srtp_ekt_key_transport` in its ClientHello, but does not receive
+`srtp_ekt_key_transport` in the ServerHello, the DTLS client MUST NOT send DTLS
+EKTMessage messages. Also, the `srtp_ekt_key_transport` in the ServerHello MUST
+select one and only one EKTCipherType from the list provided by the client in
+the `srtp_ekt_key_transport` in the ClientHello.
 
-When a DTLS client sends the srtp\_ekt\_key\_transport in its
-ClientHello message, it MUST include the SupportedEKTCiphers as the
-extension\_data for the extension, listing the EKTCipherTypes the
-client is willing to use in preference order, with the most preferred
-version first. When the server responds in the
-srtp\_ekt\_key\_transport in its ServerHello message, it MUST include a
-SupportedEKTCiphers list that selects a single EKTCipherType to use
-(selected from the list provided by the client) or it returns an empty
-list to indicate there is no matching EKTCipherType in the clients
-list that the server is also willing to use. The value to be used in
-the EKTCipherType for future extensions that define new ciphers is the
-value from the "EKT Ciphers Type" IANA registry defined in
-(#iana-ciphers).
+When a DTLS client sends the `srtp_ekt_key_transport` in its ClientHello
+message, it MUST include the SupportedEKTCiphers as the `extension_data` for
+the extension, listing the EKTCipherTypes the client is willing to use in
+preference order, with the most preferred version first. When the server
+responds in the `srtp_ekt_key_transport` in its ServerHello message, it MUST
+include a SupportedEKTCiphers list that selects a single EKTCipherType to use
+(selected from the list provided by the client) or it returns an empty list to
+indicate there is no matching EKTCipherType in the clients list that the server
+is also willing to use. The value to be used in the EKTCipherType for future
+extensions that define new ciphers is the value from the "EKT Ciphers Type"
+IANA registry defined in (#iana-ciphers).
 
 The figure above defines the contents for a new TLS content type called
 EKTMessage which is registered in (#iana-tls-content). The EKTMessage above is
 used as the opaque fragment in the TLSPlaintext structure defined in Section
-6.2.1 of [@!RFC5246] and the srtp\_ekt\_message as the content
-type. The srtp\_ekt\_message content type is defined and registered in
-(#iana-tls-ext).
+6.2.1 of [@!RFC5246] and the `srtp_ekt_message` as the content type. The
+`srtp_ekt_message` content type is defined and registered in (#iana-tls-ext).
 
 
-ekt\_ttl:
-: The maximum amount of time, in seconds, that this ekt\_key\_value
-can be used.  The ekt\_key\_value in this message MUST NOT be used for
-encrypting or decrypting information after the TTL expires.
+`ekt_ttl`
+: The maximum amount of time, in seconds, that this `ekt_key_value` can be
+used.  The `ekt_key_value` in this message MUST NOT be used for encrypting or
+decrypting information after the TTL expires.
 
 
-When the Server wishes to provide a new EKT Key, it can send
-EKTMessage containing an EKTKey with the new key information.  The
-client MUST respond with an EKTMessage of type ekt\_key\_act, if the
-EKTKey was successfully processed and stored or respond with the the
-ekt\_key\_error EKTMessage otherwise.
+When the Server wishes to provide a new EKT Key, it can send EKTMessage
+containing an EKTKey with the new key information.  The client MUST respond
+with an EKTMessage of type `ekt_key_ack`, if the EKTKey was successfully
+processed and stored or respond with the the `ekt_key_error` EKTMessage
+otherwise.
 
-The diagram below shows a message flow of DTLS client and DTLS server
-using the DTLS-SRTP Key Transport extension.
+The diagram below shows a message flow of DTLS client and DTLS server using the
+DTLS-SRTP Key Transport extension.
 
 {#tls-handshake-message-flow}
 ~~~
@@ -744,24 +737,23 @@ SRTP packets                 <------->      SRTP packets
 Figure: DTLS/SRTP Message Flow
 
 
-Note that when used in PERC [@?I-D.ietf-perc-private-media-framework],
-the Server is actually split between the Media Distrbutor and Key
-Distributor. The messages in the above figure that are "SRTP packets"
-will not got to the Key Distributor but the other packets will be
-relayed by the Media Distributor to the Key Distributor.
+Note that when used in PERC [@?I-D.ietf-perc-private-media-framework], the
+Server is actually split between the Media Distrbutor and Key Distributor. The
+messages in the above figure that are "SRTP packets" will not got to the Key
+Distributor but the other packets will be relayed by the Media Distributor to
+the Key Distributor.
 
 
 ## Offer/Answer Considerations
 
-When using EKT with DTLS-SRTP, the negotiation to use EKT is done at
-the DTLS handshake level and does not change the [@RFC3264] Offer /
-Answer messaging.
+When using EKT with DTLS-SRTP, the negotiation to use EKT is done at the DTLS
+handshake level and does not change the [@!RFC3264] Offer / Answer messaging.
  
 
 ## Sending the DTLS EKT\_Key Reliably
 
-The DTLS ekt_key is sent using the retransmissions specified in
-Section 4.2.4.  of DTLS [@!RFC6347].
+The DTLS ekt_key is sent using the retransmissions specified in Section 4.2.4.
+of DTLS [@!RFC6347].
     
     
 # Security Considerations {#sec}
@@ -895,34 +887,31 @@ RFCAAA. Allocated values MUST be in the range of 1 to 254.
 
 ## TLS Extensions {#iana-tls-ext}
 
-IANA is requested to add srtp\_ekt\_key\_transport as a new extension
-name to the "ExtensionType Values" table of the "Transport Layer
-Security (TLS) Extensions" registry with a reference to this
-specification and allocate a value of TBD to for this. Note to RFC
-Editor: TBD will be allocated by IANA.
+IANA is requested to add `srtp_ekt_key_transport` as a new extension name to
+the "ExtensionType Values" table of the "Transport Layer Security (TLS)
+Extensions" registry with a reference to this specification and allocate a
+value of TBD to for this. Note to RFC Editor: TBD will be allocated by IANA.
 
-Considerations for this type of extension are described in Section 5
-of [@RFC4366] and requires "IETF Consensus".
+Considerations for this type of extension are described in Section 5 of
+[@!RFC4366] and requires "IETF Consensus".
 
 
 ## TLS Content Type {#iana-tls-content}
 
-IANA is requested to add srtp\_ekt\_message as an new descriptions
-name to the "TLS ContentType Registry" table of the "Transport Layer
-Security (TLS) Extensions" registry with a reference to this
-specification, a DTLS-OK value of "Y", and allocate a value of TBD to
-for this content type. Note to RFC Editor: TBD will be allocated by
-IANA.
+IANA is requested to add `srtp_ekt_message` as an new descriptions name to the
+"TLS ContentType Registry" table of the "Transport Layer Security (TLS)
+Extensions" registry with a reference to this specification, a DTLS-OK value of
+"Y", and allocate a value of TBD to for this content type. Note to RFC Editor:
+TBD will be allocated by IANA.
 
-This registry was defined in Section 12 of [@!RFC5246] and requires
-"Standards Action".
+This registry was defined in Section 12 of [@!RFC5246] and requires "Standards
+Action".
 
 
 # Acknowledgements
 
-Thank you to Russ Housley provided detailed review and significant
-help with crafting text for this document. Thanks to David Benham, Yi
-Cheng, Lakshminath Dondeti, Kai Fischer, Nermeen Ismail, Paul Jones,
-Eddy Lem, Jonathan Lennox, Michael Peck, Rob Raymond, Sean Turner,
-Magnus Westerlund, and Felix Wyss for fruitful discussions, comments,
-and contributions to this document.
+Thank you to Russ Housley provided detailed review and significant help with
+crafting text for this document. Thanks to David Benham, Yi Cheng, Lakshminath
+Dondeti, Kai Fischer, Nermeen Ismail, Paul Jones, Eddy Lem, Jonathan Lennox,
+Michael Peck, Rob Raymond, Sean Turner, Magnus Westerlund, and Felix Wyss for
+fruitful discussions, comments, and contributions to this document.
