@@ -1,33 +1,34 @@
 
+#   https://pypi.python.org/pypi/xml2rfc
+xml2rfc ?= xml2rfc
+#   https://github.com/cabo/kramdown-rfc2629
+kramdown-rfc2629 ?= kramdown-rfc2629
+#  mmark (https://github.com/miekg/mmark)
+mmark ?= mmark
 
-SRC  := $(wildcard draft-*.xml)
+DRAFT = draft-ietf-perc-srtp-ekt-diet
+VERSION = 06
 
-VERSION = 05
+.PHONY: all clean diff
+.PRECIOUS: %.xml
 
-HTML := $(patsubst %.xml,%-$(VERSION).html,$(SRC))
-TXT  := $(patsubst %.xml,%-$(VERSION).txt,$(SRC))
-DIF  := $(patsubst %.xml,%-$(VERSION).diff.html,$(SRC))
-PDF  := $(patsubst %.xml,%-$(VERSION).pdf,$(SRC))
+all: $(DRAFT)-$(VERSION).txt $(DRAFT)-$(VERSION).html 
 
-all: $(HTML) $(TXT)
-
-diff: $(DIF)
+diff: $(DRAFT).diff.html
 
 clean:
-	rm -f *~ draft*.html draft*pdf draft*txt
+	-rm -f $(DRAFT)-??.{txt,html,xml,pdf} $(DRAFT).diff.html
 
-%-$(VERSION).html: %.xml
-	xml2rfc $^ --html -o $@
+%.txt: %.xml
+	$(xml2rfc) $< -o $@ --text
 
-%-$(VERSION).txt: %.xml
-	xml2rfc $^ --text -o $@
+%.html: %.xml
+	$(xml2rfc) $< -o $@ --html
 
-%.diff.html: %.txt
-	htmlwdiff  $^.old $^ >  $@
+$(DRAFT)-$(VERSION).xml: $(DRAFT).md 
+	mmark -xml2 -page $^ $@ 
 
-%.pdf: %.html  $(SVG)
-	wkpdf -p letter -s $^ -o $@
-
-
+$(DRAFT).diff.html: $(DRAFT)-$(VERSION).txt $(DRAFT)-old.txt 
+	htmlwdiff   $(DRAFT)-old.txt   $(DRAFT)-$(VERSION).txt >   $(DRAFT).diff.html
 
 
