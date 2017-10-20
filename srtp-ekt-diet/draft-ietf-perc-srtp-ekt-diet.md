@@ -641,10 +641,12 @@ ClientHello
  + key_share*
  + pre_shared_key*      -------->
  + cookie
+ + use_srtp
  + supported_ekt_ciphers
                                                ServerHello
                                               + key_share*
                                          + pre_shared_key*
+                                                + use_srtp
                                    + supported_ekt_ciphers
                                      {EncryptedExtensions}
                                      {CertificateRequest*}
@@ -726,18 +728,18 @@ struct {
 } EKTCipher;
 ~~~
 
-If this extension is successfully negotiated, then once one endpoint sends
 
 ### Establishing an EKT Key
 
-Once a client and server have concluded a handshake that negotiated an EKT
-cipher, the server MUST provide to the client a key to be used when encrypting
-and decrypting EKTCiphertext values.  EKT keys are sent in encrypted handshake
-records, using handshake type `ekt_key(TBD)`.  The body of the handshake
-message contains an `EKTKey` structure:
+Once a client and server have concluded a handshake that negotiated
+an EKT cipher, the server MUST provide to the client a key to be
+used when encrypting and decrypting EKTCiphertext values.  EKT keys
+are sent in encrypted handshake records, using handshake type
+`ekt_key(TBD)`.  The body of the handshake message contains an
+`EKTKey` structure:
 
-[[ NOTE: RFC Editor, please replace "TBD" above with the code point assigend by
-IANA ]]
+[[ NOTE: RFC Editor, please replace "TBD" above with the code point
+assigend by IANA ]]
 
 ~~~
 struct {
@@ -767,27 +769,29 @@ EKT tags (along with the EKT cipher negotiated in the handshake)
 `ekt_key_value` in this message MUST NOT be used for encrypting or decrypting
 information after the TTL expires.
 
-If the server did not provide a `supported_ekt_ciphers` extension in its
-ServerHello, then EKTKey messages MUST NOT be sent by either the client or the
-server.
+If the server did not provide a `supported_ekt_ciphers` extension in
+its ServerHello, then EKTKey messages MUST NOT be sent by either the
+client or the server.
 
-When an EKTKey is received and processed successfully, the recipient MUST
-respond with an Ack handshake message as described in Section 7 of
-[@!I-D.ietf-tls-dtls13].  If an EKTKey message is received that cannot be
-processed, then the recipient MUST respond with an appropriate DTLS alert.
+When an EKTKey is received and processed successfully, the recipient
+MUST respond with an Ack handshake message as described in Section 7
+of [@!I-D.ietf-tls-dtls13].  If an EKTKey message is received that
+cannot be processed, then the recipient MUST respond with an
+appropriate DTLS alert.
 
 
 ## Offer/Answer Considerations
 
-When using EKT with DTLS-SRTP, the negotiation to use EKT is done at the DTLS
-handshake level and does not change the [@!RFC3264] Offer / Answer messaging.
+When using EKT with DTLS-SRTP, the negotiation to use EKT is done at
+the DTLS handshake level and does not change the [@!RFC3264] Offer /
+Answer messaging.
 
 
 ## Sending the DTLS EKTKey Reliably
 
-The DTLS `EKTKey` message is sent using the retransmissions specified in
-Section 4.2.4.  of DTLS [@!RFC6347].  Retransmission is finished with an Ack
-message or an alert is received.
+The DTLS `EKTKey` message is sent using the retransmissions
+specified in Section 4.2.4.  of DTLS [@!RFC6347].  Retransmission is
+finished with an Ack message or an alert is received.
 
 
 # Security Considerations {#sec}
