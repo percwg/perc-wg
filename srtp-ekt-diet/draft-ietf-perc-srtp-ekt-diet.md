@@ -1,225 +1,188 @@
-<?xml version="1.0" encoding="us-ascii"?>
-<?rfc toc="yes" ?>
-<?rfc symrefs="yes" ?>
-<?rfc sortrefs="yes"?>
-<?rfc iprnotified="no" ?>
-<?rfc strict="yes" ?>
-<!DOCTYPE rfc SYSTEM "rfc2629.dtd"
-[ ]>
-<?xml-stylesheet type='text/xsl' href='rfc2629.xslt' ?>
-<rfc category="std" docName="draft-ietf-perc-srtp-ekt-diet-05"
-ipr="trust200902">
-  <front>
-    <title abbrev="EKT SRTP">Encrypted Key Transport for DTLS and Secure
-    RTP</title>
-    <author fullname="Cullen Jennings" initials="C."
-    surname="Jennings">
-      <organization abbrev="Cisco">Cisco Systems</organization>
-      <address>
-        <postal>
-          <street></street>
-          <city>Calgary</city>
-          <region>AB</region>
-          <code></code>
-          <country>Canada</country>
-        </postal>
-        <email>fluffy@iii.ca</email>
-      </address>
-    </author>
-    <author fullname="John Mattsson" initials="J.M" surname="Mattsson"
-    role="editor">
-      <organization abbrev="Ericsson">Ericsson AB</organization>
-      <address>
-        <postal>
-          <street>SE-164 80 Stockholm</street>
-          <country>Sweden</country>
-        </postal>
-        <phone>+46 10 71 43 501</phone>
-        <email>john.mattsson@ericsson.com</email>
-      </address>
-    </author>
-    <author fullname="David A. McGrew" initials="D.A.M."
-    surname="McGrew">
-      <organization abbrev="Cisco">Cisco Systems</organization>
-      <address>
-        <postal>
-          <street>510 McCarthy Blvd.</street>
-          <city>Milpitas</city>
-          <region>CA</region>
-          <code>95035</code>
-          <country>US</country>
-        </postal>
-        <phone>(408) 525 8651</phone>
-        <email>mcgrew@cisco.com</email>
-        <uri>http://www.mindspring.com/~dmcgrew/dam.htm</uri>
-      </address>
-    </author>
-    <author fullname="Dan Wing" initials="D." surname="Wing">
-      <organization abbrev="Cisco">Cisco Systems</organization>
-      <address>
-        <postal>
-          <street>510 McCarthy Blvd.</street>
-          <city>Milpitas</city>
-          <region>CA</region>
-          <code>95035</code>
-          <country>US</country>
-        </postal>
-        <phone>(408) 853 4197</phone>
-        <email>dwing@cisco.com</email>
-      </address>
-    </author>
-    <author fullname="Flemming Andreason" initials="F.A."
-    surname="Andreasen">
-      <organization abbrev="Cisco">Cisco Systems</organization>
-      <address>
-        <postal>
-          <street>499 Thornall Street</street>
-          <city>Edison</city>
-          <region>NJ</region>
-          <code>08837</code>
-          <country>US</country>
-        </postal>
-        <email>fandreas@cisco.com</email>
-      </address>
-    </author>
-    <date month="June" day="29" year="2017" />
-    <area>ART</area>
-    <workgroup>PERC Working Group</workgroup>
-    <keyword>RTP</keyword>
-    <keyword>SRTP</keyword>
-    <keyword>EKT</keyword>
-    <abstract>
+%%%
 
-      <t>Encrypted Key Transport (EKT) is an extension to DTLS and  Secure
-      Real-time Transport Protocol (SRTP) that provides for the secure
-      transport of SRTP master keys, rollover counters, and other
-      information within SRTP. This facility enables SRTP for
-      decentralized conferences by distributing a common key to all of
-      the conference endpoints.</t>
-    </abstract>
-  </front>
-  <middle>
-    <section title="Introduction">
+    #
+    # SRTP Double Encryption Procedures
+    #
+    # Generation tool chain:
+    #   mmark (https://github.com/miekg/mmark)
+    #   xml2rfc (http://xml2rfc.ietf.org/)
+    #
 
-      <t>Real-time Transport Protocol (RTP) is designed to allow
-      decentralized groups with minimal control to establish sessions,
-      such as for multimedia conferences. Unfortunately, Secure RTP ( 
-      <xref target="RFC3711">SRTP</xref>) cannot be used in many
-      minimal-control scenarios, because it requires that
-      synchronization source (SSRC) values and other data be
-      coordinated among all of the participants in a session. For
-      example, if a participant joins a session that is already in
-      progress, that participant needs to be told the SRTP keys along
-      with the SSRC, rollover counter (ROC) and other details of the
-      other SRTP sources.</t>
+    Title = "Encrypted Key Transport for DTLS and Secure RTP"
+    abbrev = "EKT SRTP"
+    category = "std"
+    docName = "draft-ietf-perc-srtp-ekt-diet-06"
+    ipr= "trust200902"
+    area = "Internet"
+    keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
 
-      <t>The inability of SRTP to work in the absence of central
-      control was well understood during the design of the protocol;
-      the omission was considered less important than optimizations
-      such as bandwidth conservation. Additionally, in many situations
-      SRTP is used in conjunction with a signaling system that can
-      provide the central control needed by SRTP. However, there are
-      several cases in which conventional signaling systems cannot
-      easily provide all of the coordination required. It is also
-      desirable to eliminate the layer violations that occur when
-      signaling systems coordinate certain SRTP parameters, such as
-      SSRC values and ROCs.</t>
+    [pi]
+    symrefs = "yes"
+    sortrefs = "yes"
+    compact = "yes"
 
-      <t>This document defines Encrypted Key Transport (EKT) for SRTP
-      and reduces the amount of external signaling control that is
-      needed in a SRTP session with multiple receivers. EKT securely
-      distributes the SRTP master key and other information for each
-      SRTP source. With this method, SRTP entities are free to choose
-      SSRC values as they see fit, and to start up new SRTP sources
-      with new SRTP master keys (see Section 2.2) within a session
-      without coordinating with other entities via external signaling
-      or other external means.</t>
+    [[author]]
+    initials = "C."
+    surname = "Jennings"
+    fullname = "Cullen Jennings"
+    organization = "Cisco Systems"
+      [author.address]
+      email = "fluffy@iii.ca"
 
-      <t>EKT provides a way for an SRTP session participant, either a
-      sender or receiver, to securely transport its SRTP master key and
-      current SRTP rollover counter to the other participants in the
-      session. This data furnishes the information needed by the
-      receiver to instantiate an SRTP/SRTCP receiver context.</t>
+    [[author]]
+    initials = "J."
+    surname = "Mattsson"
+    fullname = "John Mattsson"
+    organization = "Ericsson AB"
+      [author.address]
+      email = "john.mattsson@ericsson.com"
 
-      <t>EKT can be used in conferences where the central media
-      distributor or conference bridge can not decrypt the media, such
-      as the type defined for <xref
-      target="I-D.ietf-perc-private-media-framework" />. It can also
-      be used for large scale conferences where the conference
-      bridge or media distributor can decrypt all the media but wishes
-      to encrypt the media it is sending just once then send the same
-      encrypted media to a large number of participants. This reduces
-      the amount of CPU time needed for encryption and can be used
-      for some optimization to media sending that use source specific
-      multicast.</t>
+    [[author]]
+    initials = "D.A.M."
+    surname = "McGrew"
+    fullname = "David A. McGrew"
+    organization = "Cisco Systems"
+      [author.address]
+      email = "mcgrew@cisco.com"
 
-      <t>EKT does not control the manner in which the SSRC is
-      generated; it is only concerned with their secure transport.</t>
+    [[author]]
+    initials = "D."
+    surname = "Wing"
+    fullname = "Dan Wing"
+    organization = "Cisco Systems"
+      [author.address]
+      email = "dwing@cisco.com"
 
-      <t>EKT is not intended to replace external key establishment
-      mechanisms. Instead, it is used in conjunction with those
-      methods, and it relieves those methods of the burden to deliver
-      the context for each SRTP source to every SRTP participant.</t>
-      </section>
+    [[author]]
+    initials = "F.A."
+    surname = "Andreason"
+    fullname = "Flemming Andreason"
+    organization = "Cisco Systems"
+      [author.address]
+      email = "fandreas@cisco.com"
 
-      <section title="Overview">
 
-        <t> This specification defines a way for the server in a
-        DTLS-SRTP negotiation to provide an ekt_key to the client
-        during the DTLS handshake. This ekt_key can be used to encrypt
-        the SRTP master key used to encrypt the media the endpoint
-        sends. This specification also defines a way to send the
-        encrypted SRTP master key along with the SRTP
-        packet. Endpoints that receive this and know the ekt_key can
-        use the ekt_key to decrypt the SRTP master key then use the
-        SRTP master key to decrypt the SRTP packet.
-        </t>
+%%%
 
-        <t> One way to use this is used is described in the
-        architecture defined by <xref
-        target="I-D.ietf-perc-private-media-framework" />. Each
-        participants in the conference call forms a DTLS-SRTP
-        connection to a common key distributor that gives all the
-        endpoints the same ekt_key. Then each endpoint picks there own
-        SRTP master key for the media they send. When sending media,
-        the endpoint also includes the SRTP master key encrypted with
-        the ekt_key. This allows all the endpoints to decrypt the
-        media. </t>
+.# Abstract
+
+Encrypted Key Transport (EKT) is an extension to DTLS and Secure
+Real-time Transport Protocol (SRTP) that provides for the secure
+transport of SRTP master keys, rollover counters, and other
+information within SRTP. This facility enables SRTP for decentralized
+conferences by distributing a common key to all of the conference
+endpoints.
+
+{mainmatter}
+
+# Introduction
+
+Real-time Transport Protocol (RTP) is designed to allow decentralized
+groups with minimal control to establish sessions, such as for
+multimedia conferences.  Unfortunately, Secure RTP (SRTP [@!RFC3711])
+cannot be used in many minimal-control scenarios, because it requires
+that synchronization source (SSRC) values and other data be
+coordinated among all of the participants in a session. For example,
+if a participant joins a session that is already in progress, that
+participant needs to be told the SRTP keys along with the SSRC,
+rollover counter (ROC) and other details of the other SRTP sources.
+
+The inability of SRTP to work in the absence of central control was
+well understood during the design of the protocol; the omission was
+considered less important than optimizations such as bandwidth
+conservation. Additionally, in many situations SRTP is used in
+conjunction with a signaling system that can provide the central
+control needed by SRTP. However, there are several cases in which
+conventional signaling systems cannot easily provide all of the
+coordination required. It is also desirable to eliminate the layer
+violations that occur when signaling systems coordinate certain SRTP
+parameters, such as SSRC values and ROCs.
+
+This document defines Encrypted Key Transport (EKT) for SRTP and
+reduces the amount of external signaling control that is needed in a
+SRTP session with multiple receivers. EKT securely distributes the
+SRTP master key and other information for each SRTP source. With this
+method, SRTP entities are free to choose SSRC values as they see fit,
+and to start up new SRTP sources with new SRTP master keys (see
+Section 2.2) within a session without coordinating with other entities
+via external signaling or other external means.
+
+EKT provides a way for an SRTP session participant, either a sender or
+receiver, to securely transport its SRTP master key and current SRTP
+rollover counter to the other participants in the session. This data
+furnishes the information needed by the receiver to instantiate an
+SRTP/SRTCP receiver context.
+
+EKT can be used in conferences where the central media distributor or
+conference bridge can not decrypt the media, such as the type defined
+for [@?I-D.ietf-perc-private-media-framework]. It can also be used for
+large scale conferences where the conference bridge or media
+distributor can decrypt all the media but wishes to encrypt the media
+it is sending just once then send the same encrypted media to a large
+number of participants. This reduces the amount of CPU time needed for
+encryption and can be used for some optimization to media sending that
+use source specific multicast.
+
+EKT does not control the manner in which the SSRC is generated; it is
+only concerned with their secure transport.
+
+EKT is not intended to replace external key establishment
+mechanisms. Instead, it is used in conjunction with those methods, and
+it relieves those methods of the burden to deliver the context for
+each SRTP source to every SRTP participant.
+
+
+# Overview
+
+This specification defines a way for the server in a DTLS-SRTP
+negotiation to provide an ekt\_key to the client during the DTLS
+handshake. This ekt\_key can be used to encrypt the SRTP master key
+used to encrypt the media the endpoint sends. This specification also
+defines a way to send the encrypted SRTP master key along with the
+SRTP packet. Endpoints that receive this and know the ekt\_key can
+use the ekt\_key to decrypt the SRTP master key then use the SRTP
+master key to decrypt the SRTP packet.
+
+One way to use this is used is described in the architecture defined
+by [@?I-D.ietf-perc-private-media-framework]. Each participants in the
+conference call forms a DTLS-SRTP connection to a common key
+distributor that gives all the endpoints the same ekt\_key. Then each
+endpoint picks there own SRTP master key for the media they send. When
+sending media, the endpoint also includes the SRTP master key
+encrypted with the ekt\_key. This allows all the endpoints to decrypt
+the media.
         
-      </section>
       
-      <section title="Conventions Used In This Document">
+# Conventions Used In This Document
 
-        <t>The key words "MUST", "MUST NOT", "REQUIRED", "SHALL",
-        "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and
-        "OPTIONAL" in this document are to be interpreted as described
-        in <xref target="RFC2119"></xref>.</t>
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
+document are to be interpreted as described in [@!RFC2119].
         
-    </section>
-    <section anchor="normative" title="Encrypted Key Transport">
+# Encrypted Key Transport
 
-      <t>EKT defines a new method of providing SRTP master keys to an
-      endpoint. In order to convey the ciphertext corresponding to the
-      SRTP master key, and other additional information, an additional
-      EKT field is added to SRTP packets. The EKT field appears at the
-      end of the SRTP packet. The EKT field appears after the optional
-      authentication tag if one is present, otherwise the EKT field
-      appears after the ciphertext portion of the packet.</t>
+EKT defines a new method of providing SRTP master keys to an
+endpoint. In order to convey the ciphertext corresponding to the SRTP
+master key, and other additional information, an additional EKT field
+is added to SRTP packets. The EKT field appears at the end of the SRTP
+packet. The EKT field appears after the optional authentication tag if
+one is present, otherwise the EKT field appears after the ciphertext
+portion of the packet.
 
-      <t>EKT MUST NOT be used in conjunction with SRTP's MKI (Master
-      Key Identifier) or with SRTP's &lt;From, To&gt; 
-      <xref target="RFC3711"></xref>, as those SRTP features duplicate
-      some of the functions of EKT. Senders MUST not include MKI when
-      using EKT. Receivers SHOULD simply ignore any MKI field received
-      if EKT is in use.</t>
-      <section anchor="EKT" title="EKT Field Formats">
+EKT MUST NOT be used in conjunction with SRTP's MKI (Master Key
+Identifier) or with SRTP's \<From, To\> [@!RFC3711], as those SRTP
+features duplicate some of the functions of EKT. Senders MUST NOT
+include MKI when using EKT. Receivers SHOULD simply ignore any MKI
+field received if EKT is in use.
 
-        <t>The EKT Field uses the format defined below for the
-        FullEKTField and ShortEKTField.</t>
-        <figure anchor="tag_format_base" title="Full EKT Field format"
-        align="center">
-          <artwork align="center">
-            <![CDATA[
+## EKT Field Formats {#EKT}
+
+The EKT Field uses the format defined below for the FullEKTField and
+ShortEKTField.
+
+
+{#tag-format-base}
+~~~
  0                   1                   2                   3
  0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
@@ -231,32 +194,29 @@ ipr="trust200902">
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 |0 0 0 0 0 0 1 0|
 +-+-+-+-+-+-+-+-+
-]]>
-</artwork>
-        </figure>
-        <figure anchor="tag_format_abbreviated"
-        title="Short EKT Field format" align="center">
-          <artwork align="center">
-            <![CDATA[
+~~~
+Figure: Full EKT Field format
+
+
+{#tag-format-abbreviated}
+~~~
  0 1 2 3 4 5 6 7 
 +-+-+-+-+-+-+-+-+
 |0 0 0 0 0 0 0 0|
 +-+-+-+-+-+-+-+-+
-]]>
-</artwork>
-        </figure>
+~~~
+Figure: Short EKT Field format
 
-        <t>The following shows the syntax of the EKTField expressed in
-        ABNF 
-        <xref target="RFC5234" />. The EKTField is added to the end of
-        an SRTP or SRTCP packet. The EKTPlaintext is the concatenation
-        of SRTPMasterKeyLength, SRTPMasterKey, SSRC, and ROC in that
-        order. The EKTCiphertext is computed by encrypting the
-        EKTPlaintext using the EKTKey. Future extensions to the
-        EKTField MUST conform to the syntax of ExtensionEKTField.</t>
-        <figure anchor="tag_formats" title="EKTField Syntax">
-          <artwork align="left">
-            <![CDATA[
+The following shows the syntax of the EKTField expressed in ABNF
+[@!RFC5234].  The EKTField is added to the end of an SRTP or SRTCP
+packet. The EKTPlaintext is the concatenation of SRTPMasterKeyLength,
+SRTPMasterKey, SSRC, and ROC in that order. The EKTCiphertext is
+computed by encrypting the EKTPlaintext using the EKTKey. Future
+extensions to the EKTField MUST conform to the syntax of
+ExtensionEKTField.
+
+{#tag-formats}
+~~~
 BYTE = %x00-FF
 
 EKTMsgTypeFull = %x02 
@@ -283,440 +243,395 @@ ExtensionData = 1*1024BYTE
 ExtensionEKTField = ExtensionData EKTMsgLength EKTMsgTypeExtension
 
 EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
-]]>
-</artwork>
-        </figure>
+~~~
+Figure: EKTField Syntax
 
-        <t>These fields and data elements are defined as follows: 
-        <list style="hanging">
-          <t hangText="EKTPlaintext:">The data that is input to the EKT
-          encryption operation. This data never appears on the wire,
-          and is used only in computations internal to EKT. This is the
-          concatenation of the SRTP Master Key, the SSRC, and the
-          ROC.</t>
-          <t hangText="EKTCiphertext:">The data that is output from the
-          EKT encryption operation, described in 
-          <xref target="cipher"></xref>. This field is included in SRTP
-          packets when EKT is in use. The length of EKTCiphertext can
-          be larger than the length of the EKTPlaintext that was
-          encrypted.</t>
-          <t hangText="SRTPMasterKey:">On the sender side, the SRTP
-          Master Key associated with the indicated SSRC.</t>
-          <t hangText="SRTPMasterKeyLength:">The length of the
-          SRTPMasterKey in bytes. This depends on the cipher suite
-          negotiated for SRTP using 
-          <xref target="RFC3264" /> SDP Offer/Answer for the SRTP.</t>
-          <t hangText="SSRC:">On the sender side, this field is the
-          SSRC for this SRTP source. The length of this field is 32
-          bits.</t>
-          <t hangText="Rollover Counter (ROC):">On the sender side,
-          this field is set to the current value of the SRTP rollover
-          counter in the SRTP context associated with the SSRC in the
-          SRTP or SRTCP packet. The length of this field is 32
-          bits.</t>
-          <t hangText="Security Parameter Index (SPI):">This field
-          indicates the appropriate EKT Key and other parameters for
-          the receiver to use when processing the packet. The length of
-          this field is 16 bits. The parameters identified by this
-          field are: 
-          <list style="symbols">
+These fields and data elements are defined as follows:
 
-            <t>The EKT cipher used to process the packet.</t>
+EKTPlaintext: The data that is input to the EKT encryption
+operation. This data never appears on the wire, and is used only in
+computations internal to EKT. This is the concatenation of the SRTP
+Master Key, the SSRC, and the ROC.
 
-            <t>The EKT Key used to process the packet.</t>
+EKTCiphertext: The data that is output from the EKT encryption
+operation, described in (#cipher). This field is included in SRTP
+packets when EKT is in use.  The length of EKTCiphertext can be larger
+than the length of the EKTPlaintext that was encrypted.
 
-            <t>The SRTP Master Salt associated with any Master Key
-            encrypted with this EKT Key. The Master Salt is
-            communicated separately, via signaling, typically along
-            with the EKTKey.</t>
-          </list>Together, these data elements are called an EKT
-          parameter set. Each distinct EKT parameter set that is used
-          MUST be associated with a distinct SPI value to avoid
-          ambiguity.</t>
-          <t hangText="EKTMsgLength:">All EKT message other that
-          ShortEKTField have a length as second from the last element.
-          This is the length in octets of either the
-          FullEKTField/ExtensionEKTField including this length field
-          and the following message type.</t>
-          <t hangText="Message Type:">The last byte is used to indicate
-          the type of the EKTField. This MUST be 2 in the FullEKTField
-          format and 0 in ShortEKTField format. Values less than 64 are
-          mandatory to understand while other values are optional to
-          understand. A receiver SHOULD discard the whole EKTField if
-          it contains any message type value that is less than 64 and
-          that is not understood. Message type values that are 64 or
-          greater but not implemented or understood can simply be
-          ignored.</t>
-        </list></t>
-      </section>
-      <section anchor="processing"
-      title="Packet Processing and State Machine">
+SRTPMasterKey: On the sender side, the SRTP Master Key associated with
+the indicated SSRC.
 
-        <t>At any given time, each SRTP/SRTCP source has associated
-        with it a single EKT parameter set. This parameter set is used
-        to process all outbound packets, and is called the outbound
-        parameter set for that SSRC. There may be other EKT parameter
-        sets that are used by other SRTP/SRTCP sources in the same
-        session, including other SRTP/SRTCP sources on the same
-        endpoint (e.g., one endpoint with voice and video might have
-        two EKT parameter sets, or there might be multiple video
-        sources on an endpoint each with their own EKT parameter set).
-        All of the received EKT parameter sets SHOULD be stored by all
-        of the participants in an SRTP session, for use in processing
-        inbound SRTP and SRTCP traffic.</t>
+SRTPMasterKeyLength: The length of the SRTPMasterKey in bytes. This
+depends on the cipher suite negotiated for SRTP using SDP Offer/Answer
+[@RFC3264] for the SRTP.
 
-        <t>Either the FullEKTField or ShortEKTField is appended at the
-        tail end of all SRTP packets. The decision on which to send is
-        specified in 
-        <xref target="timing" />.</t>
-        <section anchor="outbound" title="Outbound Processing">
+SSRC: On the sender side, this field is the SSRC for this SRTP
+source. The length of this field is 32 bits.
 
-          <t>See 
-          <xref target="timing"></xref> which describes when to send an
-          SRTP packet with a FullEKTField. If a FullEKTField is not
-          being sent, then a ShortEKTField is sent so the receiver can
-          correctly determine how to process the packet.</t>
+Rollover Counter (ROC): On the sender side, this field is set to the
+current value of the SRTP rollover counter in the SRTP context
+associated with the SSRC in the SRTP or SRTCP packet. The length of
+this field is 32 bits.
 
-          <t>When an SRTP packet is sent with a FullEKTField, the
-          EKTField for that packet is created as follows, or uses an
-          equivalent set of steps. The creation of the EKTField MUST
-          precede the normal SRTP packet processing.</t>
+Security Parameter Index (SPI): This field indicates the appropriate
+EKT Key and other parameters for the receiver to use when processing
+the packet. The length of this field is 16 bits. The parameters
+identified by this field are:
 
-          <t>
-            <list style="numbers">
+* The EKT cipher used to process the packet.
 
-              <t>The Security Parameter Index (SPI) field is set to the
-              value of the Security Parameter Index that is associated
-              with the outbound parameter set.</t>
+* The EKT Key used to process the packet.
 
-              <t>The EKTPlaintext field is computed from the SRTP
-              Master Key, SSRC, and ROC fields, as shown in 
-              <xref target="EKT" />. The ROC, SRTP Master Key, and SSRC
-              used in EKT processing SHOULD be the same as the one used
-              in the SRTP processing.</t>
+* The SRTP Master Salt associated with any Master Key encrypted with
+   this EKT Key. The Master Salt is communicated separately, via
+   signaling, typically along with the EKTKey.
 
-              <t>The EKTCiphertext field is set to the ciphertext
-              created by encrypting the EKTPlaintext with the EKT
-              cipher, using the EKTKey as the encryption key. The
-              encryption process is detailed in 
-              <xref target="cipher"></xref>.</t>
+Together, these data elements are called an EKT parameter set. Each
+distinct EKT parameter set that is used MUST be associated with a
+distinct SPI value to avoid ambiguity.
 
-              <t>Then the FullEKTField is formed using the
-              EKTCiphertext and the SPI associated with the EKTKey used
-              above. Also appended are the Length and Message Type
-              using the FullEKTField format. 
-              <list style="empty">
+EKTMsgLength: All EKT message other that ShortEKTField have a length
+as second from the last element.  This is the length in octets of
+either the FullEKTField/ExtensionEKTField including this length field
+and the following message type.
 
-                <t>Note: the value of the EKTCiphertext field is
-                identical in successive packets protected by the same
-                EKTKey and SRTP master key. This value MAY be cached by
-                an SRTP sender to minimize computational effort.</t>
-              </list>The computed value of the FullEKTField is written
-              into the packet.</t>
-            </list>
-          </t>
+Message Type: The last byte is used to indicate the type of the
+EKTField. This MUST be 2 in the FullEKTField format and 0 in
+ShortEKTField format. Values less than 64 are mandatory to understand
+while other values are optional to understand. A receiver SHOULD
+discard the whole EKTField if it contains any message type value that
+is less than 64 and that is not understood. Message type values that
+are 64 or greater but not implemented or understood can simply be
+ignored.
 
-          <t>When a packet is sent with the Short EKT Field, the
-          ShortEKFField is simply appended to the packet.</t>
-        </section>
-        <section anchor="inbound" title="Inbound Processing">
 
-          <t>When receiving a packet on a RTP stream, the following
-          steps are applied for each received packet.</t>
+## Packet Processing and State Machine
 
-          <t>
-            <list style="numbers">
+At any given time, each SRTP/SRTCP source has associated with it a
+single EKT parameter set. This parameter set is used to process all
+outbound packets, and is called the outbound parameter set for that
+SSRC. There may be other EKT parameter sets that are used by other
+SRTP/SRTCP sources in the same session, including other SRTP/SRTCP
+sources on the same endpoint (e.g., one endpoint with voice and video
+might have two EKT parameter sets, or there might be multiple video
+sources on an endpoint each with their own EKT parameter set).  All of
+the received EKT parameter sets SHOULD be stored by all of the
+participants in an SRTP session, for use in processing inbound SRTP
+and SRTCP traffic.
 
-              <t>The final byte is checked to determine which EKT
-              format is in use. When an SRTP or SRTCP packet contains a
-              ShortEKTField, the ShortEKTField is removed from the
-              packet then normal SRTP or SRTCP processing occurs. If
-              the packet contains a FullEKTField, then processing
-              continues as described below. The reason for using the
-              last byte of the packet to indicate the type is that the
-              length of the SRTP or SRTCP part is not known until the
-              decryption has occurred. At this point in the processing,
-              there is no easy way to know where the EKT field would
-              start. However, the whole UDP packet has been received so
-              instead of the starting at the front of the packet, the
-              parsing works backwards off the end of the packet and
-              thus the type is put at the very end of the packet.</t>
+Either the FullEKTField or ShortEKTField is appended at the tail end
+of all SRTP packets. The decision on which to send is specified in
+(#timing).
 
-              <t>The Security Parameter Index (SPI) field is used to
-              find which EKT parameter set to be used when processing
-              the packet. If there is no matching SPI, then the
-              verification function MUST return an indication of
-              authentication failure, and the steps described below are
-              not performed. The EKT parameter set contains the EKTKey,
-              EKTCipher, and SRTP Master Salt.</t>
 
-              <t>The EKTCiphertext authentication is checked and it is
-              decrypted, as described in 
-              <xref target="cipher" />, using the EKTKey and EKTCipher
-              found in the previous step. If the EKT decryption
-              operation returns an authentication failure, then the
-              packet processing stops.</t>
+### Outbound Processing
 
-              <t>The resulting EKTPlaintext is parsed as described in 
-              <xref target="EKT" />, to recover the SRTP Master Key,
-              SSRC, and ROC fields. The SRTP Master Salt that is
-              associated with the EKTKey is also retrieved. If the
-              value of the srtp_master_salt sent as part of the EKTkey
-              is longer than needed by SRTP, then it is truncated by
-              taking the first N bytes from the srtp_master_salt
-              field.</t>
+See (#timing) which describes when to send an SRTP packet with a
+FullEKTField. If a FullEKTField is not being sent, then a
+ShortEKTField is sent so the receiver can correctly determine how to
+process the packet.
 
-              <t>If the SSRC in the EKTPlaintext does not match the
-              SSRC of the SRTP packet, then all the information from
-              this EKTPlaintext MUST be discarded and the following
-              steps in this list are not done.</t>
+When an SRTP packet is sent with a FullEKTField, the EKTField for that
+packet is created as follows, or uses an equivalent set of steps. The
+creation of the EKTField MUST precede the normal SRTP packet
+processing.
 
-              <t>The SRTP Master Key, ROC, and SRTP Master Salt from
-              the previous step are saved in a map indexed by the SSRC
-              found in the EKTPlaintext and can be used for any future
-              crypto operations on the inbound packets with that SSRC.
-              If the SRTP Master Key recovered from the EKTPlaintext
-              is longer than needed by SRTP transform in use, the
-              first bytes are used. If the SRTP Master Key recovered
-              from the EKTPlaintext is shorter than needed by SRTP
-              transform in use, then the bytes received replace the
-              first bytes in the existing key but the other bytes
-              after that remain the same as the old key. This allows
-              for replacing just half the key for transforms such as
-              <xref target="I-D.ietf-perc-double"/>.
-              Outbound packets SHOULD continue to use the old SRTP
-              Master Key for 250 ms after sending any new key. This
-              gives all the receivers in the system time to get the new
-              key before they start receiving media encrypted with the
-              new key.</t>
+1. The Security Parameter Index (SPI) field is set to the value of the
+   Security Parameter Index that is associated with the outbound
+   parameter set.
 
-              <t>At this point, EKT processing has successfully
-              completed, and the normal SRTP or SRTCP processing takes
-              place including replay protection.</t>
-            </list>
-          </t>
-        </section>
-      </section>
-      <section anchor="inbound_impl_notes"
-      title="Implementation Notes">
+2. The EKTPlaintext field is computed from the SRTP Master Key, SSRC,
+   and ROC fields, as shown in (#EKT). The ROC, SRTP Master Key, and
+   SSRC used in EKT processing SHOULD be the same as the one used in
+   the SRTP processing.
 
-        <t>The value of the EKTCiphertext field is identical in
-        successive packets protected by the same EKT parameter set and
-        the same SRTP master key, and ROC. This ciphertext value MAY be
-        cached by an SRTP receiver to minimize computational effort by
-        noting when the SRTP master key is unchanged and avoiding
-        repeating the above steps.</t>
+3. The EKTCiphertext field is set to the ciphertext created by
+   encrypting the EKTPlaintext with the EKT cipher, using the EKTKey
+   as the encryption key.  The encryption process is detailed in
+   (#cipher).
 
-        <t>The receiver may want to have a sliding window to retain old
-        SRTP master keys (and related context) for some brief period of
-        time, so that out of order packets can be processed as well as
-        packets sent during the time keys are changing.</t>
+4. Then the FullEKTField is formed using the EKTCiphertext and the SPI
+   associated with the EKTKey used above. Also appended are the Length
+   and Message Type using the FullEKTField format.  
+   
+   * Note: the value of the EKTCiphertext field is identical in successive
+     packets protected by the same EKTKey and SRTP master key. This value MAY
+     be cached by an SRTP sender to minimize computational effort.
 
-        <t>When receiving a new EKTKey, implementations need to use the
-        ekt_ttl to create a time after which this key cannot be used
-        and they also need to create a counter that keeps track of how
-        many times the keys has been used to encrypt data to ensure it
-        does not exceed the T value for that cipher. If either of these
-        limits are exceeded, the key can no longer be used for
-        encryption. At this point implementation need to either use the
-        call signaling to renegotiation a new session or need to
-        terminate the existing session. Terminating the session is a
-        reasonable implementation choice because these limits should
-        not be exceeded except under an attack or error condition.</t>
-      </section>
-      <section anchor="cipher" title="Ciphers">
+    The computed value of the FullEKTField is written into the packet.
 
-        <t>EKT uses an authenticated cipher to encrypt and authenticate
-        the EKTPlaintext. This specification defines the interface to
-        the cipher, in order to abstract the interface away from the
-        details of that function. This specification also defines the
-        default cipher that is used in EKT. The default cipher
-        described in 
-        <xref target="DefaultCipher"></xref> MUST be implemented, but
-        another cipher that conforms to this interface MAY be used.</t>
 
-        <t>An EKTCipher consists of an encryption function and a
-        decryption function. The encryption function E(K, P) takes the
-        following inputs: 
-        <list style="symbols">
+When a packet is sent with the Short EKT Field, the ShortEKFField is
+simply appended to the packet.
 
-          <t>a secret key K with a length of L bytes, and</t>
 
-          <t>a plaintext value P with a length of M bytes.</t>
-        </list>The encryption function returns a ciphertext value C
-        whose length is N bytes, where N may be larger than M. The
-        decryption function D(K, C) takes the following inputs: 
-        <list style="symbols">
+### Inbound Processing
 
-          <t>a secret key K with a length of L bytes, and</t>
+When receiving a packet on a RTP stream, the following steps are
+applied for each received packet.
 
-          <t>a ciphertext value C with a length of N bytes.</t>
-        </list>The decryption function returns a plaintext value P that
-        is M bytes long, or returns an indication that the decryption
-        operation failed because the ciphertext was invalid (i.e. it
-        was not generated by the encryption of plaintext with the key
-        K).</t>
+1. The final byte is checked to determine which EKT format is in
+   use. When an SRTP or SRTCP packet contains a ShortEKTField, the
+   ShortEKTField is removed from the packet then normal SRTP or SRTCP
+   processing occurs. If the packet contains a FullEKTField, then
+   processing continues as described below. The reason for using the
+   last byte of the packet to indicate the type is that the length of
+   the SRTP or SRTCP part is not known until the decryption has
+   occurred. At this point in the processing, there is no easy way to
+   know where the EKT field would start. However, the whole UDP packet
+   has been received so instead of the starting at the front of the
+   packet, the parsing works backwards off the end of the packet and
+   thus the type is put at the very end of the packet.
 
-        <t>These functions have the property that D(K, E(K, P)) = P for
-        all values of K and P. Each cipher also has a limit T on the
-        number of times that it can be used with any fixed key value.
-        The EKTKey MUST NOT be used for encryption more that T times.
-        Note that if the same FullEKTField is retransmitted 3 times,
-        that only counts as 1 encryption.</t>
+2. The Security Parameter Index (SPI) field is used to find which EKT
+   parameter set to be used when processing the packet. If there is no
+   matching SPI, then the verification function MUST return an
+   indication of authentication failure, and the steps described below
+   are not performed. The EKT parameter set contains the EKTKey,
+   EKTCipher, and SRTP Master Salt.
 
-        <t>Security requirements for EKT ciphers are discussed in 
-        <xref target="sec" />.</t>
-        <section anchor="DefaultCipher" title=" Ciphers">
+3. The EKTCiphertext authentication is checked and it is decrypted, as
+   described in (#cipher), using the EKTKey and EKTCipher found in the
+   previous step. If the EKT decryption operation returns an
+   authentication failure, then the packet processing stops.
 
-          <t>The default EKT Cipher is the Advanced Encryption Standard
-          (AES) Key Wrap with Padding 
-          <xref target="RFC5649"></xref> algorithm. It requires a
-          plaintext length M that is at least one octet, and it returns
-          a ciphertext with a length of N = M + (M mod 8) + 8 octets.
-          It can be used with key sizes of L = 16, and L = 32 octets,
-          and its use with those key sizes is indicated as AESKW128, or
-          AESKW256, respectively. The key size determines the length of
-          the AES key used by the Key Wrap algorithm. With this cipher,
-          T=2^48.</t>
-          <texttable anchor="CipherTable" title="EKT Ciphers">
-            <ttcol align='left'>Cipher</ttcol>
-            <ttcol align='right'>L</ttcol>
-            <ttcol align='right'>T</ttcol>
-            <c>AESKW128</c>
-            <c>16</c>
-            <c>2^48</c>
-            <c>AESKW256</c>
-            <c>32</c>
-            <c>2^48</c>
-          </texttable>
+4. The resulting EKTPlaintext is parsed as described in (#EKT), to
+   recover the SRTP Master Key, SSRC, and ROC fields. The SRTP Master
+   Salt that is associated with the EKTKey is also retrieved. If the
+   value of the srtp\_master\_salt sent as part of the EKTkey is
+   longer than needed by SRTP, then it is truncated by taking the
+   first N bytes from the srtp\_master\_salt field.
 
-          <t>As AES-128 is the mandatory to implement transform in 
-          <xref target="RFC3711">SRTP</xref>, AESKW128 MUST be
-          implemented for EKT and AESKW256 MAY be implemented.</t>
-        </section>
-        <section title="Defining New EKT Ciphers">
+5. If the SSRC in the EKTPlaintext does not match the SSRC of the SRTP
+   packet, then all the information from this EKTPlaintext MUST be
+   discarded and the following steps in this list are not done.
 
-          <t>Other specifications may extend this document by defining
-          other EKTCiphers as described in 
-          <xref target="iana"></xref>. This section defines how those
-          ciphers interact with this specification.</t>
+6. The SRTP Master Key, ROC, and SRTP Master Salt from the previous
+   step are saved in a map indexed by the SSRC found in the
+   EKTPlaintext and can be used for any future crypto operations on
+   the inbound packets with that SSRC.  If the SRTP Master Key
+   recovered from the EKTPlaintext is longer than needed by SRTP
+   transform in use, the first bytes are used. If the SRTP Master Key
+   recovered from the EKTPlaintext is shorter than needed by SRTP
+   transform in use, then the bytes received replace the first bytes
+   in the existing key but the other bytes after that remain the same
+   as the old key. This allows for replacing just half the key for
+   transforms such as [@?I-D.ietf-perc-double].  Outbound packets
+   SHOULD continue to use the old SRTP Master Key for 250 ms after
+   sending any new key. This gives all the receivers in the system
+   time to get the new key before they start receiving media encrypted
+   with the new key.
 
-          <t>An EKTCipher determines how the EKTCiphertext field is
-          written, and how it is processed when it is read. This field
-          is opaque to the other aspects of EKT processing. EKT ciphers
-          are free to use this field in any way, but they SHOULD NOT
-          use other EKT or SRTP fields as an input. The values of the
-          parameters L, and T MUST be defined by each EKTCipher. The
-          cipher MUST provide integrity protection.</t>
-        </section>
-      </section>
-      <section anchor="SynchronizingOperation"
-      title="Synchronizing Operation">
+7. At this point, EKT processing has successfully completed, and the
+   normal SRTP or SRTCP processing takes place including replay
+   protection.
+      
 
-        <t>If a source has its EKTKey changed by the key management, it
-        MUST also change its SRTP master key, which will cause it to
-        send out a new FullEKTField. This ensures that if key
-        management thought the EKTKey needs changing (due to a
-        participant leaving or joining) and communicated that to a
-        source, the source will also change its SRTP master key, so
-        that traffic can be decrypted only by those who know the
-        current EKTKey.</t>
-      </section>
-      <section anchor="srtp" title="Transport">
+## Implementation Notes {#inbound-impl-notes}
 
-        <t>EKT SHOULD be used over SRTP, and other specification MAY
-        define how to use it over SRTCP. SRTP is preferred because it
-        shares fate with transmitted media, because SRTP rekeying can
-        occur without concern for RTCP transmission limits, and to
-        avoid SRTCP compound packets with RTP translators and
-        mixers.</t>
-      </section>
-      <section anchor="timing"
-      title="Timing and Reliability Consideration">
+The value of the EKTCiphertext field is identical in successive
+packets protected by the same EKT parameter set and the same SRTP
+master key, and ROC.  This ciphertext value MAY be cached by an SRTP
+receiver to minimize computational effort by noting when the SRTP
+master key is unchanged and avoiding repeating the above steps.
 
-        <t>A system using EKT learns the SRTP master keys distributed
-        with FullEKTFields sent with the SRTP, rather than with call
-        signaling. A receiver can immediately decrypt an SRTP packet,
-        provided the SRTP packet contains a Full EKT Field.</t>
+The receiver may want to have a sliding window to retain old SRTP
+master keys (and related context) for some brief period of time, so
+that out of order packets can be processed as well as packets sent
+during the time keys are changing.
 
-        <t>This section describes how to reliably and expediently
-        deliver new SRTP master keys to receivers.</t>
+When receiving a new EKTKey, implementations need to use the ekt\_ttl
+to create a time after which this key cannot be used and they also
+need to create a counter that keeps track of how many times the keys
+has been used to encrypt data to ensure it does not exceed the T value
+for that cipher. If either of these limits are exceeded, the key can
+no longer be used for encryption. At this point implementation need to
+either use the call signaling to renegotiation a new session or need
+to terminate the existing session.  Terminating the session is a
+reasonable implementation choice because these limits should not be
+exceeded except under an attack or error condition.
+      
+      
+## Ciphers {#cipher}
+      
+EKT uses an authenticated cipher to encrypt and authenticate the
+EKTPlaintext.  This specification defines the interface to the cipher,
+in order to abstract the interface away from the details of that
+function. This specification also defines the default cipher that is
+used in EKT. The default cipher described in (#DefaultCipher) MUST be
+implemented, but another cipher that conforms to this interface MAY be
+used.
 
-        <t>There are three cases to consider. The first case is a new
-        sender joining a session which needs to communicate its SRTP
-        master key to all the receivers. The second case is a sender
-        changing its SRTP master key which needs to be communicated to
-        all the receivers. The third case is a new receiver joining a
-        session already in progress which needs to know the sender's
-        SRTP master key.</t>
+An EKTCipher consists of an encryption function and a decryption
+function. The encryption function E(K, P) takes the following inputs:
 
-        <t>The three cases are: 
-        <list style="hanging">
-          <t hangText="New sender:">A new sender SHOULD send a packet
-          containing the FullEKTField as soon as possible, always
-          before or coincident with sending its initial SRTP packet. To
-          accommodate packet loss, it is RECOMMENDED that three
-          consecutive packets contain the Full EKT Field be
-          transmitted.</t>
-          <t hangText="Rekey:">By sending EKT over SRTP, the rekeying
-          event shares fate with the SRTP packets protected with that
-          new SRTP master key. To accommodate packet loss, it is
-          RECOMMENDED that three consecutive packets contain the
-          FullEKTField be transmitted.</t>
-          <t hangText="New receiver:">When a new receiver joins a
-          session it does not need to communicate its sending SRTP
-          master key (because it is a receiver). When a new receiver
-          joins a session the sender is generally unaware of the
-          receiver joining the session. Thus, senders SHOULD
-          periodically transmit the FullEKTField. That interval depends
-          on how frequently new receivers join the session, the
-          acceptable delay before those receivers can start processing
-          SRTP packets, and the acceptable overhead of sending the
-          FullEKT Field. If sending audio and video, the RECOMMENDED
-          frequency is the same as the rate of intra coded video
-          frames. If only sending audio, the RECOMMENDED frequency is
-          every 100ms.</t>
-        </list></t>
-      </section>
-    </section>
-    <section anchor="dtls-srtp-kt" title="Use of EKT with DTLS-SRTP">
+* a secret key K with a length of L bytes, and
 
-      <t>This document defines an extension to DTLS-SRTP called SRTP
-      EKT Key Transport which enables secure transport of EKT keying
-      material from one DTLS-SRTP peer to another. This allows those
-      peers to process EKT keying material in SRTP (or SRTCP) and
-      retrieve the embedded SRTP keying material. This combination of
-      protocols is valuable because it combines the advantages of DTLS,
-      which has strong authentication of the endpoint and flexibility,
-      along with allowing secure multiparty RTP with loose coordination
-      and efficient communication of per-source keys.</t>
-      <section title="DTLS-SRTP Recap">
+* a plaintext value P with a length of M bytes.
 
-        <t>
-        <xref target="RFC5764">DTLS-SRTP</xref> uses an extended DTLS
-        exchange between two peers to exchange keying material,
-        algorithms, and parameters for SRTP. The SRTP flow operates
-        over the same transport as the DTLS-SRTP exchange (i.e., the
-        same 5-tuple). DTLS-SRTP combines the performance and
-        encryption flexibility benefits of SRTP with the flexibility
-        and convenience of DTLS-integrated key and association
-        management. DTLS-SRTP can be viewed in two equivalent ways: as
-        a new key management method for SRTP, and a new RTP-specific
-        data format for DTLS.</t>
-      </section>
-      <section anchor="dtls-srtp-extensions"
-      title="SRTP EKT Key Transport Extensions to DTLS-SRTP">
+The encryption function returns a ciphertext value C whose length is N
+bytes, where N may be larger than M. The decryption function D(K, C)
+takes the following inputs:
 
-        <t>This document defines a new TLS negotiated extension called
-        "srtp_ekt_key_transport"and a new TLS content type called
-        EKTMessage.</t>
-        <figure anchor="tls_datastructure"
-        title="Additional TLS Data Structures">
-          <preamble>Using the syntax described in 
-          <xref target="RFC6347">DTLS</xref>, the following structures
-          are used:</preamble>
-          <artwork align="center">
-            <![CDATA[
+* a secret key K with a length of L bytes, and
+
+* a ciphertext value C with a length of N bytes.
+        
+The decryption function returns a plaintext value P that is M bytes
+long, or returns an indication that the decryption operation failed
+because the ciphertext was invalid (i.e. it was not generated by the
+encryption of plaintext with the key K).
+
+These functions have the property that D(K, E(K, P)) = P for all
+values of K and P. Each cipher also has a limit T on the number of
+times that it can be used with any fixed key value.  The EKTKey MUST
+NOT be used for encryption more that T times.  Note that if the same
+FullEKTField is retransmitted 3 times, that only counts as 1
+encryption.
+
+Security requirements for EKT ciphers are discussed in (#sec).
+
+
+### Ciphers {#DefaultCipher}
+
+The default EKT Cipher is the Advanced Encryption Standard (AES) Key
+Wrap with Padding [@!RFC5649] algorithm. It requires a plaintext
+length M that is at least one octet, and it returns a ciphertext with
+a length of N = M + (M mod 8)
++ 8 octets.  It can be used with key sizes of L = 16, and L = 32 octets, and
+its use with those key sizes is indicated as AESKW128, or AESKW256,
+respectively. The key size determines the length of the AES key used by the
+Key Wrap algorithm. With this cipher, T=2^48.
+
+{#CipherTable}
+| Cipher   | L  | T    |
+|:---------|---:|-----:|
+| AESKW128 | 16 | 2^48 |
+| AESKW256 | 32 | 2^48 |
+Table: EKT Ciphers
+
+
+As AES-128 is the mandatory to implement transform in SRTP, AESKW128
+MUST be implemented for EKT and AESKW256 MAY be implemented.
+
+
+### Defining New EKT Ciphers
+
+Other specifications may extend this document by defining other
+EKTCiphers as described in (#iana). This section defines how those
+ciphers interact with this specification.
+
+An EKTCipher determines how the EKTCiphertext field is written, and
+how it is processed when it is read. This field is opaque to the other
+aspects of EKT processing. EKT ciphers are free to use this field in
+any way, but they SHOULD NOT use other EKT or SRTP fields as an
+input. The values of the parameters L, and T MUST be defined by each
+EKTCipher. The cipher MUST provide integrity protection.
+      
+
+## Synchronizing Operation {#SynchronizingOperation}
+
+If a source has its EKTKey changed by the key management, it MUST also
+change its SRTP master key, which will cause it to send out a new
+FullEKTField. This ensures that if key management thought the EKTKey
+needs changing (due to a participant leaving or joining) and
+communicated that to a source, the source will also change its SRTP
+master key, so that traffic can be decrypted only by those who know
+the current EKTKey.
+
+
+## Transport {#srtp}
+
+EKT SHOULD be used over SRTP, and other specification MAY define how
+to use it over SRTCP. SRTP is preferred because it shares fate with
+transmitted media, because SRTP rekeying can occur without concern for
+RTCP transmission limits, and to avoid SRTCP compound packets with RTP
+translators and mixers.
+
+
+## Timing and Reliability Consideration {#timing}
+
+A system using EKT learns the SRTP master keys distributed with
+FullEKTFields sent with the SRTP, rather than with call signaling. A
+receiver can immediately decrypt an SRTP packet, provided the SRTP
+packet contains a Full EKT Field.
+
+This section describes how to reliably and expediently deliver new
+SRTP master keys to receivers.
+
+There are three cases to consider. The first case is a new sender
+joining a session which needs to communicate its SRTP master key to
+all the receivers.  The second case is a sender changing its SRTP
+master key which needs to be communicated to all the receivers. The
+third case is a new receiver joining a session already in progress
+which needs to know the sender's SRTP master key.
+
+The three cases are: 
+
+New sender:
+: A new sender SHOULD send a packet containing the
+FullEKTField as soon as possible, always before or coincident with
+sending its initial SRTP packet. To accommodate packet loss, it is
+RECOMMENDED that three consecutive packets contain the Full EKT Field
+be transmitted.
+
+Rekey:
+: By sending EKT over SRTP, the rekeying event shares fate with the
+SRTP packets protected with that new SRTP master key. To accommodate
+packet loss, it is RECOMMENDED that three consecutive packets contain
+the FullEKTField be transmitted.
+
+New receiver:
+: When a new receiver joins a session it does not need to communicate
+its sending SRTP master key (because it is a receiver). When a new
+receiver joins a session the sender is generally unaware of the
+receiver joining the session.  Thus, senders SHOULD periodically
+transmit the FullEKTField. That interval depends on how frequently new
+receivers join the session, the acceptable delay before those
+receivers can start processing SRTP packets, and the acceptable
+overhead of sending the FullEKT Field. If sending audio and video, the
+RECOMMENDED frequency is the same as the rate of intra coded video
+frames. If only sending audio, the RECOMMENDED frequency is every
+100ms.
+
+
+# Use of EKT with DTLS-SRTP {#dtls-srtp-kt}
+
+This document defines an extension to DTLS-SRTP called SRTP EKT Key
+Transport which enables secure transport of EKT keying material from
+one DTLS-SRTP peer to another. This allows those peers to process EKT
+keying material in SRTP (or SRTCP) and retrieve the embedded SRTP
+keying material. This combination of protocols is valuable because it
+combines the advantages of DTLS, which has strong authentication of
+the endpoint and flexibility, along with allowing secure multiparty
+RTP with loose coordination and efficient communication of per-source
+keys.
+
+
+## DTLS-SRTP Recap
+
+DTLS-SRTP [@!RFC5764] uses an extended DTLS exchange between two peers
+to exchange keying material, algorithms, and parameters for SRTP. The
+SRTP flow operates over the same transport as the DTLS-SRTP exchange
+(i.e., the same 5-tuple). DTLS-SRTP combines the performance and
+encryption flexibility benefits of SRTP with the flexibility and
+convenience of DTLS-integrated key and association
+management. DTLS-SRTP can be viewed in two equivalent ways: as a new
+key management method for SRTP, and a new RTP-specific data format for
+DTLS.
+  
+
+## SRTP EKT Key Transport Extensions to DTLS-SRTP {#dtls-srtp-extensions}
+      
+This document defines a new TLS negotiated extension called
+"srtp\_ekt\_key\_transport" and a new TLS content type called
+EKTMessage.
+
+Using the syntax described in DTLS [@!RFC6347], the following
+structures are used:
+
+{#tls-datastructure}
+~~~
 enum {
   reserved(0),  
   aeskw_128(1),  
@@ -749,69 +664,58 @@ struct {
     EKTKey;
   } message;
 } EKTMessage;
-]]>
-</artwork>
-        </figure>
+~~~
+Figure: Additional TLS Data Structures
 
-        <t>If a DTLS client includes "srtp_ekt_key_transport" in its
-        ClientHello, then a DTLS server that supports this extensions
-        will includes "srtp_ekt_key_transport" in its ServerHello
-        message. If a DTLS client includes "srtp_ekt_key_transport" in
-        its ClientHello, but does not receive "srtp_ekt_key_transport"
-        in the ServerHello, the DTLS client MUST NOT send DTLS
-        EKTMessage messages. Also, the "srtp_ekt_key_transport" in the
-        ServerHello MUST select one and only one EKTCipherType from the
-        list provided by the client in the "srtp_ekt_key_transport" in
-        the ClientHello.</t>
+If a DTLS client includes srtp\_ekt\_key\_transport in its ClientHello,
+then a DTLS server that supports this extensions will includes
+srtp\_ekt\_key\_transport in its ServerHello message. If a DTLS client
+includes srtp\_ekt\_key\_transport in its ClientHello, but does not
+receive srtp\_ekt\_key\_transport in the ServerHello, the DTLS client
+MUST NOT send DTLS EKTMessage messages. Also, the
+srtp\_ekt\_key\_transport in the ServerHello MUST select one and only
+one EKTCipherType from the list provided by the client in the
+srtp\_ekt\_key\_transport in the ClientHello.
 
-        <t>When a DTLS client sends the "srtp_ekt_key_transport" in its
-        ClientHello message, it MUST include the SupportedEKTCiphers as
-        the extension_data for the extension, listing the
-        EKTCipherTypes the client is willing to use in preference
-        order, with the most preferred version first. When the server
-        responds in the "srtp_ekt_key_transport" in its ServerHello
-        message, it MUST include a SupportedEKTCiphers list that
-        selects a single EKTCipherType to use (selected from the list
-        provided by the client) or it returns an empty list to indicate
-        there is no matching EKTCipherType in the clients list that the
-        server is also willing to use. The value to be used in the
-        EKTCipherType for future extensions that define new ciphers is
-        the value from the "EKT Ciphers Type" IANA registry defined in 
-        <xref target="iana-ciphers" />.</t>
+When a DTLS client sends the srtp\_ekt\_key\_transport in its
+ClientHello message, it MUST include the SupportedEKTCiphers as the
+extension\_data for the extension, listing the EKTCipherTypes the
+client is willing to use in preference order, with the most preferred
+version first. When the server responds in the
+srtp\_ekt\_key\_transport in its ServerHello message, it MUST include a
+SupportedEKTCiphers list that selects a single EKTCipherType to use
+(selected from the list provided by the client) or it returns an empty
+list to indicate there is no matching EKTCipherType in the clients
+list that the server is also willing to use. The value to be used in
+the EKTCipherType for future extensions that define new ciphers is the
+value from the "EKT Ciphers Type" IANA registry defined in
+(#iana-ciphers).
 
-        <t>The figure above defines the contents for a new TLS content
-        type called EKTMessage which is registered in 
-        <xref target="iana-tls-content" />. The EKTMessage above is
-        used as the opaque fragment in the TLSPlaintext structure
-        defined in Section 6.2.1 of 
-        <xref target="RFC5246"></xref> and the "srtp_ekt_message" as the
-        content type. The "srtp_ekt_message" content type is defined
-        and registered in 
-        <xref target="iana-tls-ext" />.</t>
+The figure above defines the contents for a new TLS content type called
+EKTMessage which is registered in (#iana-tls-content). The EKTMessage above is
+used as the opaque fragment in the TLSPlaintext structure defined in Section
+6.2.1 of [@!RFC5246] and the srtp\_ekt\_message as the content
+type. The srtp\_ekt\_message content type is defined and registered in
+(#iana-tls-ext).
 
-        <t>
-          <list style="hanging">
-            <t hangText="ekt_ttl:">The maximum amount of time, in
-            seconds, that this ekt_key_value can be used. The
-            ekt_key_value in this message MUST NOT be used for
-            encrypting or decrypting information after the TTL
-            expires.</t>
-          </list>
-        </t>
 
-        <t>When the Server wishes to provide a new EKT Key, it can send
-        EKTMessage containing an EKTKey with the new key information.
-        The client MUST respond with an EKTMessage of type ekt_key_ack,
-        if the EKTKey was successfully processed and stored or respond
-        with the the ekt_key_error EKTMessage otherwise.</t>
+ekt\_ttl:
+: The maximum amount of time, in seconds, that this ekt\_key\_value
+can be used.  The ekt\_key\_value in this message MUST NOT be used for
+encrypting or decrypting information after the TTL expires.
 
-        <t>The diagram below shows a message flow of DTLS client and
-        DTLS server using the DTLS-SRTP Key Transport extension.</t>
-        <figure anchor="tls_handshake_message_flow"
-        title="DTLS/SRTP Message Flow">
-          <preamble></preamble>
-          <artwork align="center">
-            <![CDATA[
+
+When the Server wishes to provide a new EKT Key, it can send
+EKTMessage containing an EKTKey with the new key information.  The
+client MUST respond with an EKTMessage of type ekt\_key\_act, if the
+EKTKey was successfully processed and stored or respond with the the
+ekt\_key\_error EKTMessage otherwise.
+
+The diagram below shows a message flow of DTLS client and DTLS server
+using the DTLS-SRTP Key Transport extension.
+
+{#tls-handshake-message-flow}
+~~~
 Client                                               Server
 
 ClientHello + use_srtp + srtp_ekt_key_trans
@@ -836,507 +740,189 @@ ekt_key (rekey)              <-------
 ekt_key_ack                  --------> 
 SRTP packets                 <------->      SRTP packets
 SRTP packets                 <------->      SRTP packets
-]]>
-</artwork>
-        </figure>
-
-        <t>Note that when used in PERC <xref
-        target="I-D.ietf-perc-private-media-framework"/>, the Server
-        is actually split between the Media Distrbutor and Key
-        Distributor. The messages in the above figure that are "SRTP
-        packets" will not got to the Key Distributor but the oter
-        packets will be relayed by the Media Distributor to the Key
-        Distributor. </t>
-
-      </section>
-      <section title="Offer/Answer Considerations">
-
-        <t>When using EKT with DTLS-SRTP, the negotiation to use EKT is
-        done at the DTLS handshake level and does not change the 
-        <xref target="RFC3264"></xref> Offer / Answer messaging.</t>
-      </section>
-      <section title="Sending the DTLS EKT_Key Reliably">
-
-        <t>The DTLS ekt_key is sent using the retransmissions specified
-        in Section 4.2.4. of 
-        <xref target="RFC6347">DTLS</xref>.</t>
-      </section>
-    </section>
-    <section anchor="sec" title="Security Considerations">
-
-      <t>EKT inherits the security properties of the DTLS-SRTP (or
-      other) keying it uses.</t>
-
-      <t>With EKT, each SRTP sender and receiver MUST generate distinct
-      SRTP master keys. This property avoids any security concern over
-      the re-use of keys, by empowering the SRTP layer to create keys
-      on demand. Note that the inputs of EKT are the same as for SRTP
-      with key-sharing: a single key is provided to protect an entire
-      SRTP session. However, EKT remains secure even when SSRC values
-      collide.</t>
-
-      <t>SRTP master keys MUST be randomly generated, and 
-      <xref target="RFC4086"></xref> offers some guidance about random
-      number generation. SRTP master keys MUST NOT be re-used for any
-      other purpose, and SRTP master keys MUST NOT be derived from
-      other SRTP master keys.</t>
-
-      <t>The EKT Cipher includes its own authentication/integrity
-      check. For an attacker to successfully forge a FullEKTField, it
-      would need to defeat the authentication mechanisms of the EKT
-      Cipher authentication mechanism.</t>
-
-      <t>The presence of the SSRC in the EKTPlaintext ensures that an
-      attacker cannot substitute an EKTCiphertext from one SRTP stream
-      into another SRTP stream.</t>
-
-      <t>An attacker who tampers with the bits in FullEKTField can
-      prevent the intended receiver of that packet from being able to
-      decrypt it. This is a minor denial of service vulnerability.
-      Similarly the attacker could take an old FullEKTField from the
-      same session and attach it to the packet. The FullEKTField would
-      correctly decode and pass integrity but the key extracted from
-      the FullEKTField , when used to decrypt the SRTP payload, would
-      be wrong and the SRTP integrity check would fail. Note that the
-      FullEKTField only changes the decryption key and does not change
-      the encryption key. None of these are considered significant
-      attacks as any attacker that can modify the packets in transit
-      and cause the integrity check to fail.</t>
-
-      <t>An attacker could send packets containing a Full EKT Field, in
-      an attempt to consume additional CPU resources of the receiving
-      system by causing the receiving system will decrypt the EKT
-      ciphertext and detect an authentication failure. In some cases,
-      caching the previous values of the Ciphertext as described in 
-      <xref target="inbound_impl_notes"></xref> helps mitigate this
-      issue.</t>
-
-      <t>Each EKT cipher specifies a value T that is the maximum number
-      of times a given key can be used. An endpoint MUST NOT encrypt
-      more than T different Full EKT Field using the same EKTKey. In
-      addition, the EKTKey MUST NOT be used beyond the lifetime
-      provided by the TTL described in 
-      <xref target="dtls-srtp-extensions" />.</t>
-
-      <t>The confidentiality, integrity, and authentication of the EKT
-      cipher MUST be at least as strong as the SRTP cipher and at least
-      as strong as the DTLS-SRTP ciphers.</t>
-
-      <t>Part of the EKTPlaintext is known, or easily guessable to an
-      attacker. Thus, the EKT Cipher MUST resist known plaintext
-      attacks. In practice, this requirement does not impose any
-      restrictions on our choices, since the ciphers in use provide
-      high security even when much plaintext is known.</t>
-
-      <t>An EKT cipher MUST resist attacks in which both ciphertexts
-      and plaintexts can be adaptively chosen and adversaries that can
-      query both the encryption and decryption functions
-      adaptively.</t>
-
-      <t>In some systems, when a member of a conference leaves the
-      conferences, the conferences is rekeyed so that member no longer
-      has the key. When changing to a new EKTKey, it is possible that
-      the attacker could block the EKTKey message getting to a
-      particular endpoint and that endpoint would keep sending media
-      encrypted using the old key. To mitigate that risk, the lifetime
-      of the EKTKey SHOULD be limited using the ekt_ttl.</t>
-    </section>
-    <section anchor="iana" title="IANA Considerations">
-      <section anchor="iana-ekt-msg-types" title="EKT Message Types">
-
-        <t>IANA is requested to create a new table for "EKT Messages
-        Types" in the "Real-Time Transport Protocol (RTP) Parameters"
-        registry. The initial values in this registry are:</t>
-        <texttable anchor="EKTMsgTypeTable" title="EKT Messages Types">
-          <ttcol align='left'>Message Type</ttcol>
-          <ttcol align='right'>Value</ttcol>
-          <ttcol align='left'>Specification</ttcol>
-          <c>Short</c>
-          <c>0</c>
-          <c>RFCAAAA</c>
-          <c>Full</c>
-          <c>2</c>
-          <c>RFCAAAA</c>
-          <c>Reserved</c>
-          <c>63</c>
-          <c>RFCAAAA</c>
-          <c>Reserved</c>
-          <c>255</c>
-          <c>RFCAAAA</c>
-        </texttable>
-
-        <t>Note to RFC Editor: Please replace RFCAAAA with the RFC
-        number for this specification.</t>
-
-        <t>New entries to this table can be added via "Specification
-        Required" as defined in 
-        <xref target="RFC5226" />. When requesting a new value, the
-        requestor needs to indicate if it is mandatory to understand or
-        not. If it is mandatory to understand, IANA needs to allocate a
-        value less than 64, if it is not mandatory to understand, a
-        value greater than or equal to 64 needs to be allocated. IANA
-        SHOULD prefer allocation of even values over odd ones until the
-        even code points are consumed to avoid conflicts with pre
-        standard versions of EKT that have been deployed.</t>
-
-        <t>All new EKT messages MUST be defined to have a length as
-        second from the last element.</t>
-      </section>
-      <section anchor="iana-ciphers" title="EKT Ciphers">
-
-        <t>IANA is requested to create a new table for "EKT Ciphers" in
-        the "Real-Time Transport Protocol (RTP) Parameters" registry.
-        The initial values in this registry are:</t>
-        <texttable anchor="EKTCipherTable" title="EKT Cipher Types">
-          <ttcol align='left'>Name</ttcol>
-          <ttcol align='right'>Value</ttcol>
-          <ttcol align='left'>Specification</ttcol>
-          <c>AESKW128</c>
-          <c>1</c>
-          <c>RFCAAAA</c>
-          <c>AESKW256</c>
-          <c>2</c>
-          <c>RFCAAAA</c>
-          <c>Reserved</c>
-          <c>255</c>
-          <c>RFCAAAA</c>
-        </texttable>
-
-        <t>Note to RFC Editor: Please replace RFCAAAA with the RFC
-        number for this specification.</t>
-
-        <t>New entries to this table can be added via "Specification
-        Required" as defined in 
-        <xref target="RFC5226" />. The expert SHOULD ensure the
-        specification defines the values for L and T as required in 
-        <xref target="cipher" /> of RFCAAA. Allocated values MUST be in
-        the range of 1 to 254.</t>
-      </section>
-      <section anchor="iana-tls-ext" title="TLS Extensions">
-
-        <t>IANA is requested to add "srtp_ekt_key_transport" as an new
-        extension name to the "ExtensionType Values" table of the
-        "Transport Layer Security (TLS) Extensions" registry with a
-        reference to this specification and allocate a value of TBD to
-        for this. Note to RFC Editor: TBD will be allocated by
-        IANA.</t>
-
-        <t>Considerations for this type of extension are described in
-        Section 5 of 
-        <xref target="RFC4366"></xref> and requires "IETF
-        Consensus".</t>
-      </section>
-      <section anchor="iana-tls-content" title="TLS Content Type">
-
-        <t>IANA is requested to add "srtp_ekt_message" as an new
-        descriptions name to the "TLS ContentType Registry" table of
-        the "Transport Layer Security (TLS) Extensions" registry with a
-        reference to this specification, a DTLS-OK value of "Y", and
-        allocate a value of TBD to for this content type. Note to RFC
-        Editor: TBD will be allocated by IANA.</t>
-
-        <t>This registry was defined in Section 12 of 
-        <xref target="RFC5246"></xref> and requires "Standards
-        Action".</t>
-      </section>
-    </section>
-    <section title="Acknowledgements">
-
-      <t>Thank you to Russ Housley provided detailed review and
-      significant help with crafting text for this document. Thanks to
-      David Benham, Yi Cheng, Lakshminath Dondeti, Kai Fischer, Nermeen
-      Ismail, Paul Jones, Eddy Lem, Jonathan Lennox, Michael Peck, Rob
-      Raymond, Sean Turner, Magnus Westerlund, and Felix Wyss for
-      fruitful discussions, comments, and contributions to this
-      document.</t>
-    </section>
-  </middle>
-  <back>
-    <references title="Normative References">
-      <reference anchor='RFC2119'
-      target='http://www.rfc-editor.org/info/rfc2119'>
-        <front>
-          <title>Key words for use in RFCs to Indicate Requirement
-          Levels</title>
-          <author initials='S.' surname='Bradner'
-          fullname='S. Bradner'>
-            <organization />
-          </author>
-          <date year='1997' month='March' />
-       
-
-      
-        </front>
-        <seriesInfo name='BCP' value='14' />
-        <seriesInfo name='RFC' value='2119' />
-        <seriesInfo name='DOI' value='10.17487/RFC2119' />
-      </reference>
-      <reference anchor='RFC3711'
-      target='http://www.rfc-editor.org/info/rfc3711'>
-        <front>
-          <title>The Secure Real-time Transport Protocol (SRTP)</title>
-          <author initials='M.' surname='Baugher'
-          fullname='M. Baugher'>
-            <organization />
-          </author>
-          <author initials='D.' surname='McGrew' fullname='D. McGrew'>
-            <organization />
-          </author>
-          <author initials='M.' surname='Naslund'
-          fullname='M. Naslund'>
-            <organization />
-          </author>
-          <author initials='E.' surname='Carrara'
-          fullname='E. Carrara'>
-            <organization />
-          </author>
-          <author initials='K.' surname='Norrman'
-          fullname='K. Norrman'>
-            <organization />
-          </author>
-          <date year='2004' month='March' />
-       
-        </front>
-        <seriesInfo name='RFC' value='3711' />
-        <seriesInfo name='DOI' value='10.17487/RFC3711' />
-      </reference>
-      <reference anchor='RFC4086'
-      target='http://www.rfc-editor.org/info/rfc4086'>
-        <front>
-          <title>Randomness Requirements for Security</title>
-          <author initials='D.' surname='Eastlake 3rd'
-          fullname='D. Eastlake 3rd'>
-            <organization />
-          </author>
-          <author initials='J.' surname='Schiller'
-          fullname='J. Schiller'>
-            <organization />
-          </author>
-          <author initials='S.' surname='Crocker'
-          fullname='S. Crocker'>
-            <organization />
-          </author>
-          <date year='2005' month='June' />
-       
-        </front>
-        <seriesInfo name='BCP' value='106' />
-        <seriesInfo name='RFC' value='4086' />
-        <seriesInfo name='DOI' value='10.17487/RFC4086' />
-      </reference>
-      <reference anchor='RFC5649'
-      target='http://www.rfc-editor.org/info/rfc5649'>
-        <front>
-          <title>Advanced Encryption Standard (AES) Key Wrap with
-          Padding Algorithm</title>
-          <author initials='R.' surname='Housley'
-          fullname='R. Housley'>
-            <organization />
-          </author>
-          <author initials='M.' surname='Dworkin'
-          fullname='M. Dworkin'>
-            <organization />
-          </author>
-          <date year='2009' month='September' />
-        
-        </front>
-        <seriesInfo name='RFC' value='5649' />
-        <seriesInfo name='DOI' value='10.17487/RFC5649' />
-      </reference>
-      <reference anchor='RFC6347'
-      target='http://www.rfc-editor.org/info/rfc6347'>
-        <front>
-          <title>Datagram Transport Layer Security Version 1.2</title>
-          <author initials='E.' surname='Rescorla'
-          fullname='E. Rescorla'>
-            <organization />
-          </author>
-          <author initials='N.' surname='Modadugu'
-          fullname='N. Modadugu'>
-            <organization />
-          </author>
-          <date year='2012' month='January' />
-        
-        </front>
-        <seriesInfo name='RFC' value='6347' />
-        <seriesInfo name='DOI' value='10.17487/RFC6347' />
-      </reference>
-      <reference anchor='RFC5246'
-      target='http://www.rfc-editor.org/info/rfc5246'>
-        <front>
-          <title>The Transport Layer Security (TLS) Protocol Version
-          1.2</title>
-          <author initials='T.' surname='Dierks' fullname='T. Dierks'>
-            <organization />
-          </author>
-          <author initials='E.' surname='Rescorla'
-          fullname='E. Rescorla'>
-            <organization />
-          </author>
-          <date year='2008' month='August' />
-         
-        </front>
-        <seriesInfo name='RFC' value='5246' />
-        <seriesInfo name='DOI' value='10.17487/RFC5246' />
-      </reference>
-      <reference anchor='RFC5234'
-      target='http://www.rfc-editor.org/info/rfc5234'>
-        <front>
-          <title>Augmented BNF for Syntax Specifications: ABNF</title>
-          <author initials='D.' surname='Crocker' fullname='D. Crocker'
-          role='editor'>
-            <organization />
-          </author>
-          <author initials='P.' surname='Overell'
-          fullname='P. Overell'>
-            <organization />
-          </author>
-          <date year='2008' month='January' />
-        </front>
-        <seriesInfo name='STD' value='68' />
-        <seriesInfo name='RFC' value='5234' />
-        <seriesInfo name='DOI' value='10.17487/RFC5234' />
-      </reference>
-      <reference anchor='RFC5764'
-      target='http://www.rfc-editor.org/info/rfc5764'>
-        <front>
-          <title>Datagram Transport Layer Security (DTLS) Extension to
-          Establish Keys for the Secure Real-time Transport Protocol
-          (SRTP)</title>
-          <author initials='D.' surname='McGrew' fullname='D. McGrew'>
-            <organization />
-          </author>
-          <author initials='E.' surname='Rescorla'
-          fullname='E. Rescorla'>
-            <organization />
-          </author>
-          <date year='2010' month='May' />
-       
-        </front>
-        <seriesInfo name='RFC' value='5764' />
-        <seriesInfo name='DOI' value='10.17487/RFC5764' />
-      </reference>
-      <reference anchor='RFC5226'
-      target='http://www.rfc-editor.org/info/rfc5226'>
-        <front>
-          <title>Guidelines for Writing an IANA Considerations Section
-          in RFCs</title>
-          <author initials='T.' surname='Narten' fullname='T. Narten'>
-            <organization />
-          </author>
-          <author initials='H.' surname='Alvestrand'
-          fullname='H. Alvestrand'>
-            <organization />
-          </author>
-          <date year='2008' month='May' />
-       
-        </front>
-        <seriesInfo name='BCP' value='26' />
-        <seriesInfo name='RFC' value='5226' />
-        <seriesInfo name='DOI' value='10.17487/RFC5226' />
-      </reference>
-    </references>
-    <references title="Informative References">
+~~~
+Figure: DTLS/SRTP Message Flow
 
 
-      <reference anchor='I-D.ietf-perc-double'>
-        <front>
-          <title>SRTP Double Encryption Procedures</title>
-          
-          <author initials='C' surname='Jennings' fullname='Cullen Jennings'>
-            <organization />
-          </author>
-          
-          <author initials='P' surname='Jones' fullname='Paul Jones'>
-            <organization />
-          </author>
-          
-          <author initials='A' surname='Roach' fullname='Adam Roach'>
+Note that when used in PERC [@?I-D.ietf-perc-private-media-framework],
+the Server is actually split between the Media Distrbutor and Key
+Distributor. The messages in the above figure that are "SRTP packets"
+will not got to the Key Distributor but the other packets will be
+relayed by the Media Distributor to the Key Distributor.
 
-               <organization />
-          </author>
-          
-          <date month='October' day='31' year='2016' />
-          
-        </front>
-          <seriesInfo name='Internet-Draft' value='draft-ietf-perc-double-02' />
-        <format type='TXT'
-                target='http://www.ietf.org/internet-drafts/draft-ietf-perc-double-02.txt' />
-      </reference>
-      
-      <reference anchor='I-D.ietf-perc-private-media-framework'>
-        <front>
-          <title>A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing</title>
-          
-          <author initials='P' surname='Jones' fullname='Paul Jones'>
-            <organization />
-          </author>
-          
-          <author initials='D' surname='Benham' fullname='David Benham'>
-            <organization />
-          </author>
-          
-          <author initials='C' surname='Groves' fullname='Christian Groves'>
-            <organization />
-          </author>
-          
-          <date month='October' day='31' year='2016' />
-          
-        </front>
 
-        <seriesInfo name='Internet-Draft' value='draft-ietf-perc-private-media-framework-02' />
-        <format type='TXT'
-                target='http://www.ietf.org/internet-drafts/draft-ietf-perc-private-media-framework-02.txt' />
-      </reference>
+## Offer/Answer Considerations
 
-      
-      <reference anchor='RFC3264'
-      target='http://www.rfc-editor.org/info/rfc3264'>
-        <front>
-          <title>An Offer/Answer Model with Session Description
-          Protocol (SDP)</title>
-          <author initials='J.' surname='Rosenberg'
-          fullname='J. Rosenberg'>
-            <organization />
-          </author>
-          <author initials='H.' surname='Schulzrinne'
-          fullname='H. Schulzrinne'>
-            <organization />
-          </author>
-          <date year='2002' month='June' />
-        
-        </front>
-        <seriesInfo name='RFC' value='3264' />
-        <seriesInfo name='DOI' value='10.17487/RFC3264' />
-      </reference>
-      <reference anchor='RFC4366'
-      target='http://www.rfc-editor.org/info/rfc4366'>
-        <front>
-          <title>Transport Layer Security (TLS) Extensions</title>
-          <author initials='S.' surname='Blake-Wilson'
-          fullname='S. Blake-Wilson'>
-            <organization />
-          </author>
-          <author initials='M.' surname='Nystrom'
-          fullname='M. Nystrom'>
-            <organization />
-          </author>
-          <author initials='D.' surname='Hopwood'
-          fullname='D. Hopwood'>
-            <organization />
-          </author>
-          <author initials='J.' surname='Mikkelsen'
-          fullname='J. Mikkelsen'>
-            <organization />
-          </author>
-          <author initials='T.' surname='Wright' fullname='T. Wright'>
-            <organization />
-          </author>
-          <date year='2006' month='April' />
-     
-        </front>
-        <seriesInfo name='RFC' value='4366' />
-        <seriesInfo name='DOI' value='10.17487/RFC4366' />
-      </reference>
-    </references>
-  </back>
-</rfc>
+When using EKT with DTLS-SRTP, the negotiation to use EKT is done at
+the DTLS handshake level and does not change the [@RFC3264] Offer /
+Answer messaging.
+ 
+
+## Sending the DTLS EKT\_Key Reliably
+
+The DTLS ekt_key is sent using the retransmissions specified in
+Section 4.2.4.  of DTLS [@!RFC6347].
+    
+    
+# Security Considerations {#sec}
+
+EKT inherits the security properties of the DTLS-SRTP (or other)
+keying it uses.
+
+With EKT, each SRTP sender and receiver MUST generate distinct SRTP
+master keys. This property avoids any security concern over the re-use
+of keys, by empowering the SRTP layer to create keys on demand. Note
+that the inputs of EKT are the same as for SRTP with key-sharing: a
+single key is provided to protect an entire SRTP session. However, EKT
+remains secure even when SSRC values collide.
+
+SRTP master keys MUST be randomly generated, and [@RFC4086] offers
+some guidance about random number generation. SRTP master keys MUST
+NOT be re-used for any other purpose, and SRTP master keys MUST NOT be
+derived from other SRTP master keys.
+
+The EKT Cipher includes its own authentication/integrity check. For an
+attacker to successfully forge a FullEKTField, it would need to defeat
+the authentication mechanisms of the EKT Cipher authentication
+mechanism.
+
+The presence of the SSRC in the EKTPlaintext ensures that an attacker
+cannot substitute an EKTCiphertext from one SRTP stream into another
+SRTP stream.
+
+An attacker who tampers with the bits in FullEKTField can prevent the
+intended receiver of that packet from being able to decrypt it. This
+is a minor denial of service vulnerability.  Similarly the attacker
+could take an old FullEKTField from the same session and attach it to
+the packet. The FullEKTField would correctly decode and pass integrity
+but the key extracted from the FullEKTField , when used to decrypt the
+SRTP payload, would be wrong and the SRTP integrity check would
+fail. Note that the FullEKTField only changes the decryption key and
+does not change the encryption key. None of these are considered
+significant attacks as any attacker that can modify the packets in
+transit and cause the integrity check to fail.
+
+An attacker could send packets containing a Full EKT Field, in an
+attempt to consume additional CPU resources of the receiving system by
+causing the receiving system will decrypt the EKT ciphertext and
+detect an authentication failure. In some cases, caching the previous
+values of the Ciphertext as described in (#inbound-impl-notes) helps
+mitigate this issue.
+
+Each EKT cipher specifies a value T that is the maximum number of
+times a given key can be used. An endpoint MUST NOT encrypt more than
+T different Full EKT Field using the same EKTKey. In addition, the
+EKTKey MUST NOT be used beyond the lifetime provided by the TTL
+described in (#dtls-srtp-extensions).
+
+The confidentiality, integrity, and authentication of the EKT cipher
+MUST be at least as strong as the SRTP cipher and at least as strong
+as the DTLS-SRTP ciphers.
+
+Part of the EKTPlaintext is known, or easily guessable to an
+attacker. Thus, the EKT Cipher MUST resist known plaintext attacks. In
+practice, this requirement does not impose any restrictions on our
+choices, since the ciphers in use provide high security even when much
+plaintext is known.
+
+An EKT cipher MUST resist attacks in which both ciphertexts and
+plaintexts can be adaptively chosen and adversaries that can query
+both the encryption and decryption functions adaptively.
+
+In some systems, when a member of a conference leaves the conferences,
+the conferences is rekeyed so that member no longer has the key. When
+changing to a new EKTKey, it is possible that the attacker could block
+the EKTKey message getting to a particular endpoint and that endpoint
+would keep sending media encrypted using the old key. To mitigate that
+risk, the lifetime of the EKTKey SHOULD be limited using the ekt_ttl.
+
+
+# IANA Considerations {#iana}
+
+## EKT Message Types {#iana-ekt-msg-types}
+
+IANA is requested to create a new table for "EKT Messages Types" in
+the "Real-Time Transport Protocol (RTP) Parameters" registry. The
+initial values in this registry are:
+
+{#EKTMsgTypeTable}
+| Message Type | Value | Specification |
+|:-------------|------:|:--------------|
+| Short        | 0     | RFCAAAA       |
+| Full         | 2     | RFCAAAA       |
+| Reserved     | 63    | RFCAAAA       |
+| Reserved     | 255   | RFCAAAA       |
+Table: EKT Messages Types
+
+Note to RFC Editor: Please replace RFCAAAA with the RFC number for
+this specification.
+
+New entries to this table can be added via "Specification Required" as
+defined in [@!RFC5226]. When requesting a new value, the requestor
+needs to indicate if it is mandatory to understand or not. If it is
+mandatory to understand, IANA needs to allocate a value less than 64,
+if it is not mandatory to understand, a value greater than or equal to
+64 needs to be allocated. IANA SHOULD prefer allocation of even values
+over odd ones until the even code points are consumed to avoid
+conflicts with pre standard versions of EKT that have been deployed.
+
+All new EKT messages MUST be defined to have a length as second from
+the last element.
+
+
+## EKT Ciphers {#iana-ciphers}
+
+IANA is requested to create a new table for "EKT Ciphers" in the
+"Real-Time Transport Protocol (RTP) Parameters" registry.  The initial
+values in this registry are:
+
+{#EKTCipherTable}
+| Name     | Value | Specification |
+|:---------|------:|:--------------|
+| AESKW128 | 1     | RFCAAAA       |
+| AESKW256 | 2     | RFCAAAA       |
+| Reserved | 255   | RFCAAAA       |
+Table: EKT Cipher Types
+
+Note to RFC Editor: Please replace RFCAAAA with the RFC number for
+this specification.
+
+New entries to this table can be added via "Specification Required" as
+defined in [@!RFC5226]. The expert SHOULD ensure the specification
+defines the values for L and T as required in (#cipher) of
+RFCAAA. Allocated values MUST be in the range of 1 to 254.
+
+
+## TLS Extensions {#iana-tls-ext}
+
+IANA is requested to add srtp\_ekt\_key\_transport as a new extension
+name to the "ExtensionType Values" table of the "Transport Layer
+Security (TLS) Extensions" registry with a reference to this
+specification and allocate a value of TBD to for this. Note to RFC
+Editor: TBD will be allocated by IANA.
+
+Considerations for this type of extension are described in Section 5
+of [@RFC4366] and requires "IETF Consensus".
+
+
+## TLS Content Type {#iana-tls-content}
+
+IANA is requested to add srtp\_ekt\_message as an new descriptions
+name to the "TLS ContentType Registry" table of the "Transport Layer
+Security (TLS) Extensions" registry with a reference to this
+specification, a DTLS-OK value of "Y", and allocate a value of TBD to
+for this content type. Note to RFC Editor: TBD will be allocated by
+IANA.
+
+This registry was defined in Section 12 of [@!RFC5246] and requires
+"Standards Action".
+
+
+# Acknowledgements
+
+Thank you to Russ Housley provided detailed review and significant
+help with crafting text for this document. Thanks to David Benham, Yi
+Cheng, Lakshminath Dondeti, Kai Fischer, Nermeen Ismail, Paul Jones,
+Eddy Lem, Jonathan Lennox, Michael Peck, Rob Raymond, Sean Turner,
+Magnus Westerlund, and Felix Wyss for fruitful discussions, comments,
+and contributions to this document.
