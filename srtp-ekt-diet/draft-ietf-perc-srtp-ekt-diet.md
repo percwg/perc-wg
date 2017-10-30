@@ -771,9 +771,15 @@ client or the server.
 
 When an EKTKey is received and processed successfully, the recipient
 MUST respond with an Ack handshake message as described in Section 7
-of [@!I-D.ietf-tls-dtls13].  If an EKTKey message is received that
-cannot be processed, then the recipient MUST respond with an
-appropriate DTLS alert.
+of [@I-D.ietf-tls-dtls13].  The EKTKey message and Ack must be
+retransmitted following the rules in Secton 4.2.4 of [@RFC6347].
+  
+  Note: To be clear, EKT can be used with versions of DTLS prior to
+  1.3.  The only difference is that in a pre-1.3 TLS stacks will not
+  have built-in support for generating and processing Ack messages.
+
+If an EKTKey message is received that cannot be processed, then the
+recipient MUST respond with an appropriate DTLS alert.
 
 
 ## Offer/Answer Considerations
