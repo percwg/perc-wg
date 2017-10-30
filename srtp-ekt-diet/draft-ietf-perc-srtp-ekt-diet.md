@@ -632,36 +632,29 @@ message carries the corresponding key.
 
 The diagram below shows a message flow of DTLS 1.3 client and server
 using EKT configured using the DTLS extensions described in this
-section.  (The initial cookie exchange is omitted.)
+section.  (The initial cookie exchange and other normal DTLS
+messages are omitted.)
 
 ~~~
 Client                                             Server
 
 ClientHello
- + key_share*
- + pre_shared_key*      -------->
- + cookie
  + use_srtp
- + supported_ekt_ciphers
+ + supported_ekt_ciphers 
+                        -------->
+                                               
                                                ServerHello
-                                              + key_share*
-                                         + pre_shared_key*
+                                     {EncryptedExtensions}
                                                 + use_srtp
                                    + supported_ekt_ciphers
-                                     {EncryptedExtensions}
-                                     {CertificateRequest*}
-                                            {Certificate*}
-                                      {CertificateVerify*}
-                        <--------               {Finished}
+                                            {... Finished}
+                        <--------
 
+{... Finished}          -------->
 
-{Certificate*}
-{CertificateVerify*}
-{Finished}              -------->
-
-                        <--------                    [Ack]
-
+                                                     [Ack]
                         <--------                 [EKTKey]
+
 [Ack]                   -------->
 
 |SRTP packets|          <------->           |SRTP packets|
@@ -678,13 +671,14 @@ ClientHello
    a Full EKT Tag
 ~~~
 
-When used in multi-party SRTP sessions, the DTLS Server may be a different
-entity than the source of the SRTP packets.  If the DTLS-SRTP server performs a
-handshake with each DTLS-SRTP endpoint to set a common EKT key, then each SRTP
-sender can use EKT to inform other participants of the keys it is using to
-send.  This avoids the need for many individual DTLS handshakes among the
-endpoints, at the cost of preventing endpoints from directly authenticating one
-another.
+In the context of a multi-party SRTP session in which each endpoint
+performs a DTLS handshake as a client with a central DTLS server,
+the extensions defined in this session allow the DTLS server to set
+a common EKT key among all participants. Each endpoint can then use
+EKT tags encrypted with that common key to inform other endpoint of
+the keys it is using to protect SRTP packet.  This avoids the need
+for many individual DTLS handshakes among the endpoints, at the cost
+of preventing endpoints from directly authenticating one another.
 
 ~~~
 Client A                 Server                 Client B
@@ -701,11 +695,13 @@ Client A                 Server                 Client B
 
 ### Negotiating an EKT Cipher
 
-To indicate its support for EKT, a DTLS-SRTP client includes in its ClientHello
-an extension of type `supported_ekt_ciphers` listing the EKT ciphers the client
-supports.  If the server agrees to use EKT, then it includes a
-`supported_ekt_ciphers` extension in its ServerHello containing a cipher
-selected from among those advertised by the client.
+To indicate its support for EKT, a DTLS-SRTP client includes in its
+ClientHello an extension of type `supported_ekt_ciphers` listing the
+EKT ciphers the client supports in preference order, with the most
+preferred version first.  If the server agrees to use EKT, then it
+includes a `supported_ekt_ciphers` extension in its ServerHello
+containing a cipher selected from among those advertised by the
+client.
 
 The `extension_data` field of this extension contains an "EKTCipher" value,
 encoded using the syntax defined in [@!RFC5246]:
@@ -720,7 +716,7 @@ enum {
 struct {
     select (Handshake.msg_type) {
         case client_hello:
-            EKTCipherType client_shares<1..255>;
+            EKTCipherType supported_ciphers<1..255>;
 
         case server_hello:
             EKTCipherType selected_cipher;
@@ -933,7 +929,7 @@ specification and allocate a value of TBD to for this.
 [[ Note to RFC Editor: TBD will be allocated by IANA. ]]
 
 Considerations for this type of extension are described in Section 5
-of [@!RFC4366] and requires "IETF Consensus".
+of [@RFC4366] and requires "IETF Consensus".
 
 
 ## TLS Handshake Type
