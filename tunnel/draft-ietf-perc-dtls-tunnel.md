@@ -65,10 +65,10 @@
     #          - Insert a message length field after msg_type
     #          - Allow the key distributor to send EndpointDisconnect
     #        Editorial refinement
-    #   02 - Changes based on agreements at IETF99
-    #          - Remived editor's note about how key distributor gets
-    #            The dtls-id from SDP
-    #
+    #   02 - Changes based on agreements at IETF99
+    #          - Removed editor's note about how key distributor gets
+    #            The dtls-id from SDP
+    #
 
 %%%
 
