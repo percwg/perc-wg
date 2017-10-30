@@ -7,7 +7,7 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 mmark ?= mmark
 
 DRAFT = draft-ietf-perc-dtls-tunnel
-VERSION = 01
+VERSION = $(shell grep 'docName.*=.*"$(DRAFT)-[0-9]\+"' $(DRAFT).md | head -1 | sed 's/.*"$(DRAFT)-\([0-9]\+\)".*/\1/')
 
 .PHONY: all clean diff
 .PRECIOUS: %.xml

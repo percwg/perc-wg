@@ -8,7 +8,7 @@
     Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-ietf-perc-private-media-framework-04"
+    docName = "draft-ietf-perc-private-media-framework-05"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "Private Media Framework", "conferencing"]
@@ -51,6 +51,18 @@
       city = "Melbourne"
       country = "Australia"
 
+    #
+    # Revision History
+    #   00 - Initial WG document
+    #   01 - See IETF meeting slides
+    #   02 - See IETF meeting slides
+    #   03 - See IETF meeting slides
+    #   04 - Addressed markdown rendering issue
+    #        Added appendices for key and packet information
+    #   05 - Clarified key exchange procedures
+    #        Editorial corrections
+    #
+
 %%%
 
 .# Abstract
@@ -58,7 +70,7 @@
 This document describes a solution framework for ensuring that media
 confidentiality and integrity are maintained end-to-end within the
 context of a switched conferencing environment where media
-distribution devices are not trusted with the end-to-end media
+distributors are not trusted with the end-to-end media
 encryption keys.  The solution aims to build upon existing security
 mechanisms defined for the real-time transport protocol (RTP).
 
@@ -93,14 +105,14 @@ public in cloud deployments, such as for remote administration, and so
 on.
 
 This document defines a solution framework wherein media privacy is
-ensured by making it impossible for a media distribution device to
+ensured by making it impossible for a media distributor to
 gain access to keys needed to decrypt or authenticate the actual media
-content sent between conference participants. At the same time, the
+content sent between conference participants.  At the same time, the
 framework allows for the Media Distributors to modify certain RTP
 headers; add, remove, encrypt, or decrypt RTP header extensions; and
 encrypt and decrypt RTCP packets.  The framework also prevents replay
 attacks by authenticating each packet transmitted between a given
-participant and the media distribution device using a unique key per
+participant and the media distributor using a unique key per
 endpoint that is independent from the key for media encryption and
 authentication.
 
@@ -117,14 +129,14 @@ as described in [@!RFC2119] when they appear in ALL CAPS.  These words
 may also appear in this document in lower case as plain English words,
 absent their normative meanings.
 
-Additionally, this solution framework uses the following conventions,
+Additionally, this solution framework uses the following
 terms and acronyms:
 
 End-to-End (E2E): Communications from one endpoint through one or more
-Media Distribution Devices to the endpoint at the other end.
+Media Distributors to the endpoint at the other end.
 
 Hop-by-Hop (HBH): Communications between an endpoint and a Media
-Distribution Device or between Media Distribution Devices.
+Distributor or between Media Distributors.
 
 Trusted Endpoint: An RTP flow terminating entity that has possession
 of E2E media encryption keys and terminates E2E encryption.  This may
@@ -134,11 +146,10 @@ trusted domain for a given deployment.
 
 Media Distributor (MD): An RTP middlebox that is not allowed to to
 have access to E2E encryption keys.  It operates according to the
-Selective Forwarding Middlebox RTP topologies
-[@I-D.ietf-avtcore-rtp-topologies-update] per the constraints defined
-by the PERC system, which includes, but not limited to, having no
-access to RTP media unencrypted and having limits on what RTP header
-field it can alter.
+Selective Forwarding Middlebox RTP topologies [@RFC7667] per the
+constraints defined by the PERC system, which includes, but not limited
+to, having no access to RTP media unencrypted and having limits on what
+RTP header field it can alter.
 
 Key Distributor: An entity that is a logical function which
 distributes keying material and related information to trusted
@@ -203,9 +214,12 @@ domain is still trusted with reliably connecting the participants
 together in a conference, but not trusted with keying material needed
 to decrypt any of the participant's media.  Entities in such lower
 trustworthiness domains will simply be referred to as untrusted
-entities from this point forward.  This does not mean that they are
-completely untrusted as they may be trusted with most non-media
-related aspects of hosting a conference.
+entities from this point forward.
+
+It is important to understand that untrusted in this document does not
+mean an entity is not expected to function properly.  Rather, it means
+only that the entity does not have access to the E2E media encryption
+keys.
 
 ### Media Distributor
 
@@ -217,8 +231,9 @@ The Media Distributor will also relay secured messaging between the
 endpoints and the Key Distributor and will acquire per-hop key
 information from the Key Distributor.  The actual media content
 **MUST NOT** not be decryptable by a Media Distributor, so it is untrusted to
-have access to the E2E media encryption keys, which this framework's
-key exchange mechanisms will prevent.
+have access to the E2E media encryption keys.  The key exchange
+mechanisms specified in this framework will prevent the Media Distributor
+from gaining access to the E2E media encryption keys.
 
 An endpoint's ability to join a conference hosted by a Media
 Distributor **MUST NOT** alone be interpreted as being authorized to
@@ -260,7 +275,7 @@ integrity of received messages before forwarding to other entities.
 
 From the PERC model system perspective, entities considered trusted
 (refer to (#fig-trust-model)) can be in possession of the E2E media
-encryption key(s) for one or more conferences.
+encryption keys for one or more conferences.
 
 ### Endpoint
 
@@ -407,7 +422,7 @@ intentionally use the same SRTP master key.
 Using hop-by-hop authentication gives the Media Distributor the
 ability to change certain RTP header values.  Which values the Media
 Distributor can change in the RTP header are defined in
-[@!I-D.ietf-perc-double].  RTCP can only be encrypted, giving the
+[@!I-D.ietf-perc-double].  RTCP can only be encrypted HBH, giving the
 Media Distributor the flexibility to forward RTCP content unchanged,
 transmit compound RTCP packets or to initiate RTCP packets for
 reporting statistics or conveying other information.  Performing
@@ -425,22 +440,6 @@ re-encrypt these encrypted header extensions.
 
 ## Key Exchange
 
-To facilitate key exchange required to establish or generate an E2E
-key and a HBH key for an endpoint and the same HBH key for the Media
-Distributor, this framework utilizes a DTLS-SRTP [@!RFC5764]
-association between an endpoint and the Key Distributor.  To establish
-this association, an endpoint will send DTLS-SRTP messages to the
-Media Distributor which will then forward them to the Key Distributor
-as defined in [@!I-D.ietf-perc-dtls-tunnel].  The Key Encryption Key
-(KEK) (i.e., EKTKey) is also conveyed by the Key Distributor over the
-DTLS association to endpoints via procedures defined in PERC EKT
-[I-D.ietf-perc-srtp-ekt-diet].
-
-Media Distributors use DTLS-SRTP [@!RFC5764] directly with a peer
-Media Distributor to establish the HBH key for transmitting RTP and RTCP
-packets to that peer Media Distributor.  The Key Distributor does not
-facilitate establishing a HBH key for use between Media Distributors.
-
 ### Initial Key Exchange and Key Distributor
 
 The procedures defined in DTLS Tunnel for PERC
@@ -450,12 +449,11 @@ possible for the Media Distributor to facilitate the establishment of
 a secure DTLS association between each endpoint and the Key
 Distributor as shown the following figure.  The DTLS association
 between endpoints and the Key Distributor will enable each endpoint to
-receive E2E key information, Key Encryption Key (KEK) information
-(i.e., EKT Key), and HBH key information.  At the same time, the Key
-Distributor can securely provide the HBH key information to the Media
-Distributor.  The key information summarized here may include the SRTP
-master key, SRTP master salt, and the negotiated cryptographic
-transform.
+generate E2E and HBH keys and receive the Key Encryption Key (KEK)
+(i.e., EKT Key).  At the same time, the Key Distributor can securely
+provide the HBH key information to the Media Distributor.  The key
+information summarized here may include the SRTP master key, SRTP
+master salt, and the negotiated cryptographic transform.
 
 {#fig-initial-key-exchange align="center"}
 ~~~
@@ -476,8 +474,8 @@ transform.
 ~~~
 Figure: Exchanging Key Information Between Entities
 
-Endpoints will establish a DTLS-SRTP association over the RTP
-session's media ports for the purposes of key information exchange
+Endpoints will establish a DTLS-SRTP [@!RFC5764] association over the
+RTP session's media ports for the purposes of key information exchange
 with the Key Distributor.  The Media Distributor will not terminate
 the DTLS signaling, but will instead forward DTLS packets received
 from an endpoint on to the Key Distributor (and vice versa) via a
@@ -487,10 +485,34 @@ Key Distributor and endpoints will also be used to convey HBH key
 information from the Key Distributor to the Media Distributor, so no
 additional protocol or interface is required.
 
+In establishing the DTLS association between endpoints and the
+Key Distributor, the endpoint acts as the DTLS client and the
+Key Distributor acts as the DTLS server.  The Key Encryption Key (KEK)
+(i.e., EKT Key) is conveyed by the Key Distributor over the DTLS
+association to endpoints via procedures defined in PERC EKT
+[I-D.ietf-perc-srtp-ekt-diet] via the EKTKey message.  Endpoints do not
+send EKTKey messages over the DTLS association and the Key Distributor
+**MUST** silently discard any EKTKey messages received from an endpoint.
+
+Note that following DTLS-SRTP procedures for the [@!I-D.ietf-perc-double]
+cipher, the endpoint will generate both E2E and HBH encryption keys
+and salt values.  Endpoints **MAY** use the DTLS-SRTP generated E2E key
+or **MAY** generate different E2E keys.  In either case, the generated SRTP
+master salt for E2E encryption **MUST** be replaced with the salt value
+provided by the Key Distributor via the EKTKey message.  That is because
+every endpoint in the conference uses the same SRTP master salt.  The
+endpoint only transmits its SRTP master key (not the salt) to other
+endpoints in RTP/RTCP packets per [I-D.ietf-perc-srtp-ekt-diet].
+
+Media Distributors use DTLS-SRTP [@!RFC5764] directly with a peer
+Media Distributor to establish the HBH key for transmitting RTP and RTCP
+packets to that peer Media Distributor.  The Key Distributor does not
+facilitate establishing a HBH key for use between Media Distributors.
+
 ### Key Exchange during a Conference
 
 Following the initial key information exchange with the Key
-Distributor, an endpoints will be able to encrypt media end-to-end with
+Distributor, an endpoint will be able to encrypt media end-to-end with
 an E2E key, sending that E2E key to other endpoints encrypted with the
 KEK, and will be able to encrypt and authenticate RTP packets
 using a HBH key.  The procedures defined do not allow the Media
@@ -514,6 +536,17 @@ short period of time before sending media encrypted with the new
 master key, but it **MUST** be prepared to make use of the information
 from a new inbound EKT Key immediately. See Section 2.2.2 of
 [@!I-D.ietf-perc-srtp-ekt-diet].
+
+Endpoints **MAY** follow the procedures in section 5.2 of [@RFC5764]
+to re-negotiate HBH keys as desired.  If new HBH keys are generated,
+the new keys are also delivered to the Media Distributor following
+the procedures defined in [@!I-D.ietf-perc-dtls-tunnel].
+
+Endpoints are at liberty to change the E2E encryption key used at
+any time.  Endpoints **MUST** generate a new E2E encryption key
+whenever it receives a new EKT Key.  After switching to a new key,
+the new key will be conveyed to other endpoints in the conference
+in RTP/RTCP packets per [@!I-D.ietf-perc-srtp-ekt-diet].
 
 # Entity Trust
 
@@ -813,12 +846,13 @@ The media distributor is not given the KEK (i.e., EKT Key).
 
 ## Endpoints fabricate an SRTP Master Key
 
-As stated earlier, the E2E key determined via DTLS-SRTP is discarded.
-While it could have been used, the fact that endpoints may need to
-change the SRTP master key periodically or are forced to change the
+As stated earlier, the E2E key determined via DTLS-SRTP **MAY** be
+discarded in favor of a locally-generated SRTP master key.  While the
+DTLS-SRTP-derived key could be used, the fact that an endpoint might
+need to change the SRTP master key periodically or is forced to change the
 SRTP master key as a result of the EKT key changing means using it has
-only limited utility.  To reduce complexity, PERC prescribes that
-endpoints manufacturer random SRTP master keys locally to be used for E2E
+only limited utility.  To reduce complexity, PERC **RECOMMENDS** that
+endpoints create random SRTP master keys locally to be used for E2E
 encryption.
 
 This locally-generated SRTP master key is used along with the master salt
