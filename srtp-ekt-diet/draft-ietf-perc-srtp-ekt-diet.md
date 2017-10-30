@@ -226,7 +226,7 @@ EKTMsgTypeExtension = %x03-FF
 EKTMsgLength = 2BYTE;
 
 SRTPMasterKeyLength = BYTE
-SRTPMasterKey = 1\*256BYTE
+SRTPMasterKey = 1*256BYTE
 SSRC = 4BYTE; SSRC from RTP
 ROC = 4BYTE ; ROC from SRTP FOR THE GIVEN SSRC
 
@@ -625,8 +625,8 @@ for DTLS.
 {#dtls-srtp-extensions}
 
 This document defines a new TLS negotiated extension
-`supported_ekt_ciphers` and a new TLS handshake message type
-`ekt_key`.  The extension negotiates the cipher to be used in
+supported\_ekt\_ciphers and a new TLS handshake message type
+ekt\_key.  The extension negotiates the cipher to be used in
 encrypting and decrypting EKTCiphertext values, and the handshake
 message carries the corresponding key.
 
@@ -696,14 +696,14 @@ Client A                 Server                 Client B
 ### Negotiating an EKT Cipher
 
 To indicate its support for EKT, a DTLS-SRTP client includes in its
-ClientHello an extension of type `supported_ekt_ciphers` listing the
+ClientHello an extension of type supported\_ekt\_ciphers listing the
 EKT ciphers the client supports in preference order, with the most
 preferred version first.  If the server agrees to use EKT, then it
-includes a `supported_ekt_ciphers` extension in its ServerHello
+includes a supported\_ekt\_ciphers extension in its ServerHello
 containing a cipher selected from among those advertised by the
 client.
 
-The `extension_data` field of this extension contains an "EKTCipher" value,
+The extension\_data field of this extension contains an "EKTCipher" value,
 encoded using the syntax defined in [@!RFC5246]:
 
 ~~~
@@ -731,8 +731,8 @@ Once a client and server have concluded a handshake that negotiated
 an EKT cipher, the server MUST provide to the client a key to be
 used when encrypting and decrypting EKTCiphertext values.  EKT keys
 are sent in encrypted handshake records, using handshake type
-`ekt_key(TBD)`.  The body of the handshake message contains an
-`EKTKey` structure:
+ekt\_key(TBD).  The body of the handshake message contains an
+EKTKey structure:
 
 [[ NOTE: RFC Editor, please replace "TBD" above with the code point
 assigend by IANA ]]
@@ -748,24 +748,24 @@ struct {
 
 The contents of the fields in this message are as follows:
 
-`ekt_key_value`
+ekt\_key\_value
 : The EKT Key that the recipient should use when generating EKTCiphertext
 values
 
-`srtp_master_salt`
+srtp\_master\_salt
 : The SRTP Master Salt to be used with any Master Key encrypted with this EKT
 Key
 
-`ekt_spi`
+ekt\_spi
 : The SPI value to be used to reference this EKT Key and SRTP Master Salt in
 EKT tags (along with the EKT cipher negotiated in the handshake)
 
-`ekt_ttl`
+ekt\_ttl
 : The maximum amount of time, in seconds, that this EKT Key can be used.  The
-`ekt_key_value` in this message MUST NOT be used for encrypting or decrypting
+ekt\_key\_value in this message MUST NOT be used for encrypting or decrypting
 information after the TTL expires.
 
-If the server did not provide a `supported_ekt_ciphers` extension in
+If the server did not provide a supported\_ekt\_ciphers extension in
 its ServerHello, then EKTKey messages MUST NOT be sent by either the
 client or the server.
 
@@ -791,7 +791,7 @@ Answer messaging.
 
 ## Sending the DTLS EKTKey Reliably
 
-The DTLS `EKTKey` message is sent using the retransmissions
+The DTLS EKTKey message is sent using the retransmissions
 specified in Section 4.2.4.  of DTLS [@!RFC6347].  Retransmission is
 finished with an Ack message or an alert is received.
 
@@ -927,7 +927,7 @@ RFCAAA. Allocated values MUST be in the range of 1 to 254.
 
 ## TLS Extensions
 
-IANA is requested to add `supported_ekt_ciphers` as a new extension
+IANA is requested to add supported\_ekt\_ciphers as a new extension
 name to the "ExtensionType Values" table of the "Transport Layer
 Security (TLS) Extensions" registry with a reference to this
 specification and allocate a value of TBD to for this.
@@ -940,7 +940,7 @@ of [@RFC4366] and requires "IETF Consensus".
 
 ## TLS Handshake Type
 
-IANA is requested to add `ekt_key` as a new entry in the "TLS
+IANA is requested to add ekt\_key as a new entry in the "TLS
 HandshakeType Registry" table of the "Transport Layer Security (TLS)
 Parameters" registry with a reference to this specification, a
 DTLS-OK value of "Y", and allocate a value of TBD to for this
