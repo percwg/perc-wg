@@ -490,9 +490,7 @@ Key Distributor, the endpoint acts as the DTLS client and the
 Key Distributor acts as the DTLS server.  The Key Encryption Key (KEK)
 (i.e., EKT Key) is conveyed by the Key Distributor over the DTLS
 association to endpoints via procedures defined in PERC EKT
-[I-D.ietf-perc-srtp-ekt-diet] via the EKTKey message.  Endpoints do not
-send EKTKey messages over the DTLS association and the Key Distributor
-**MUST** silently discard any EKTKey messages received from an endpoint.
+[@I-D.ietf-perc-srtp-ekt-diet] via the EKTKey message.
 
 Note that following DTLS-SRTP procedures for the [@!I-D.ietf-perc-double]
 cipher, the endpoint will generate both E2E and HBH encryption keys
@@ -501,8 +499,9 @@ or **MAY** generate different E2E keys.  In either case, the generated SRTP
 master salt for E2E encryption **MUST** be replaced with the salt value
 provided by the Key Distributor via the EKTKey message.  That is because
 every endpoint in the conference uses the same SRTP master salt.  The
-endpoint only transmits its SRTP master key (not the salt) to other
-endpoints in RTP/RTCP packets per [I-D.ietf-perc-srtp-ekt-diet].
+endpoint only transmits the SRTP master key (not the salt) used for E2E
+encryption to other endpoints in RTP/RTCP packets per
+[@I-D.ietf-perc-srtp-ekt-diet].
 
 Media Distributors use DTLS-SRTP [@!RFC5764] directly with a peer
 Media Distributor to establish the HBH key for transmitting RTP and RTCP
@@ -527,7 +526,7 @@ re-keyed is outside the scope of this document, but this framework
 does accommodate re-keying during the life of a conference.
 
 When a Key Distributor decides to re-key a conference, it transmits a
-specific message defined in PERC EKT [I-D.ietf-perc-srtp-ekt-diet] to
+specific message defined in PERC EKT [@!I-D.ietf-perc-srtp-ekt-diet] to
 each of the conference participants.  The endpoint **MUST** create a
 new SRTP master key and prepare to send that key inside a Full EKT
 Field using the new EKTKey.  Since it may take some time for all of the
