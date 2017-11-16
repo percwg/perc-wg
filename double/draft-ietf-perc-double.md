@@ -372,14 +372,15 @@ encrypted in repair mode packet.
 ## RED
 
 When using RED [@RFC2198] with double, the primary encoding MAY
-contain RTP header extensions but non primary encodings can not.
+contain RTP header extensions and CSRC identifiers but non primary
+encodings can not.
 
 The sender takes encrypted payloads from the cached packets to form
 the RED payload. Any header extensions from the primary encoding are
 copied to the RTP packet that will cary the RED payload and the other
-RTP header information such as SSRC, SEQ, are set to the same as the
-primary payload. The RED RTP packet is then encrypted in repair mode
-and sent.
+RTP header information such as SSRC, SEQ, CSRC, etc are set to the
+same as the primary payload. The RED RTP packet is then encrypted in
+repair mode and sent.
 
 The receiver decrypts the payload to find the RED payload. Note a
 media relay can do this decryption as the packet was sent in repair
@@ -387,10 +388,12 @@ mode that only needs the hop-by-hop key. The RTP headers and header
 extensions along with the primary payload and PT from inside the RED
 payload are used to form the encrypted primary RTP packet which can
 then be decrypted with double. The RTP headers (but not header
-extensions) along with PT from inside the RED payload are used for
-from the non primary payloads. The time offset information in the RED
-data MUST be used to adjust the SEQ number in the RTP header. At this
-point the non primary packets can be decrypted with double.
+extensions or CSRC) along with PT from inside the RED payload are used
+for from the non primary payloads. The time offset information in the
+RED data MUST be used to adjust the sequence number in the RTP header
+by using the timestamp offset and packet rate to find a sequence
+number offset to adjust by. At this point the non primary packets can
+be decrypted with double.
 
 Note that Flex FEC [@I-D.ietf-payload-flexible-fec-scheme] is a
 superset of the capabilities of RED.  For most applications, FlexFEC
