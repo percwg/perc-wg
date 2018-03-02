@@ -239,8 +239,10 @@ An endpoint's ability to join a conference hosted by a Media
 Distributor **MUST NOT** alone be interpreted as being authorized to
 have access to the E2E media encryption keys, as the Media Distributor
 does not have the ability to determine whether an endpoint is
-authorized.  Trusted endpoint authorization is described in
-[@I-D.roach-perc-webrtc].
+authorized.  Instead, the Key Distributor is responsible for
+authenticating endpoints (e.g., using WebRTC Identity
+[@I-D.ietf-rtcweb-security-arch]) and determining their
+authorization to receive E2E media encryption keys.
 
 A Media Distributor **MUST** perform its role in properly forwarding
 media packets while taking measures to mitigate the adverse effects of
@@ -290,7 +292,7 @@ traditional conference (i.e., non-PERC) deployments.
 
 ### Key Distributor
 
-The Key Distributor, which may be collocated with an endpoint or exist
+The Key Distributor, which may be colocated with an endpoint or exist
 standalone, is responsible for providing key information to endpoints
 for both end-to-end and hop-by-hop security and for providing key
 information to Media Distributors for the hop-by-hop security.
