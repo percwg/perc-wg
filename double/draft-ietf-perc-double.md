@@ -166,6 +166,24 @@ provisioned with this information.  One possible way to provide keying
 material for the outer (hop-by-hop) algorithm is to use
 [@I-D.ietf-perc-dtls-tunnel].
 
+## Key Derivation
+
+In order to allow the inner and outer keys to be managed
+independently via the master key, the transforms defined in this
+document MUST be used with the following PRF, which preserves the
+separation between the two halves of the key:
+
+~~~~~
+PRF\_double\_n(k\_master, x) = PRF\_inner\_(n/2)(k\_master, x) || 
+                               PRF\_outer\_(n/2)(k\_master, x)
+
+PRF\_inner\_n(k\_master, x) = PRF\_n(inner(k\_master), x)
+PRF\_outer\_n(k\_master, x) = PRF\_n(outer(k\_master), x)
+~~~~~
+
+Here `PRF_n(k, x)` represents the default SRTP PRF [@RFC3711],
+`inner(key)` represents the first half of the key, and `outer(key)`
+represents the second half of the key.
 
 # Original Header Block
 
