@@ -444,9 +444,13 @@ using additional FEC only m-line in SDP for the repair packets.
 ## DTMF
 
 When DTMF is sent with [@RFC4733], it is end-to-end encrypted and the
-relay can not read it so it can not be used to control the
-relay. Other out of band methods to control the relay need to be used
-instead.
+relay can not read it so it can not be used to control the media
+relay. Other out of band methods to control the relay need to can be
+used instead.  One way to do this is with out of band REST calls API
+call or [@RFC4730] which will be sent in the signalling thus allowing
+the relay to read the DTMF. Another way would be to send DTMF with
+[@RFC6086] using the info package defined in [@SDO-3GPP.24.229].
+
 
 
 # Recommended Inner and Outer Cryptographic Algorithms
