@@ -334,40 +334,41 @@ security contexts and two associated encryption keys: an "inner" key
 encryption of RTP media between endpoints and an "outer" key (HBH key)
 known only to media distributor and the adjacent endpoint)
 for the hop between an endpoint and a Media Distributor or between Media
-Distributor.  Reference the following figure.
+Distributor.  
 
 ~~~
 +-------------+                                +-------------+
 |             |################################|             |
-|    Media    |------------------------------->|    Media    |
-| Distributor |<-------------------------------| Distributor |
-|      X      |################################|      Y      |
-|             |          HBH Key (XY)          |             |
-+-------------+                                +-------------+
-   #  ^ |  #                                      #  ^ |  #
-   #  | |  #       HBH                  HBH       #  | |  #
-   #  | |  # <== Key(AX)              Key(YB) ==> #  | |  #
+|    Media    |-----------------------*------->|    Media    |
+| Distributor |<----------------------*--------| Distributor |
+|      X      |#####################*#|########|      Y      |
+|             |                     | |        |             |
++-------------+                     | |        +-------------+
+   #  ^ |  #          HBH Key (XY) -+ |           #  ^ |  #
+   #  | |  #                          |           #  | |  #
+   #  | |  #          E2E Key (AB) ---+           #  | |  #
    #  | |  #                                      #  | |  #
-   #  |<+--#---- E2E Key (A)       E2E Key (B) ---#->| |  #
+   #  | |  #                                      #  | |  #
+   #  | |  *---- HBH Key (AX)    HBH Key (YB) ----*  | |  #
+   #  | |  #                                      #  | |  #
+   #  *-*------- E2E Key (AB)    E2E Key (AB) -------*-*  #
    #  | |  #                                      #  | |  #
    #  | v  #                                      #  | v  #
 +-------------+                                +-------------+
 | Endpoint A  |                                | Endpoint B  |
 +-------------+                                +-------------+
 ~~~
-Figure: E2E and HBH Keys Used for Authenticated Encryption
+Figure: E2E and HBH Keys Used for Authenticated Encryption of SRTP
+Packets
 
-The PERC Double specification [@!I-D.ietf-perc-double] uses
-standard SRTP keying material and recommended cryptographic
-transform(s) to first form the inner, end-to-end SRTP cryptographic
-context.  That end-to-end SRTP cryptographic context **MAY** be used
-to encrypt some RTP header extensions along with RTP media content.
-The output of this is treated like an RTP packet and encrypted again
-using the outer hop-by-hop cryptographic context.  The endpoint
-executes the entire Double operation while the Media Distributor just
-performs the outer, hop-by-hop operation.  (See [@keyinventory] for a
-description of the keys used in PERC and [@packetformat] for an
-overview of how the packet appears on the wire.)
+The PERC Double transform [@!I-D.ietf-perc-double] enables endpoints
+to perform encryption using both the E2E and HBH contexts while
+still preserving the same overall interface as other SRTP
+transforms.  The Media Distributor simply uses the corresponding
+normal (single) AES-GCM transform, keyed with the appropriate HBH
+keys. See [@keyinventory] for a description of the keys used in PERC
+and [@packetformat] for an overview of how the packet appears on the
+wire.
 
 RTCP can only be encrypted hop-by-hop, not end-to-end.  This framework
 introduces no additional step for RTCP authenticated encryption, so
@@ -419,7 +420,7 @@ an endpoint and a Media Distributor, as well between Media
 Distributors.  The authentication key used for hop-by-hop
 authentication is derived from an SRTP master key shared only on the
 respective hop.  Each HBH key is distinct per hop and no two hops ever
-intentionally use the same SRTP master key.
+use the same SRTP master key.
 
 Using hop-by-hop authentication gives the Media Distributor the
 ability to change certain RTP header values.  Which values the Media
@@ -442,11 +443,26 @@ re-encrypt these encrypted header extensions.
 
 ## Key Exchange
 
+In brief, the keys used by any given endpoints are determined in the
+following way:
+
+* The HBH keys that the endpoint uses to send and receive SRTP media
+  are derived from a DTLS hadnshake that the endpoint performs with
+  the Key Distributor (following normal DTLS-SRTP procedures).
+
+* The E2E key that an endpoint uses to send SRTP media can either be
+  set from DTLS or chosen by the endpoint.  It is then distributed
+  to other endpoints in a Full EKT Field, encrypted under an EKTKey
+  provided to the client by the Key Distributor within the DTLS
+  channel they negotiated.
+
+* Each E2E key that an endpoint uses to receive SRTP media is set
+  by receiving a Full EKT Field from another endpoints.
+
 ### Initial Key Exchange and Key Distributor
 
-The procedures defined in DTLS Tunnel for PERC
-[@!I-D.ietf-perc-dtls-tunnel] establish one or more TLS tunnels
-between the Media Distributor and Key Distributor, making it is
+The Media Distributor maintains a tunnel with the Key Distrubutor
+(e.g., using [@?I-D.ietf-perc-dtls-tunnel]), making it
 possible for the Media Distributor to facilitate the establishment of
 a secure DTLS association between each endpoint and the Key
 Distributor as shown the following figure.  The DTLS association
@@ -465,7 +481,7 @@ master salt, and the negotiated cryptographic transform.
              to Endpoints |Distributor| Endpoints & Media Distributor
                           +-----------+
                              # ^ ^ #
-                             # | | #-TLS Tunnel
+                             # | | #--- Tunnel
                              # | | #
 +-----------+             +-----------+             +-----------+
 | Endpoint  |   DTLS      |   Media   |   DTLS      | Endpoint  |
@@ -488,16 +504,16 @@ information from the Key Distributor to the Media Distributor, so no
 additional protocol or interface is required.
 
 In establishing the DTLS association between endpoints and the
-Key Distributor, the endpoint acts as the DTLS client and the
-Key Distributor acts as the DTLS server.  The Key Encryption Key (KEK)
+Key Distributor, the endpoint MUST act as the DTLS client and the
+Key Distributor MUST act as the DTLS server.  The Key Encryption Key (KEK)
 (i.e., EKT Key) is conveyed by the Key Distributor over the DTLS
 association to endpoints via procedures defined in PERC EKT
 [@I-D.ietf-perc-srtp-ekt-diet] via the EKTKey message.
 
 Note that following DTLS-SRTP procedures for the [@!I-D.ietf-perc-double]
 cipher, the endpoint will generate both E2E and HBH encryption keys
-and salt values.  Endpoints **MAY** use the DTLS-SRTP generated E2E key
-or **MAY** generate different E2E keys.  In either case, the generated SRTP
+and salt values.  Endpoints **MAY** use the DTLS-SRTP generated E2E key for transmission
+or **MAY** generate a fresh E2E key.  In either case, the generated SRTP
 master salt for E2E encryption **MUST** be replaced with the salt value
 provided by the Key Distributor via the EKTKey message.  That is because
 every endpoint in the conference uses the same SRTP master salt.  The
@@ -549,10 +565,10 @@ whenever it receives a new EKT Key.  After switching to a new key,
 the new key will be conveyed to other endpoints in the conference
 in RTP/RTCP packets per [@!I-D.ietf-perc-srtp-ekt-diet].
 
-# Entity Trust
+# Authentication
 
-It is important to this solution framework that the entities can trust
-and validate the authenticity of other entities, especially the Key
+It is important to this solution framework that the entities can 
+validate the authenticity of other entities, especially the Key
 Distributor and endpoints.  The details of this are outside the scope
 of specification but a few possibilities are discussed in the
 following sections.  The key requirements is that endpoints can verify
