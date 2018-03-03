@@ -61,8 +61,8 @@
 In some conferencing scenarios, it is desirable for an intermediary to
 be able to manipulate some RTP parameters, while still providing
 strong end-to-end security guarantees.  This document defines SRTP
-procedures that use two separate but related cryptographic operations to
-provide hop-by-hop and end-to-end security guarantees.  Both the
+procedures that use two separate but related cryptographic operations
+to provide hop-by-hop and end-to-end security guarantees.  Both the
 end-to-end and hop-by-hop cryptographic algorithms can utilize an
 authenticated encryption with associated data scheme or take advantage
 of future SRTP transforms with different properties.
@@ -76,12 +76,12 @@ Cloud conferencing systems that are based on switched conferencing
 have a central Media Distributor device that receives media from
 endpoints and distributes it to other endpoints, but does not need to
 interpret or change the media content.  For these systems, it is
-desirable to have one cryptographic key from the sending endpoint
-to the receiving endpoint that can encrypt and authenticate the media
+desirable to have one cryptographic key from the sending endpoint to
+the receiving endpoint that can encrypt and authenticate the media
 end-to-end while still allowing certain RTP header information to be
 changed by the Media Distributor.  At the same time, a separate
-cryptographic key provides integrity and optional confidentiality
-for the media flowing between the Media Distributor and the endpoints.
+cryptographic key provides integrity and optional confidentiality for
+the media flowing between the Media Distributor and the endpoints.
 See the framework document that describes this concept in more detail
 in more detail in [@I-D.ietf-perc-private-media-framework].
 
@@ -211,8 +211,8 @@ marker bit (if necessary):
 * B: Value of marker bit
 * R: Reserved, MUST be set to 0
 
-In particular, an all-zero OHB config octet (0x00) indicates that there have
-been no modifications from the original header.
+In particular, an all-zero OHB config octet (0x00) indicates that
+there have been no modifications from the original header.
 
 # RTP Operations
 
@@ -225,7 +225,7 @@ for repair packets that only does the outer (hop-by-hop) encryption.
 The processes is as follows:
 
 1. Form an RTP packet.  If there are any header extensions, they MUST
-  use [@!RFC8285].
+   use [@!RFC8285].
 
 2. If the packet is for repair mode data, skip to step 6.
 
@@ -233,19 +233,21 @@ The processes is as follows:
   * Header: The RTP header of the original packet with the following
     modifications:
     * The X bit is set to zero
-    * The header is truncated to remove any extensions (12 + 4 * CC bytes)
+    * The header is truncated to remove any extensions (12 + 4 * CC
+    bytes)
   * Payload: The RTP payload of the original packet
 
 4. Apply the inner cryptographic algorithm to the RTP packet.
 
-5. Replace the header of the protected RTP packet with the header of the
-  original packet, and append to the payload of the packet (1) the
-  authentication tag from the original transform, and (2) an empty OHB (0x00).
+5. Replace the header of the protected RTP packet with the header of
+   the original packet, and append to the payload of the packet (1)
+   the authentication tag from the original transform, and (2) an
+   empty OHB (0x00).
   
 6. Apply the outer cryptographic algorithm to the RTP packet.  If
-  encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
-  be used when encrypting the RTP packet using the outer cryptographic
-  key.
+   encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
+   be used when encrypting the RTP packet using the outer
+   cryptographic key.
 
 When using EKT [@I-D.ietf-perc-srtp-ekt-diet], the EKT Field comes
 after the SRTP packet exactly like using EKT with any other SRTP
@@ -254,10 +256,11 @@ transform.
 ## Relaying a Packet
 
 The Media Distributor has the part of the key for the outer
-(hop-by-hop), but it does not have the part of the key for the (end-to-end)
-cryptographic algorithm.  The cryptographic algorithm and key used to
-decrypt a packet and any encrypted RTP header extensions would be the
-same as those used in the endpoint's outer algorithm and key.
+(hop-by-hop), but it does not have the part of the key for the
+(end-to-end) cryptographic algorithm.  The cryptographic algorithm and
+key used to decrypt a packet and any encrypted RTP header extensions
+would be the same as those used in the endpoint's outer algorithm and
+key.
 
 In order to modify a packet, the Media Distributor decrypts the
 packet, modifies the packet, updates the OHB with any modifications
@@ -266,15 +269,15 @@ cryptographic using the outer (hop-by-hop) key.
 
 1. Apply the outer (hop-by-hop) cryptographic algorithm to decrypt the
   packet.  If decrypting RTP header extensions hop-by-hop, then
-  [@!RFC6904] MUST be used.  Note that the RTP payload produced by this
-  decryption operation contains the original encrypted payload with the tag
-  from the inner transform and the OHB appended.
+  [@!RFC6904] MUST be used.  Note that the RTP payload produced by
+  this decryption operation contains the original encrypted payload
+  with the tag from the inner transform and the OHB appended.
 
 2. Change any parts of the RTP packet that the relay wishes to change
-  and are allowed to be changed. 
+  and are allowed to be changed.
 
-2. If a changed RTP header field is not already in the OHB, add it with
-  its original value to the OHB.  A Media Distributor can add
+2. If a changed RTP header field is not already in the OHB, add it
+  with its original value to the OHB.  A Media Distributor can add
   information to the OHB, but MUST NOT change existing information in
   the OHB.
 
@@ -282,10 +285,11 @@ cryptographic using the outer (hop-by-hop) key.
   it MAY drop it from the OHB. Note that this might result in a
   decrease in the size of the OHB.
 
-5. Apply the outer (hop-by-hop) cryptographic algorithm to the packet. If the RTP Sequence
-  Number has been modified, SRTP processing happens as defined in SRTP
-  and will end up using the new Sequence Number. If encrypting RTP
-  header extensions hop-by-hop, then [@!RFC6904] MUST be used.
+5. Apply the outer (hop-by-hop) cryptographic algorithm to the
+  packet. If the RTP Sequence Number has been modified, SRTP
+  processing happens as defined in SRTP and will end up using the new
+  Sequence Number. If encrypting RTP header extensions hop-by-hop,
+  then [@!RFC6904] MUST be used.
 
 ## Decrypting a Packet
 
@@ -302,21 +306,23 @@ the inner (end-to-end) cryptographic key.
 
 2. If the packet is for repair mode data, skip the rest of the steps.
 
-3. Remove the inner authentication tag and the OHB from the end of the payload
-  of the outer SRTP packet.
+3. Remove the inner authentication tag and the OHB from the end of the
+  payload of the outer SRTP packet.
 
 4. Form a new synthetic SRTP packet with:
 
   * Header = Received header, with the following modifications:
+
     * Header fields replaced with values from OHB (if any)
     * The X bit is set to zero
-    * The header is truncated to remove any extensions (12 + 4 * CC bytes) 
+    * The header is truncated to remove any extensions (12 + 4 * CC
+      bytes)
 
-  * Payload is the encrypted payload from the outer SRTP packet (after the
-    inner tag and OHB have been stripped).
+  * Payload is the encrypted payload from the outer SRTP packet (after
+    the inner tag and OHB have been stripped).
 
-  * Authentication tag is the inner authentication tag from the outer SRTP
-    packet.
+  * Authentication tag is the inner authentication tag from the outer
+    SRTP packet.
 
 5. Apply the inner cryptographic algorithm to this synthetic SRTP
   packet.  Note if the RTP Sequence Number was changed by the Media
@@ -346,8 +352,8 @@ SRTP packet, they MAY be used:
 # RTCP Operations
 
 Unlike RTP, which is encrypted both hop-by-hop and end-to-end using
-two separate cryptographic key, RTCP is encrypted using only the
-outer (hop-by-hop) cryptographic key.  The procedures for RTCP encryption
+two separate cryptographic key, RTCP is encrypted using only the outer
+(hop-by-hop) cryptographic key. The procedures for RTCP encryption
 are specified in [@!RFC3711] and this document introduces no
 additional steps.
 
@@ -355,12 +361,11 @@ additional steps.
 
 There are some RTP related extensions that need special consideration
 to be used by a relay when using the double transform due to the
-end-to-end protection of the RTP.
-The repair mechanism, when used with double, typically operate on the
-double encrypted data then take the results of theses operations and
-encrypted them using only the HBH key. This results in three
-cryptography operation happening to the repair data sent over the
-wire.
+end-to-end protection of the RTP.  The repair mechanism, when used
+with double, typically operate on the double encrypted data then take
+the results of theses operations and encrypted them using only the HBH
+key. This results in three cryptography operation happening to the
+repair data sent over the wire.
 
 ## RTX
 
@@ -404,12 +409,13 @@ is a better choice than RED.
 
 When using Flex FEC [@I-D.ietf-payload-flexible-fec-scheme] with
 double, the negotiation of double for the crypto is the out of band
-signalling that indicates that the repair packets MUST use the order of
-operations of SRTP followed by FEC when encrypting. This is to ensure
-that the original media is not revealed to the Media Distributor but at
-the same time allow the Media Distributor to repair media.  When
-encrypting a packet that contains the Flex FEC data, which is already
-encrypted, it MUST be encrypted in repair mode packet.
+signalling that indicates that the repair packets MUST use the order
+of operations of SRTP followed by FEC when encrypting. This is to
+ensure that the original media is not revealed to the Media
+Distributor but at the same time allow the Media Distributor to repair
+media.  When encrypting a packet that contains the Flex FEC data,
+which is already encrypted, it MUST be encrypted in repair mode
+packet.
 
 The algorithm recommend in [@I-D.ietf-rtcweb-fec] for repair of video
 is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  Note that for
@@ -430,24 +436,24 @@ instead.
 This specification recommends and defines AES-GCM as both the inner
 and outer cryptographic algorithms, identified as
 DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM and
-DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM.  These algorithm provide
-for authenticated encryption and will consume additional processing
-time double-encrypting for hop-by-hop and end-to-end.  However, the approach is
-secure and simple, and is thus viewed as an acceptable trade-off in
-processing efficiency.
+DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM.  These algorithm provide for
+authenticated encryption and will consume additional processing time
+double-encrypting for hop-by-hop and end-to-end.  However, the
+approach is secure and simple, and is thus viewed as an acceptable
+trade-off in processing efficiency.
 
 Note that names for the cryptographic transforms are of the form
 DOUBLE_(inner algorithm)_(outer algorithm).
 
 While this document only defines a profile based on AES-GCM, it is
 possible for future documents to define further profiles with
-different inner and outer crypto in this same framework.  For
-example, if a new SRTP transform was defined that encrypts some or all
-of the RTP header, it would be reasonable for systems to have the
-option of using that for the outer algorithm.  Similarly, if a new
-transform was defined that provided only integrity, that would also be
-reasonable to use for the hop-by-hop as the payload data is already encrypted
-by the end-to-end.
+different inner and outer crypto in this same framework.  For example,
+if a new SRTP transform was defined that encrypts some or all of the
+RTP header, it would be reasonable for systems to have the option of
+using that for the outer algorithm.  Similarly, if a new transform was
+defined that provided only integrity, that would also be reasonable to
+use for the hop-by-hop as the payload data is already encrypted by the
+end-to-end.
 
 The AES-GCM cryptographic algorithm introduces an additional 16 octets
 to the length of the packet.  When using AES-GCM for both the inner
@@ -465,18 +471,18 @@ the RTP fields and headers created by the sender and before the pay
 load as the initial envelope and the RTP payload information with the
 media as the payload. Any additional headers added by the Media
 Distributor are referred to as the extra envelope. The sender uses the
-end-to-end key to encrypts the payload and authenticate the payload + initial
-envelope which using an AEAD cipher results in a slight longer new
-payload.  Then the sender uses the hop-by-hop key to encrypt the new payload
-and authenticate the initial envelope and new payload.
+end-to-end key to encrypts the payload and authenticate the payload +
+initial envelope which using an AEAD cipher results in a slight longer
+new payload.  Then the sender uses the hop-by-hop key to encrypt the
+new payload and authenticate the initial envelope and new payload.
 
 The Media Distributor has the hop-by-hop key so it can check the
 authentication of the received packet across the initial envelope and
 payload data but it can't decrypt the payload as it does not have the
-end-to-end key. It can add extra envelope information. It then authenticates
-the initial plus extra envelope information plus payload with a hop-by-hop
-key. This hop-by-hop for the outgoing packet is typically different than the
-hop-by-hop key for the incoming packet.
+end-to-end key. It can add extra envelope information. It then
+authenticates the initial plus extra envelope information plus payload
+with a hop-by-hop key. This hop-by-hop for the outgoing packet is
+typically different than the hop-by-hop key for the incoming packet.
 
 The receiver can check the authentication of the initial and extra
 envelope information.  This, along with the OHB, is used to construct
@@ -563,7 +569,8 @@ DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM
 ~~~~
 
 The first half of the key and salt is used for the inner (end-to-end)
-algorithm and the second half is used for the outer (hop-by-hop) algorithm.
+algorithm and the second half is used for the outer (hop-by-hop)
+algorithm.
 
 # Acknowledgments
 
@@ -579,7 +586,7 @@ information in the RTP payload instead of the RTP header.
 
 The following figure shows a double encrypted SRTP packet. The sides
 indicate the parts of the packet that are encrypted and authenticated
-by the hob-by-hop and end-to-end operations. 
+by the hob-by-hop and end-to-end operations.
 
 
 ~~~~~
