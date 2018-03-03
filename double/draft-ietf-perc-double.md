@@ -174,11 +174,11 @@ document MUST be used with the following PRF, which preserves the
 separation between the two halves of the key:
 
 ~~~~~
-PRF\_double\_n(k\_master, x) = PRF\_inner\_(n/2)(k\_master, x) || 
-                               PRF\_outer\_(n/2)(k\_master, x)
+PRF_double_n(k_master,x) = PRF_inner_(n/2)(k_master,x) || 
+                           PRF_outer_(n/2)(k_master,x)
 
-PRF\_inner\_n(k\_master, x) = PRF\_n(inner(k\_master), x)
-PRF\_outer\_n(k\_master, x) = PRF\_n(outer(k\_master), x)
+PRF_inner_n(k_master,x)  = PRF_n(inner(k_master),x)
+PRF_outer_n(k_master,x)  = PRF_n(outer(k_master),x)
 ~~~~~
 
 Here `PRF_n(k, x)` represents the default SRTP PRF [@RFC3711],
