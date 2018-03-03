@@ -225,7 +225,7 @@ for repair packets that only does the outer (hop-by-hop) encryption.
 The processes is as follows:
 
 1. Form an RTP packet.  If there are any header extensions, they MUST
-  use [@!RFC5285].
+  use [@!RFC8285].
 
 2. If the packet is for repair mode data, skip to step 6.
 
