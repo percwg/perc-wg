@@ -11,7 +11,7 @@
     Title = "Encrypted Key Transport for DTLS and Secure RTP"
     abbrev = "EKT SRTP"
     category = "std"
-    docName = "draft-ietf-perc-srtp-ekt-diet-06"
+    docName = "draft-ietf-perc-srtp-ekt-diet-07"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
@@ -735,7 +735,7 @@ ekt\_key(TBD).  The body of the handshake message contains an
 EKTKey structure:
 
 [[ NOTE: RFC Editor, please replace "TBD" above with the code point
-assigend by IANA ]]
+assigned by IANA ]]
 
 ~~~
 struct {
@@ -772,7 +772,7 @@ client or the server.
 When an EKTKey is received and processed successfully, the recipient
 MUST respond with an Ack handshake message as described in Section 7
 of [@I-D.ietf-tls-dtls13].  The EKTKey message and Ack must be
-retransmitted following the rules in Secton 4.2.4 of [@RFC6347].
+retransmitted following the rules in Section 4.2.4 of [@RFC6347].
   
   Note: To be clear, EKT can be used with versions of DTLS prior to
   1.3.  The only difference is that in a pre-1.3 TLS stacks will not
@@ -890,7 +890,7 @@ Note to RFC Editor: Please replace RFCAAAA with the RFC number for
 this specification.
 
 New entries to this table can be added via "Specification Required" as
-defined in [@!RFC5226]. When requesting a new value, the requestor
+defined in [@!RFC8126]. When requesting a new value, the requestor
 needs to indicate if it is mandatory to understand or not. If it is
 mandatory to understand, IANA needs to allocate a value less than 64,
 if it is not mandatory to understand, a value greater than or equal to
@@ -920,9 +920,9 @@ Note to RFC Editor: Please replace RFCAAAA with the RFC number for
 this specification.
 
 New entries to this table can be added via "Specification Required" as
-defined in [@!RFC5226]. The expert SHOULD ensure the specification
+defined in [@!RFC8126]. The expert SHOULD ensure the specification
 defines the values for L and T as required in (#cipher) of
-RFCAAA. Allocated values MUST be in the range of 1 to 254.
+RFCAAAA. Allocated values MUST be in the range of 1 to 254.
 
 
 ## TLS Extensions
