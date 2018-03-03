@@ -262,7 +262,7 @@ The processes is as follows:
   * Payload: The RTP payload of the original packet
 
 4. Apply the inner cryptographic algorithm to the synthetic RTP packet
-   from the previos step.
+   from the previous step.
 
 5. Replace the header of the protected RTP packet with the header of
    the original packet, and append to the payload of the packet (1)
@@ -301,10 +301,10 @@ cryptographic using the outer (hop-by-hop) key.
 2. Change any parts of the RTP packet that the relay wishes to change
   and should be changed.
 
-3. A Media Distributor can add
-  information to the OHB, but MUST NOT change existing information in
-  the OHB. If RTP value is changed and not already in the OHB, then add it
-  with its original value to the OHB. 
+3. A Media Distributor can add information to the OHB, but MUST NOT
+  change existing information in the OHB. If RTP value is changed and
+  not already in the OHB, then add it with its original value to the
+  OHB.
 
 4. If the Media Distributor resets a parameter to its original value,
   it MAY drop it from the OHB. Note that this might result in a
@@ -335,7 +335,7 @@ the inner (end-to-end) cryptographic key.
    specified by the repair algorithm sections.
 
 3. Remove the inner authentication tag and the OHB from the end of the
-  payload of the outer SRTP packet.
+   payload of the outer SRTP packet.
 
 4. Form a new synthetic SRTP packet with:
 
@@ -527,7 +527,7 @@ the receiver can check that it is identical and then decrypt the
 original payload.
 
 The end result is that if the authentications succeed, the receiver
-knows exactly what the payload and intal envelope the sender sent, as
+knows exactly what the payload and initial envelope the sender sent, as
 well as exactly which modifications were made by the Media Distributor
 and what extra envelope the Media Distributor send. The receive does
 not know exactly what extra envelope the sender sent.
