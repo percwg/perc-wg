@@ -349,7 +349,7 @@ the inner (end-to-end) cryptographic key.
 
 Once the packet has been successfully decrypted, the application needs
 to be careful about which information it uses to get the correct
-behaviour.  The application MUST use only the information found in the
+behavior.  The application MUST use only the information found in the
 synthetic SRTP packet and MUST NOT use the other data that was in the
 outer SRTP packet with the following exceptions:
 
@@ -427,7 +427,7 @@ is a better choice than RED.
 
 When using Flex FEC [@I-D.ietf-payload-flexible-fec-scheme] with
 double, the negotiation of double for the crypto is the out of band
-signalling that indicates that the repair packets MUST use the order
+signaling that indicates that the repair packets MUST use the order
 of operations of SRTP followed by FEC when encrypting. This is to
 ensure that the original media is not revealed to the Media
 Distributor but at the same time allow the Media Distributor to repair
