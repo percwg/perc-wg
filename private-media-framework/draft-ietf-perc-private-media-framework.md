@@ -351,7 +351,7 @@ Distributor.
    #  | |  #                                      #  | |  #
    #  | |  *---- HBH Key (AX)    HBH Key (YB) ----*  | |  #
    #  | |  #                                      #  | |  #
-   #  *--------- E2E Key (AB)    E2E Key (AB) -------*-*  #
+   #  *--------- E2E Key (AB)    E2E Key (AB) ---------*  #
    #  | *------- E2E Key (BA)    E2E Key (BA) -------* |  #
    #  | |  #                                      #  | |  #
    #  | v  #                                      #  | v  #
