@@ -8,7 +8,7 @@
     Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-ietf-perc-private-media-framework-05"
+    docName = "draft-ietf-perc-private-media-framework-06"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "Private Media Framework", "conferencing"]
@@ -44,7 +44,7 @@
     initials="C."
     surname="Groves"
     fullname="Christian Groves"
-    organization = "Huawei"
+    organization = "Independent"
       [author.address]
       email = "Christian.Groves@nteczone.com"
       [author.address.postal]
@@ -61,6 +61,7 @@
     #        Added appendices for key and packet information
     #   05 - Clarified key exchange procedures
     #        Editorial corrections
+    #   06 - Editorial improvements (https://github.com/ietf/perc-wg/pull/150)
     #
 
 %%%
