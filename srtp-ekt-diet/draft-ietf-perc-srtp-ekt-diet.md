@@ -693,7 +693,7 @@ Client A                 Server                 Client B
 ~~~
 
 
-### Negotiating an EKT Cipher
+### Negotiating the Use of EKT
 
 To indicate its support for EKT, a DTLS-SRTP client includes in its
 ClientHello an extension of type supported\_ekt\_ciphers listing the
@@ -703,6 +703,18 @@ includes a supported\_ekt\_ciphers extension in its ServerHello
 containing a cipher selected from among those advertised by the
 client.
 
+This extension is also used to negotiate whether the client or
+server will be allowed to transmit EKTKey handshake messages.  The
+"active" party sends EKTKey messages; the "passive" party consumes
+and uses them.  The DTLS client may select a role by sending the
+value "active" or "passive", or indicate its willingness to play
+either role by sending "actpass".  If the client selects a role,
+then the server MUST send the corresponding role.  If the role
+selected by the client is not acceptable to the server, then the
+server MUST send a "handshake\_failure" alert and close the
+connection.  If the client sends "actpass", then the server MUST
+select a role; it MUST NOT send "actpass".
+
 The extension\_data field of this extension contains an "EKTCipher" value,
 encoded using the syntax defined in [@!RFC5246]:
 
@@ -711,9 +723,18 @@ enum {
   reserved(0),
   aeskw_128(1),
   aeskw_256(2),
+  (255)
 } EKTCipherType;
 
+enum {
+  passive(0),
+  active(1),
+  actpass(2),
+  (255)
+} EKTRole;
+
 struct {
+    EKTRole role;
     select (Handshake.msg_type) {
         case client_hello:
             EKTCipherType supported_ciphers<1..255>;
@@ -728,11 +749,11 @@ struct {
 ### Establishing an EKT Key
 
 Once a client and server have concluded a handshake that negotiated
-an EKT cipher, the server MUST provide to the client a key to be
-used when encrypting and decrypting EKTCiphertext values.  EKT keys
-are sent in encrypted handshake records, using handshake type
-ekt\_key(TBD).  The body of the handshake message contains an
-EKTKey structure:
+an EKT cipher and EKT roles, the active party MUST provide to the
+passive party a key to be used when encrypting and decrypting
+EKTCiphertext values.  EKT keys are sent in encrypted handshake
+records, using handshake type ekt\_key(TBD).  The body of the
+handshake message contains an EKTKey structure:
 
 [[ NOTE: RFC Editor, please replace "TBD" above with the code point
 assigned by IANA ]]

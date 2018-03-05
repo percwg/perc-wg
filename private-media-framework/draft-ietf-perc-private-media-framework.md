@@ -512,6 +512,14 @@ Key Distributor MUST act as the DTLS server.  The Key Encryption Key (KEK)
 association to endpoints via procedures defined in PERC EKT
 [@I-D.ietf-perc-srtp-ekt-diet] via the EKTKey message.
 
+In order to enable the Key Distributor to provide the KEK, the Key
+Distributor needs to play the "active" role in EKT.  When a PERC
+endpoint acts as a DTLS client, it MUST send the "passive" or
+"actpass" role in the EKT handshake extension, and the Key
+Distributor MUST select the "active" role.  When a PERC endpoint
+acts as DTLS server, the Key Distributor MUST send the "active"
+role, and the endpoint MUST accept this.
+
 Note that following DTLS-SRTP procedures for the [@!I-D.ietf-perc-double]
 cipher, the endpoint will generate both E2E and HBH encryption keys
 and salt values.  Endpoints **MAY** use the DTLS-SRTP generated E2E key for transmission
