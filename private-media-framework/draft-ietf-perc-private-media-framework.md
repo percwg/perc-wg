@@ -351,7 +351,8 @@ Distributor.
    #  | |  #                                      #  | |  #
    #  | |  *---- HBH Key (AX)    HBH Key (YB) ----*  | |  #
    #  | |  #                                      #  | |  #
-   #  *-*------- E2E Key (AB)    E2E Key (AB) -------*-*  #
+   #  *--------- E2E Key (AB)    E2E Key (AB) -------*-*  #
+   #  | *------- E2E Key (BA)    E2E Key (BA) -------* |  #
    #  | |  #                                      #  | |  #
    #  | v  #                                      #  | v  #
 +-------------+                                +-------------+
@@ -447,7 +448,7 @@ In brief, the keys used by any given endpoints are determined in the
 following way:
 
 * The HBH keys that the endpoint uses to send and receive SRTP media
-  are derived from a DTLS hadnshake that the endpoint performs with
+  are derived from a DTLS handshake that the endpoint performs with
   the Key Distributor (following normal DTLS-SRTP procedures).
 
 * The E2E key that an endpoint uses to send SRTP media can either be
@@ -457,7 +458,7 @@ following way:
   channel they negotiated.
 
 * Each E2E key that an endpoint uses to receive SRTP media is set
-  by receiving a Full EKT Field from another endpoints.
+  by receiving a Full EKT Field from another endpoint.
 
 ### Initial Key Exchange and Key Distributor
 
