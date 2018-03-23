@@ -213,7 +213,7 @@ BYTE = %x00-FF
 PT = BYTE
 SEQ = 2BYTE
 Config = BYTE
-OHB = [ PT ]  [SEQ ] Config
+OHB = [ PT ]  [ SEQ ] Config
 
 ~~~~~
 
