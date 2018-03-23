@@ -11,7 +11,7 @@
     Title = "SRTP Double Encryption Procedures"
     abbrev = "Double SRTP"
     category = "std"
-    docName = "draft-ietf-perc-double-08"
+    docName = "draft-ietf-perc-double-09"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
@@ -213,8 +213,8 @@ BYTE = %x00-FF
 PT = BYTE
 SEQ = 2BYTE
 Config = BYTE
+OHB = [ PT ]  [SEQ ] Config
 
-OHB = ?PT ?SEQ Config
 ~~~~~
 
 If present, the PT and SEQ parts of the OHB contain the original payload type
