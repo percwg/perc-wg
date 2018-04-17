@@ -89,13 +89,13 @@ This specification defines an SRTP transform that uses the AES-GCM
 algorithm [@!RFC7714] to provide encryption and integrity for an RTP
 packet for the end-to-end cryptographic key as well as a hop-by-hop
 cryptographic encryption and integrity between the endpoint and the
-Media Distributor.  The Media Distributor decrypts and checks
-integrity of the hop-by-hop security.  The Media Distributor MAY
+Media Distributor. The Media Distributor decrypts and checks
+integrity of the hop-by-hop security. The Media Distributor MAY
 change some of the RTP header information that would impact the
-end-to-end integrity.  The original value of any RTP header field that
-is changed is included in a new RTP header extension called the
-Original Header Block.  The new RTP packet is encrypted with the
-hop-by-hop cryptographic algorithm before it is sent.  The receiving
+end-to-end integrity. In that case, the original value of any RTP 
+header field that is changed is included in a new RTP header extension 
+called the Original Header Block. The new RTP packet is encrypted with the
+hop-by-hop cryptographic algorithm before it is sent. The receiving
 endpoint decrypts and checks integrity using the hop-by-hop
 cryptographic algorithm and then replaces any parameters the Media
 Distributor changed using the information in the Original Header Block
@@ -103,7 +103,7 @@ before decrypting and checking the end-to-end integrity.
 
 One can think of the double as a normal SRTP transform for encrypting
 the RTP in a way where things that only know half of the key, can
-decrypt and modify part of the RTP packet but not other parts of if
+decrypt and modify part of the RTP packet but not other parts,
 including the media payload.
 
 # Terminology
@@ -135,7 +135,7 @@ This specification uses a cryptographic context with two parts: an inner
 consume media to ensure the integrity of media end-to-end, and an
 outer (hop-by-hop) part that is used between endpoints and Media
 Distributors to ensure the integrity of media over a single hop and to
-enable a Media Distributor to modify certain RTP header fields.  RTCP
+enable a Media Distributor to modify certain RTP header fields. RTCP
 is also handled using the hop-by-hop cryptographic part.  The
 RECOMMENDED cipher for the hop-by-hop and end-to-end algorithm is
 AES-GCM.  Other combinations of SRTP ciphers that support the
@@ -166,8 +166,8 @@ steps:
 
 Obviously, if the Media Distributor is to be able to modify header
 fields but not decrypt the payload, then it must have cryptographic
-key for the outer algorithm, but not the inner (end-to-end) algorithm.  This
-document does not define how the Media Distributor should be
+key for the outer algorithm, but not the inner (end-to-end) algorithm. 
+This document does not define how the Media Distributor should be
 provisioned with this information.  One possible way to provide keying
 material for the outer (hop-by-hop) algorithm is to use
 [@I-D.ietf-perc-dtls-tunnel].
@@ -194,7 +194,7 @@ represents the second half of the key.
 # Original Header Block {#ohb} 
 
 The Original Header Block (OHB) contains the original values of any modified
-header fields.  In the encryption process, the OHB is appended to the RTP
+RTP header fields. In the encryption process, the OHB is appended to the RTP
 payload.  In the decryption process, the receiving endpoint uses it to
 reconstruct the original RTP header, so that it can pass the proper AAD value
 to the inner transform.
@@ -204,16 +204,16 @@ payload type, the sequence number, and the marker bit.  All other fields in the
 RTP header MUST remain unmodified; since the OHB cannot reflect their original
 values, the receiver will be unable to verify the E2E integrity of the packet.
 
-The OHB has the following syntax (in ABNF):
+The OHB has the following syntax (in ABNF [@RFC5234]):
 
 {align="left"}
 ~~~~~
-BYTE = %x00-FF
+OCTET = %x00-FF
 
-PT = BYTE
-SEQ = 2BYTE
-Config = BYTE
-OHB = [ PT ]  [ SEQ ] Config
+PT = OCTET
+SEQ = 2OCTET
+Config = OCTET
+OHB = [ PT ] [ SEQ ] Config
 
 ~~~~~
 
@@ -606,7 +606,7 @@ information in the RTP payload instead of the RTP header.
 
 The following figure shows a double encrypted SRTP packet. The sides
 indicate the parts of the packet that are encrypted and authenticated
-by the hob-by-hop and end-to-end operations.
+by the hop-by-hop and end-to-end operations.
 
 
 ~~~~~
