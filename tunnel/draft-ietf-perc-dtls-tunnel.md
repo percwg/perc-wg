@@ -11,7 +11,7 @@
     Title = "DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
-    docName = "draft-ietf-perc-dtls-tunnel-02"
+    docName = "draft-ietf-perc-dtls-tunnel-03"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
@@ -68,6 +68,7 @@
     #   02 - Changes based on agreements at IETF99
     #          - Removed editor's note about how key distributor gets
     #            The dtls-id from SDP
+    #   03 - No change; rev to address expiration
     #
 
 %%%
