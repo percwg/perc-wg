@@ -268,7 +268,7 @@ The processes is as follows:
   * Payload: The RTP payload of the original packet
 
 4. Apply the inner cryptographic algorithm to the synthetic RTP packet
-   from the previous step. 
+   from the previous step.
 
 5. Replace the header of the protected RTP packet with the header of
    the original packet, and append an empty OHB (0x00) to the 
@@ -543,7 +543,7 @@ original payload.
 The end result is that if the authentications succeed, the receiver
 knows exactly the payload and initial envelope the sender sent, as
 well as exactly which modifications were made by the Media Distributor
-and what extra envelope the Media Distributor sent. The receive does
+and what extra envelope the Media Distributor sent. The receiver does
 not know exactly what extra envelope the sender sent.
 
 It is obviously critical that the intermediary has access to just the 
@@ -551,11 +551,10 @@ outer (hop-by-hop) algorithm key and not the half of the key for the the
 inner (end-to-end) algorithm.  We rely on an external key management
 protocol to ensure this property.
 
-Modifications by the intermediary result in the recipient getting two
+Modifications by the intermediary results in the recipient getting two
 values for changed parameters (original and modified).  The recipient
 will have to choose which to use; there is risk in using either that
 depends on the session setup.
-
 
 The security properties for both the inner (end-to-end) and outer
 (hop-by-hop) key holders are the same as the security properties of
