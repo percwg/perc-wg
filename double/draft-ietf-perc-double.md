@@ -265,7 +265,7 @@ The processes is as follows:
   * Payload: The RTP payload of the original packet
 
 4. Apply the inner cryptographic algorithm to the synthetic RTP packet
-   from the previous step.
+   from the previous step. 
 
 5. Replace the header of the protected RTP packet with the header of
    the original packet, and append an empty OHB (0x00) to the 
@@ -511,9 +511,15 @@ media as the payload. Any additional headers added by the sender or Media
 Distributor are referred to as the extra envelope. The sender uses the
 end-to-end key to encrypt the payload and authenticate the payload +
 initial envelope, which using an AEAD cipher results in a slight longer
-new payload.  Then the sender uses the hop-by-hop key to encrypt the
+new payload. Then the sender uses the hop-by-hop key to encrypt the
 new payload and authenticate the initial envelope, extra envelope and
-the new payload.
+the new payload. Also to note, the "Associated Data" input (which 
+excludes header extensions ) to the inner crypto differs from [@!RFC7714]
+construction. This shouldn't typically impact the strength of e2e 
+integrity given the fact that there doesn't exist header extensions defined
+today that needs e2e protection. However, if future specifications define
+header extensions that needs e2e integrity protection, the input to inner 
+transform may be modified to consider including the header extensions.
 
 The Media Distributor has the hop-by-hop key so it can check the
 authentication of the received packet across the initial envelope,
@@ -546,6 +552,7 @@ Modifications by the intermediary result in the recipient getting two
 values for changed parameters (original and modified).  The recipient
 will have to choose which to use; there is risk in using either that
 depends on the session setup.
+
 
 The security properties for both the inner (end-to-end) and outer
 (hop-by-hop) key holders are the same as the security properties of
