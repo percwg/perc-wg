@@ -514,9 +514,15 @@ media as the payload. Any additional headers added by the sender or Media
 Distributor are referred to as the extra envelope. The sender uses the
 end-to-end key to encrypt the payload and authenticate the payload +
 initial envelope, which using an AEAD cipher results in a slight longer
-new payload.  Then the sender uses the hop-by-hop key to encrypt the
+new payload. Then the sender uses the hop-by-hop key to encrypt the
 new payload and authenticate the initial envelope, extra envelope and
-the new payload.
+the new payload. Also to note, the "Associated Data" input (which 
+excludes header extensions ) to the inner crypto differs from [@!RFC7714]
+construction. This shouldn't typically impact the strength of e2e 
+integrity given the fact that there doesn't exist header extensions defined
+today that needs e2e protection. However, if future specifications define
+header extensions that needs e2e integrity protection, the input to inner 
+transform may be modified to consider including the header extensions.
 
 The Media Distributor has the hop-by-hop key so it can check the
 authentication of the received packet across the initial envelope,
@@ -537,7 +543,7 @@ original payload.
 The end result is that if the authentications succeed, the receiver
 knows exactly the payload and initial envelope the sender sent, as
 well as exactly which modifications were made by the Media Distributor
-and what extra envelope the Media Distributor sent. The receive does
+and what extra envelope the Media Distributor sent. The receiver does
 not know exactly what extra envelope the sender sent.
 
 It is obviously critical that the intermediary has access to just the 
@@ -545,7 +551,7 @@ outer (hop-by-hop) algorithm key and not the half of the key for the the
 inner (end-to-end) algorithm.  We rely on an external key management
 protocol to ensure this property.
 
-Modifications by the intermediary result in the recipient getting two
+Modifications by the intermediary results in the recipient getting two
 values for changed parameters (original and modified).  The recipient
 will have to choose which to use; there is risk in using either that
 depends on the session setup.
