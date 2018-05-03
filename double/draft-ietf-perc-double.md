@@ -193,7 +193,7 @@ PRF_outer_n(k_master,x)  = PRF_n(outer(k_master),x)
 
 Here `PRF_n(k, x)` represents the AES_CM PRF KDF [@RFC3711] for 
 DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM algorithm and 
-AES_256_CM_PRF KDF [@RFC6188] for DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM 
+AES_256_CM_PRF KDF [@!RFC6188] for DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM 
 algorithm. `inner(key)` represents the first half of the key, and `outer(key)`
 represents the second half of the key.
 
