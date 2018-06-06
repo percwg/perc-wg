@@ -31,15 +31,9 @@
     initials="D."
     surname="Benham"
     fullname="David Benham"
-    organization = "Cisco"
+    organization = "Independent"
       [author.address]
-      email = "dbenham@cisco.com"
-      [author.address.postal]
-      street = "170 West Tasman Drive"
-      city = "San Jose"
-      region = "California"
-      code = "95134"
-      country = "USA"
+      email = "dabenham@gmail.com"
     [[author]]
     initials="C."
     surname="Groves"
