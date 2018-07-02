@@ -66,8 +66,9 @@
 
 .# Abstract
 
-Encrypted Key Transport (EKT) is an extension to DTLS and Secure
-Real-time Transport Protocol (SRTP) that provides for the secure
+Encrypted Key Transport (EKT) is an extension to DTLS 
+(Datagram Transport Layer Security) and Secure Real-time 
+Transport Protocol (SRTP) that provides for the secure
 transport of SRTP master keys, rollover counters, and other
 information within SRTP. This facility enables SRTP for decentralized
 conferences by distributing a common key to all of the conference
@@ -103,22 +104,22 @@ reduces the amount of external signaling control that is needed in a
 SRTP session with multiple receivers. EKT securely distributes the
 SRTP master key and other information for each SRTP source. With this
 method, SRTP entities are free to choose SSRC values as they see fit,
-and to start up new SRTP sources with new SRTP master keys (see
-Section 2.2) within a session without coordinating with other entities
-via external signaling or other external means.
+and to start up new SRTP sources with new SRTP master keys within a 
+session without coordinating with other entities via external signaling 
+or other external means.
 
-EKT provides a way for an SRTP session participant, either a sender or
-receiver, to securely transport its SRTP master key and current SRTP
+EKT provides a way for an SRTP session participant, to securely 
+transport its SRTP master key and current SRTP
 rollover counter to the other participants in the session. This data
 furnishes the information needed by the receiver to instantiate an
 SRTP/SRTCP receiver context.
 
 EKT can be used in conferences where the central media distributor or
-conference bridge can not decrypt the media, such as the type defined
+conference bridge cannot decrypt the media, such as the type defined
 for [@?I-D.ietf-perc-private-media-framework]. It can also be used for
 large scale conferences where the conference bridge or media
 distributor can decrypt all the media but wishes to encrypt the media
-it is sending just once then send the same encrypted media to a large
+it is sending just once and then send the same encrypted media to a large
 number of participants. This reduces the amount of CPU time needed for
 encryption and can be used for some optimization to media sending that
 use source specific multicast.
@@ -135,22 +136,23 @@ each SRTP source to every SRTP participant.
 # Overview
 
 This specification defines a way for the server in a DTLS-SRTP
-negotiation to provide an ekt\_key to the client during the DTLS
-handshake. This ekt\_key can be used to encrypt the SRTP master key
-used to encrypt the media the endpoint sends. This specification also
-defines a way to send the encrypted SRTP master key along with the
-SRTP packet. Endpoints that receive this and know the ekt\_key can
-use the ekt\_key to decrypt the SRTP master key then use the SRTP
-master key to decrypt the SRTP packet.
+negotiation, see (#dtls-srtp-kt), to provide an ekt\_key to the client 
+during the DTLS handshake. The ekt\_key can be used to encrypt 
+the SRTP master key that is used to encrypt the media sent by 
+the endpoint. This specification also defines a way to send the 
+encrypted SRTP master key along with the SRTP packet, see (#srtp_ekt).
+Endpoints that receive this and know the ekt\_key can use the ekt\_key 
+to decrypt the SRTP master key which can then be used to decrypt 
+the SRTP packet.
 
-One way to use this is used is described in the architecture defined
-by [@?I-D.ietf-perc-private-media-framework]. Each participants in the
-conference call forms a DTLS-SRTP connection to a common key
-distributor that gives all the endpoints the same ekt\_key. Then each
-endpoint picks there own SRTP master key for the media they send. When
-sending media, the endpoint also includes the SRTP master key
-encrypted with the ekt\_key. This allows all the endpoints to decrypt
-the media.
+One way to use this is described in the architecture defined
+by [@?I-D.ietf-perc-private-media-framework]. Each participant in the
+conference forms a DTLS-SRTP connection to a common key
+distributor that distributes the same ekt\_key to all the endpoints. 
+Then each endpoint picks their own SRTP master key for the media 
+they send. When sending media, the endpoint also includes the 
+SRTP master key encrypted with the ekt\_key in the SRTP packet. 
+This allows all the endpoints to decrypt the media.
 
 
 # Conventions Used In This Document
@@ -159,15 +161,15 @@ The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
 "SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
 document are to be interpreted as described in [@!RFC2119].
 
-# Encrypted Key Transport
+# Encrypted Key Transport {#srtp_ekt}
 
 EKT defines a new method of providing SRTP master keys to an
 endpoint. In order to convey the ciphertext corresponding to the SRTP
-master key, and other additional information, an additional EKT field
-is added to SRTP packets. The EKT field appears at the end of the SRTP
-packet. The EKT field appears after the optional authentication tag if
-one is present, otherwise the EKT field appears after the ciphertext
-portion of the packet.
+master key, and other additional information, an additional field,
+called  EKTField, is added to the SRTP packets. The EKTField appears 
+at the end of the SRTP packet. It appears after the optional 
+authentication tag if one is present, otherwise the EKTField 
+appears after the ciphertext portion of the packet.
 
 EKT MUST NOT be used in conjunction with SRTP's MKI (Master Key
 Identifier) or with SRTP's \<From, To\> [@!RFC3711], as those SRTP
@@ -175,9 +177,9 @@ features duplicate some of the functions of EKT. Senders MUST NOT
 include MKI when using EKT. Receivers SHOULD simply ignore any MKI
 field received if EKT is in use.
 
-## EKT Field Formats {#EKT}
+## EKTField Formats {#EKT}
 
-The EKT Field uses the format defined below for the FullEKTField and
+The EKTField uses the format defined below for the FullEKTField and
 ShortEKTField.
 
 
@@ -195,7 +197,7 @@ ShortEKTField.
 |0 0 0 0 0 0 1 0|
 +-+-+-+-+-+-+-+-+
 ~~~
-Figure: Full EKT Field format
+Figure: FullEKTField format
 
 
 {#tag-format-abbreviated}
@@ -205,7 +207,7 @@ Figure: Full EKT Field format
 |0 0 0 0 0 0 0 0|
 +-+-+-+-+-+-+-+-+
 ~~~
-Figure: Short EKT Field format
+Figure: ShortEKTField format
 
 The following shows the syntax of the EKTField expressed in ABNF
 [@!RFC5234].  The EKTField is added to the end of an SRTP or SRTCP
@@ -251,7 +253,7 @@ These fields and data elements are defined as follows:
 EKTPlaintext: The data that is input to the EKT encryption
 operation. This data never appears on the wire, and is used only in
 computations internal to EKT. This is the concatenation of the SRTP
-Master Key, the SSRC, and the ROC.
+Master Key and its length, the SSRC, and the ROC.
 
 EKTCiphertext: The data that is output from the EKT encryption
 operation, described in (#cipher). This field is included in SRTP
@@ -265,38 +267,38 @@ SRTPMasterKeyLength: The length of the SRTPMasterKey in bytes. This
 depends on the cipher suite negotiated for SRTP using SDP Offer/Answer
 [@RFC3264] for the SRTP.
 
-SSRC: On the sender side, this field is the SSRC for this SRTP
+SSRC: On the sender side, this is the SSRC for this SRTP
 source. The length of this field is 32 bits.
 
-Rollover Counter (ROC): On the sender side, this field is set to the
-current value of the SRTP rollover counter in the SRTP context
+Rollover Counter (ROC): On the sender side, this is set to the
+current value of the SRTP rollover counter in the SRTP/SRTCP context
 associated with the SSRC in the SRTP or SRTCP packet. The length of
 this field is 32 bits.
 
 Security Parameter Index (SPI): This field indicates the appropriate
-EKT Key and other parameters for the receiver to use when processing
+EKTKey and other parameters for the receiver to use when processing
 the packet. The length of this field is 16 bits. The parameters
 identified by this field are:
 
 * The EKT cipher used to process the packet.
 
-* The EKT Key used to process the packet.
+* The EKTKey used to process the packet.
 
-* The SRTP Master Salt associated with any Master Key encrypted with
-   this EKT Key. The Master Salt is communicated separately, via
-   signaling, typically along with the EKTKey.
+* The SRTP Master Salt associated with any master key encrypted with
+  this EKT Key. The master salt is communicated separately, via
+  signaling, typically along with the EKTKey.
 
 Together, these data elements are called an EKT parameter set. Each
 distinct EKT parameter set that is used MUST be associated with a
 distinct SPI value to avoid ambiguity.
 
-EKTMsgLength: All EKT message other that ShortEKTField have a length
-as second from the last element.  This is the length in octets of
-either the FullEKTField/ExtensionEKTField including this length field
-and the following message type.
+EKTMsgLength: All EKT messages types other than the ShortEKTField 
+have a length as second from the last element. This is the length 
+in octets of either the FullEKTField/ExtensionEKTField including 
+this length field and the following EKT Message Type.
 
 Message Type: The last byte is used to indicate the type of the
-EKTField. This MUST be 2 in the FullEKTField format and 0 in
+EKTField. This MUST be 2 for the FullEKTField format and 0 in
 ShortEKTField format. Values less than 64 are mandatory to understand
 while other values are optional to understand. A receiver SHOULD
 discard the whole EKTField if it contains any message type value that
@@ -305,7 +307,7 @@ are 64 or greater but not implemented or understood can simply be
 ignored.
 
 
-## Packet Processing and State Machine
+## Packet Processing and State Machine {#pkt_proc}
 
 At any given time, each SRTP/SRTCP source has associated with it a
 single EKT parameter set. This parameter set is used to process all
@@ -320,8 +322,8 @@ participants in an SRTP session, for use in processing inbound SRTP
 and SRTCP traffic.
 
 Either the FullEKTField or ShortEKTField is appended at the tail end
-of all SRTP packets. The decision on which to send is specified in
-(#timing).
+of all SRTP packets. The decision on which to send when is specified 
+in (#timing).
 
 
 ### Outbound Processing
@@ -358,17 +360,16 @@ processing.
      packets protected by the same EKTKey and SRTP master key. This value MAY
      be cached by an SRTP sender to minimize computational effort.
 
-    The computed value of the FullEKTField is written into the packet.
+The computed value of the FullEKTField is written into the SRTP packet.
 
-
-When a packet is sent with the Short EKT Field, the ShortEKFField is
+When a packet is sent with the ShortEKTField, the ShortEKFField is
 simply appended to the packet.
 
 
 ### Inbound Processing
 
 When receiving a packet on a RTP stream, the following steps are
-applied for each received packet.
+applied for each SRTP received packet.
 
 1. The final byte is checked to determine which EKT format is in
    use. When an SRTP or SRTCP packet contains a ShortEKTField, the
@@ -378,17 +379,17 @@ applied for each received packet.
    last byte of the packet to indicate the type is that the length of
    the SRTP or SRTCP part is not known until the decryption has
    occurred. At this point in the processing, there is no easy way to
-   know where the EKT field would start. However, the whole UDP packet
-   has been received so instead of the starting at the front of the
-   packet, the parsing works backwards off the end of the packet and
-   thus the type is put at the very end of the packet.
+   know where the EKTField would start. However, the whole UDP packet
+   has been received, so instead of the starting at the front of the
+   packet, the parsing works backwards at the end of the packet and
+   thus the type is placed at the very end of the packet.
 
-2. The Security Parameter Index (SPI) field is used to find which EKT
-   parameter set to be used when processing the packet. If there is no
-   matching SPI, then the verification function MUST return an
-   indication of authentication failure, and the steps described below
-   are not performed. The EKT parameter set contains the EKTKey,
-   EKTCipher, and SRTP Master Salt.
+2. The Security Parameter Index (SPI) field is used to find the
+   right EKT parameter set to be used for processing the packet. 
+   If there is no matching SPI, then the verification function 
+   MUST return an indication of authentication failure, and 
+   the steps described below are not performed. The EKT parameter 
+   set contains the EKTKey, EKTCipher, and the SRTP Master Salt.
 
 3. The EKTCiphertext authentication is checked and it is decrypted, as
    described in (#cipher), using the EKTKey and EKTCipher found in the
@@ -403,11 +404,11 @@ applied for each received packet.
    first N bytes from the srtp\_master\_salt field.
 
 5. If the SSRC in the EKTPlaintext does not match the SSRC of the SRTP
-   packet, then all the information from this EKTPlaintext MUST be
-   discarded and the following steps in this list are not done.
+   packet received, then all the information from this EKTPlaintext MUST be
+   discarded and the following steps in this list are aborted.
 
 6. The SRTP Master Key, ROC, and SRTP Master Salt from the previous
-   step are saved in a map indexed by the SSRC found in the
+   steps are saved in a map indexed by the SSRC found in the
    EKTPlaintext and can be used for any future crypto operations on
    the inbound packets with that SSRC.  If the SRTP Master Key
    recovered from the EKTPlaintext is longer than needed by SRTP
@@ -433,21 +434,22 @@ The value of the EKTCiphertext field is identical in successive
 packets protected by the same EKT parameter set and the same SRTP
 master key, and ROC.  This ciphertext value MAY be cached by an SRTP
 receiver to minimize computational effort by noting when the SRTP
-master key is unchanged and avoiding repeating the above steps.
+master key is unchanged and avoiding repeating the steps defined in
+{#pkt_proc}.
 
 The receiver may want to have a sliding window to retain old SRTP
-master keys (and related context) for some brief period of time, so
+Master Keys (and related context) for some brief period of time, so
 that out of order packets can be processed as well as packets sent
 during the time keys are changing.
 
 When receiving a new EKTKey, implementations need to use the ekt\_ttl
 to create a time after which this key cannot be used and they also
-need to create a counter that keeps track of how many times the keys
+need to create a counter that keeps track of how many times the key
 has been used to encrypt data to ensure it does not exceed the T value
-for that cipher. If either of these limits are exceeded, the key can
-no longer be used for encryption. At this point implementation need to
-either use the call signaling to renegotiation a new session or need
-to terminate the existing session.  Terminating the session is a
+for that cipher (see {#cipher}). If either of these limits are exceeded, 
+the key can no longer be used for encryption. At this point implementation 
+need to either use the call signaling to renegotiate a new session 
+or need to terminate the existing session.  Terminating the session is a
 reasonable implementation choice because these limits should not be
 exceeded except under an attack or error condition.
 
@@ -497,8 +499,8 @@ Security requirements for EKT ciphers are discussed in (#sec).
 The default EKT Cipher is the Advanced Encryption Standard (AES) Key
 Wrap with Padding [@!RFC5649] algorithm. It requires a plaintext
 length M that is at least one octet, and it returns a ciphertext with
-a length of N = M + (M mod 8)
-+ 8 octets.  It can be used with key sizes of L = 16, and L = 32 octets, and
+a length of N = M + (M mod 8) + 8 octets.  
+It can be used with key sizes of L = 16, and L = 32 octets, and
 its use with those key sizes is indicated as AESKW128, or AESKW256,
 respectively. The key size determines the length of the AES key used by the
 Key Wrap algorithm. With this cipher, T=2^48.
