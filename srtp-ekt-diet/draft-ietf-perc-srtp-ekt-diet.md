@@ -136,13 +136,13 @@ each SRTP source to every SRTP participant.
 # Overview
 
 This specification defines a way for the server in a DTLS-SRTP
-negotiation, see (#dtls-srtp-kt), to provide an ekt\_key to the client 
-during the DTLS handshake. The ekt\_key can be used to encrypt 
-the SRTP master key that is used to encrypt the media sent by 
+negotiation, see (#dtls-srtp-kt), to provide an EKTKey to the client 
+during the DTLS handshake. The EKTKey thus obtained can be used to 
+encrypt the SRTP master key that is used to encrypt the media sent by 
 the endpoint. This specification also defines a way to send the 
-encrypted SRTP master key along with the SRTP packet, see (#srtp_ekt).
-Endpoints that receive this and know the ekt\_key can use the ekt\_key 
-to decrypt the SRTP master key which can then be used to decrypt 
+encrypted SRTP master key (with the EKTKey) along with the SRTP packet, 
+see (#srtp_ekt). Endpoints that receive this and know the EKTKey can use 
+the EKTKey to decrypt the SRTP master key which can then be used to decrypt 
 the SRTP packet.
 
 One way to use this is described in the architecture defined
@@ -546,7 +546,7 @@ the current EKTKey.
 
 EKT SHOULD be used over SRTP, and other specification MAY define how
 to use it over SRTCP. SRTP is preferred because it shares fate with
-transmitted media, because SRTP rekeying can occur without concern for
+the transmitted media, because SRTP rekeying can occur without concern for
 RTCP transmission limits, and to avoid SRTCP compound packets with RTP
 translators and mixers.
 
@@ -599,7 +599,7 @@ frames. If only sending audio, the RECOMMENDED frequency is every
 
 # Use of EKT with DTLS-SRTP {#dtls-srtp-kt}
 
-This document defines an extension to DTLS-SRTP called SRTP EKT Key
+This document defines an extension to DTLS-SRTP called SRTP EKTKey
 Transport which enables secure transport of EKT keying material from
 the DTLS-SRTP peer in the server role to the client. This allows
 those peers to process EKT keying material in SRTP (or SRTCP) and
@@ -676,7 +676,7 @@ ClientHello
 In the context of a multi-party SRTP session in which each endpoint
 performs a DTLS handshake as a client with a central DTLS server,
 the extensions defined in this session allow the DTLS server to set
-a common EKT key among all participants. Each endpoint can then use
+a common EKTKey among all participants. Each endpoint can then use
 EKT tags encrypted with that common key to inform other endpoint of
 the keys it is using to protect SRTP packet.  This avoids the need
 for many individual DTLS handshakes among the endpoints, at the cost
@@ -695,13 +695,13 @@ Client A                 Server                 Client B
 ~~~
 
 
-### Negotiating an EKT Cipher
+### Negotiating an EKTCipher
 
 To indicate its support for EKT, a DTLS-SRTP client includes in its
 ClientHello an extension of type supported\_ekt\_ciphers listing the
-EKT ciphers the client supports in preference order, with the most
-preferred version first.  If the server agrees to use EKT, then it
-includes a supported\_ekt\_ciphers extension in its ServerHello
+ciphers used for EKT by the client supports in preference order, with 
+the most preferred version first.  If the server agrees to use EKT, 
+then it includes a supported\_ekt\_ciphers extension in its ServerHello
 containing a cipher selected from among those advertised by the
 client.
 
@@ -730,8 +730,8 @@ struct {
 ### Establishing an EKT Key
 
 Once a client and server have concluded a handshake that negotiated
-an EKT cipher, the server MUST provide to the client a key to be
-used when encrypting and decrypting EKTCiphertext values.  EKT keys
+an EKTCipher, the server MUST provide to the client a key to be
+used when encrypting and decrypting EKTCiphertext values. EKT keys
 are sent in encrypted handshake records, using handshake type
 ekt\_key(TBD).  The body of the handshake message contains an
 EKTKey structure:
@@ -763,13 +763,12 @@ ekt\_spi
 EKT tags (along with the EKT cipher negotiated in the handshake)
 
 ekt\_ttl
-: The maximum amount of time, in seconds, that this EKT Key can be used.  The
+: The maximum amount of time, in seconds, that this EKTKey can be used.  The
 ekt\_key\_value in this message MUST NOT be used for encrypting or decrypting
 information after the TTL expires.
 
 If the server did not provide a supported\_ekt\_ciphers extension in
-its ServerHello, then EKTKey messages MUST NOT be sent by either the
-client or the server.
+its ServerHello, then EKTKey messages MUST NOT be sent by the sever.
 
 When an EKTKey is received and processed successfully, the recipient
 MUST respond with an Ack handshake message as described in Section 7
@@ -829,14 +828,14 @@ intended receiver of that packet from being able to decrypt it. This
 is a minor denial of service vulnerability.  Similarly the attacker
 could take an old FullEKTField from the same session and attach it to
 the packet. The FullEKTField would correctly decode and pass integrity
-but the key extracted from the FullEKTField , when used to decrypt the
-SRTP payload, would be wrong and the SRTP integrity check would
-fail. Note that the FullEKTField only changes the decryption key and
-does not change the encryption key. None of these are considered
+checks. However, the key extracted from the FullEKTField , when used 
+to decrypt the SRTP payload, would be wrong and the SRTP integrity check 
+would fail. Note that the FullEKTField only changes the decryption key 
+and does not change the encryption key. None of these are considered
 significant attacks as any attacker that can modify the packets in
 transit and cause the integrity check to fail.
 
-An attacker could send packets containing a Full EKT Field, in an
+An attacker could send packets containing a FullEKTField, in an
 attempt to consume additional CPU resources of the receiving system by
 causing the receiving system will decrypt the EKT ciphertext and
 detect an authentication failure. In some cases, caching the previous
@@ -845,7 +844,7 @@ mitigate this issue.
 
 Each EKT cipher specifies a value T that is the maximum number of
 times a given key can be used. An endpoint MUST NOT encrypt more than
-T different Full EKT Field using the same EKTKey. In addition, the
+T different FullEKTField values using the same EKTKey. In addition, the
 EKTKey MUST NOT be used beyond the lifetime provided by the TTL
 described in (#dtls-srtp-extensions).
 
@@ -930,7 +929,7 @@ RFCAAAA. Allocated values MUST be in the range of 1 to 254.
 ## TLS Extensions
 
 IANA is requested to add supported\_ekt\_ciphers as a new extension
-name to the "ExtensionType Values" table of the "Transport Layer
+name to the "TLS ExtensionType Values" table of the "Transport Layer
 Security (TLS) Extensions" registry with a reference to this
 specification and allocate a value of TBD to for this.
 
