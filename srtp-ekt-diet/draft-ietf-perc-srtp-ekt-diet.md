@@ -148,10 +148,10 @@ the SRTP packet.
 One way to use this is described in the architecture defined
 by [@?I-D.ietf-perc-private-media-framework]. Each participant in the
 conference forms a DTLS-SRTP connection to a common key
-distributor that distributes the same ekt\_key to all the endpoints. 
+distributor that distributes the same EKTKey to all the endpoints. 
 Then each endpoint picks their own SRTP master key for the media 
 they send. When sending media, the endpoint also includes the 
-SRTP master key encrypted with the ekt\_key in the SRTP packet. 
+SRTP master key encrypted with the EKTKey in the SRTP packet. 
 This allows all the endpoints to decrypt the media.
 
 
@@ -348,7 +348,7 @@ processing.
    the SRTP processing.
 
 3. The EKTCiphertext field is set to the ciphertext created by
-   encrypting the EKTPlaintext with the EKT cipher, using the EKTKey
+   encrypting the EKTPlaintext with the EKTCipher using the EKTKey
    as the encryption key.  The encryption process is detailed in
    (#cipher).
 
@@ -391,7 +391,7 @@ applied for each SRTP received packet.
    the steps described below are not performed. The EKT parameter 
    set contains the EKTKey, EKTCipher, and the SRTP Master Salt.
 
-3. The EKTCiphertext authentication is checked and it is decrypted, as
+3. The EKTCiphertext authentication is checked and is decrypted, as
    described in (#cipher), using the EKTKey and EKTCipher found in the
    previous step. If the EKT decryption operation returns an
    authentication failure, then the packet processing stops.
@@ -416,12 +416,12 @@ applied for each SRTP received packet.
    recovered from the EKTPlaintext is shorter than needed by SRTP
    transform in use, then the bytes received replace the first bytes
    in the existing key but the other bytes after that remain the same
-   as the old key. This allows for replacing just half the key for
-   transforms such as [@?I-D.ietf-perc-double].  Outbound packets
-   SHOULD continue to use the old SRTP Master Key for 250 ms after
-   sending any new key. This gives all the receivers in the system
-   time to get the new key before they start receiving media encrypted
-   with the new key.
+   as the old key. This applies in transforms such as [@?I-D.ietf-perc-double]
+   for replacing just half the key, but SHOULD return a processing
+   error otherwise. Outbound packets SHOULD continue to use the old 
+   SRTP Master Key for 250 ms after sending any new key. This gives all 
+   the receivers in the system time to get the new key before they start 
+   receiving media encrypted with the new key.
 
 7. At this point, EKT processing has successfully completed, and the
    normal SRTP or SRTCP processing takes place including replay
@@ -554,9 +554,9 @@ translators and mixers.
 ## Timing and Reliability Consideration {#timing}
 
 A system using EKT learns the SRTP master keys distributed with
-FullEKTFields sent with the SRTP, rather than with call signaling. A
+the FullEKTField sent with the SRTP, rather than with call signaling. A
 receiver can immediately decrypt an SRTP packet, provided the SRTP
-packet contains a Full EKT Field.
+packet contains a FullEKTField.
 
 This section describes how to reliably and expediently deliver new
 SRTP master keys to receivers.
@@ -574,11 +574,11 @@ New sender:
 : A new sender SHOULD send a packet containing the
 FullEKTField as soon as possible, always before or coincident with
 sending its initial SRTP packet. To accommodate packet loss, it is
-RECOMMENDED that three consecutive packets contain the Full EKT Field
+RECOMMENDED that three consecutive packets contain the FullEKTField
 be transmitted.
 
 Rekey:
-: By sending EKT over SRTP, the rekeying event shares fate with the
+: By sending EKT tag over SRTP, the rekeying event shares fate with the
 SRTP packets protected with that new SRTP master key. To accommodate
 packet loss, it is RECOMMENDED that three consecutive packets contain
 the FullEKTField be transmitted.
@@ -586,12 +586,12 @@ the FullEKTField be transmitted.
 New receiver:
 : When a new receiver joins a session it does not need to communicate
 its sending SRTP master key (because it is a receiver). When a new
-receiver joins a session the sender is generally unaware of the
+receiver joins a session, the sender is generally unaware of the
 receiver joining the session.  Thus, senders SHOULD periodically
 transmit the FullEKTField. That interval depends on how frequently new
 receivers join the session, the acceptable delay before those
 receivers can start processing SRTP packets, and the acceptable
-overhead of sending the FullEKT Field. If sending audio and video, the
+overhead of sending the FullEKTField. If sending audio and video, the
 RECOMMENDED frequency is the same as the rate of intra coded video
 frames. If only sending audio, the RECOMMENDED frequency is every
 100ms.
@@ -675,10 +675,10 @@ ClientHello
 
 In the context of a multi-party SRTP session in which each endpoint
 performs a DTLS handshake as a client with a central DTLS server,
-the extensions defined in this session allow the DTLS server to set
-a common EKTKey among all participants. Each endpoint can then use
+the extensions defined in this session allows the DTLS server to set
+a common EKTKey for all participants. Each endpoint can then use
 EKT tags encrypted with that common key to inform other endpoint of
-the keys it is using to protect SRTP packet.  This avoids the need
+the keys it uses to protect SRTP packets.  This avoids the need
 for many individual DTLS handshakes among the endpoints, at the cost
 of preventing endpoints from directly authenticating one another.
 
@@ -731,7 +731,7 @@ struct {
 
 Once a client and server have concluded a handshake that negotiated
 an EKTCipher, the server MUST provide to the client a key to be
-used when encrypting and decrypting EKTCiphertext values. EKT keys
+used when encrypting and decrypting EKTCiphertext values. EKTKeys
 are sent in encrypted handshake records, using handshake type
 ekt\_key(TBD).  The body of the handshake message contains an
 EKTKey structure:
@@ -751,7 +751,7 @@ struct {
 The contents of the fields in this message are as follows:
 
 ekt\_key\_value
-: The EKT Key that the recipient should use when generating EKTCiphertext
+: The EKTKey that the recipient should use when generating EKTCiphertext
 values
 
 srtp\_master\_salt
@@ -759,7 +759,7 @@ srtp\_master\_salt
 Key
 
 ekt\_spi
-: The SPI value to be used to reference this EKT Key and SRTP Master Salt in
+: The SPI value to be used to reference this EKTKey and SRTP Master Salt in
 EKT tags (along with the EKT cipher negotiated in the handshake)
 
 ekt\_ttl
