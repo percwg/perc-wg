@@ -405,7 +405,7 @@ applied for each SRTP received packet.
 
 5. If the SSRC in the EKTPlaintext does not match the SSRC of the SRTP
    packet received, then all the information from this EKTPlaintext MUST be
-   discarded and the following steps in this list are aborted.
+   discarded and the following steps in this list are skipped.
 
 6. The SRTP Master Key, ROC, and SRTP Master Salt from the previous
    steps are saved in a map indexed by the SSRC found in the
@@ -768,7 +768,8 @@ ekt\_key\_value in this message MUST NOT be used for encrypting or decrypting
 information after the TTL expires.
 
 If the server did not provide a supported\_ekt\_ciphers extension in
-its ServerHello, then EKTKey messages MUST NOT be sent by the sever.
+its ServerHello, then EKTKey messages MUST NOT be sent by the client 
+or the server.
 
 When an EKTKey is received and processed successfully, the recipient
 MUST respond with an Ack handshake message as described in Section 7
