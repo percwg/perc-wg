@@ -5,13 +5,19 @@
     # Generation tool: mmark (https://github.com/miekg/mmark)
     #
 
-    Title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
+    title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
     abbrev = "Private Media Framework"
     category = "std"
-    docName = "draft-ietf-perc-private-media-framework-06"
     ipr= "trust200902"
     area = "Internet"
+    workgroup = ""
     keyword = ["PERC", "Private Media Framework", "conferencing"]
+
+    [seriesInfo]
+    status = "standard"
+    name = "Internet-Draft"
+    value = "draft-ietf-perc-private-media-framework-07"
+    stream = "IETF"
 
     [[author]]
     initials="P."
@@ -56,6 +62,7 @@
     #   05 - Clarified key exchange procedures
     #        Editorial corrections
     #   06 - Editorial improvements (https://github.com/ietf/perc-wg/pull/150)
+    #   07 - Expiration refresh
     #
 
 %%%
@@ -331,6 +338,7 @@ known only to media distributor and the adjacent endpoint)
 for the hop between an endpoint and a Media Distributor or between Media
 Distributor.  
 
+{#fig-e2e-and-hbh-keys-used align="center"}
 ~~~
 +-------------+                                +-------------+
 |             |################################|             |
