@@ -110,13 +110,17 @@ including the media payload.
 # Terminology
 
 The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in [@!RFC2119].
+"SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+"OPTIONAL" in this document are to be interpreted as described in
+BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they appear in all
+capitals, as shown here.
 
 Terms used throughout this document include:
 
-* Media Distributor: media distribution device that routes media from
-  one endpoint to other endpoints
+* Media Distributor: device that receives media from endpoints and
+  distributes it to other endpoints, but does not need to interpret
+  or change the media content (see also
+  [@?I-D.ietf-perc-private-media-framework])
 
 * end-to-end: meaning the link from one endpoint through one or
   more Media Distributors to the endpoint at the other end.
@@ -246,6 +250,27 @@ there have been no modifications from the original header.
 
 # RTP Operations
 
+As implied by the use of the word "double" above, this transform
+applies AES-GCM to the SRTP packet twice.  This allows media
+distributors to be able to modify some header fields while allowing
+endpoints to verify the end-to-end integrity and confidentiality of
+a packet.
+
+The first, "inner" application of AES-GCM encrypts the SRTP payload
+and integrity-protects a version of the SRTP header with extensions
+truncated.  Omitting extensions from the inner integrity check means
+that they can be modified by a media distributor holding only the
+"outer" key.
+
+The second, "outer" application of AES-GCM encrypts the ciphertext
+produced by the inner encryption (i.e., the encrypted payload and
+authentication tag), plus an OHB that expresses any changes made
+between the inner and outer transforms.
+
+A media distributor that has the outer key but not the inner key may
+modify the header fields that can be included in the OHB by
+decrypting, modifying, and re-encrypting the packet.
+
 ## Encrypting a Packet {#encrypt}
 
 To encrypt a packet, the endpoint encrypts the packet using the inner
@@ -263,8 +288,8 @@ The processes is as follows:
   * Header: The RTP header of the original packet with the following
     modifications:
     * The X bit is set to zero
-    * The header is truncated to remove any extensions (12 + 4 * CC
-    bytes)
+    * The header is truncated to remove any extensions (i.e., keep
+      only the first 12 + 4 * CC bytes of the header)
   * Payload: The RTP payload of the original packet
 
 4. Apply the inner cryptographic algorithm to the synthetic RTP packet
@@ -323,6 +348,16 @@ before transmitting.
   Sequence Number. If encrypting RTP header extensions hop-by-hop,
   then [@!RFC6904] MUST be used.
 
+In order to avoid nonce reuse, the cryptographic contexts used in
+step 1 and step 5 MUST use different, independent master keys and
+master salts.
+
+Note that if multiple MDs modify the same packet, then the first MD
+to alter a given header field is the one that adds it to the OHB.
+If a subsequent MD changes the value of a header field that has
+already been changed, then the original value will already be in the
+OHB, so no update to the OHB is required.
+
 ## Decrypting a Packet {#decrypt} 
 
 To decrypt a packet, the endpoint first decrypts and verifies using
@@ -350,8 +385,8 @@ the inner (end-to-end) cryptographic key.
 
     * Header fields replaced with values from OHB (if any)
     * The X bit is set to zero
-    * The header is truncated to remove any extensions (12 + 4 * CC
-      bytes)
+    * The header is truncated to remove any extensions (i.e., keep
+      only the first 12 + 4 * CC bytes of the header)
 
   * Payload is the encrypted payload from the outer SRTP packet (after
     the inner tag and OHB have been stripped).
@@ -492,8 +527,8 @@ if a new SRTP transform was defined that encrypts some or all of the
 RTP header, it would be reasonable for systems to have the option of
 using that for the outer algorithm.  Similarly, if a new transform was
 defined that provided only integrity, that would also be reasonable to
-use for the hop-by-hop as the payload data is already encrypted by the
-end-to-end.
+use for the outer transform as the payload data is already encrypted by the
+inner transform.
 
 The AES-GCM cryptographic algorithm introduces an additional 16 octets
 to the length of the packet.  When using AES-GCM for both the inner
@@ -504,61 +539,38 @@ other extensions are already present, the OHB will consume up to 4
 additional octets. For packets in repair mode, the data they are
 caring is often already encrypted further increasing the size. 
 
-
 # Security Considerations {#sec} 
 
-To summarize what is encrypted and authenticated, we will refer to all
-the RTP fields except headers created by the sender and before 
-the payload as the initial envelope and the RTP payload information with the
-media as the payload. Any additional headers added by the sender or Media
-Distributor are referred to as the extra envelope. The sender uses the
-end-to-end key to encrypt the payload and authenticate the payload +
-initial envelope, which using an AEAD cipher results in a slight longer
-new payload. Then the sender uses the hop-by-hop key to encrypt the
-new payload and authenticate the initial envelope, extra envelope and
-the new payload. Also to note, the "Associated Data" input (which 
-excludes header extensions ) to the inner crypto differs from [@!RFC7714]
-construction. This shouldn't typically impact the strength of e2e 
-integrity given the fact that there doesn't exist header extensions defined
-today that needs e2e protection. However, if future specifications define
-header extensions that needs e2e integrity protection, the input to inner 
-transform may be modified to consider including the header extensions.
+This SRTP transform provides protection against two classes of
+attacker: An network attacker that knows neither the inner nor outer
+keys, and a malicious MD that knows the outer key.  Obviously, it
+provides no protections against an attacker that holds both the
+inner and outer keys.
 
-The Media Distributor has the hop-by-hop key so it can check the
-authentication of the received packet across the initial envelope,
-extra envelope and payload data but it can't decrypt the payload as it
-does not have the end-to-end key. It can add or change extra envelope
-information. It then authenticates the initial plus extra envelope
-information plus payload with a hop-by-hop key. The hop-by-hop key for
-the outgoing packet is typically different than the hop-by-hop key for
-the incoming packet.
+The protections with regard to the network are the same as with the
+normal SRTP AES-GCM transforms.
 
-The receiver can check the authentication of the initial and extra
-envelope information from the Media Distributor. This, along with the
-OHB, is used to construct a synthetic packet which should be
-identical to the initial envelope plus payload to one the sender created 
-and the receiver can check that it is identical and then decrypt the
-original payload.
+With regard to a malicious MD, the recipient can verify the
+integrity of the base header fields and confidentiality and
+integrity of the payload.  The recipient has no assurance, however,
+of the integrity of the header extensions in the packet.
 
-The end result is that if the authentications succeed, the receiver
-knows exactly the payload and initial envelope the sender sent, as
-well as exactly which modifications were made by the Media Distributor
-and what extra envelope the Media Distributor sent. The receiver does
-not know exactly what extra envelope the sender sent.
+The main innovation of this transform relative to other SRTP
+transforms is that it allows a partly-trusted MD to decrypt, modify,
+and re-encrypt a packet.  When this is done, the cryptographic
+contexts used for decryption and re-encryption MUST use different,
+independent master keys and master salts.  If the same context is
+used, the nonce formation rules for SRTP will cause the same key and
+nonce to be used with two different plaintexts, which substantially
+degrades the security of AES-GCM.
 
-It is obviously critical that the intermediary has access to just the 
-outer (hop-by-hop) algorithm key and not the half of the key for the the
-inner (end-to-end) algorithm.  We rely on an external key management
-protocol to ensure this property.
+In other words, from the perspective of the MD, re-encrypting
+packets using this protocol will involve the same cryptographic
+operations as if it had established independent AES-GCM crypto
+contexts with the sender and the receiver.  If the MD doesn't modify
+any header fields, then an MD that supports AES-GCM could be unused
+unmodified.
 
-Modifications by the intermediary results in the recipient getting two
-values for changed parameters (original and modified).  The recipient
-will have to choose which to use; there is risk in using either that
-depends on the session setup.
-
-The security properties for both the inner (end-to-end) and outer
-(hop-by-hop) key holders are the same as the security properties of
-classic SRTP.
 
 # IANA Considerations {#iana}
 
