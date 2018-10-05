@@ -58,14 +58,16 @@
 
 .# Abstract
 
-In some conferencing scenarios, it is desirable for an intermediary to
-be able to manipulate some RTP parameters, while still providing
-strong end-to-end security guarantees. This document defines SRTP
-procedures that use two separate but related cryptographic operations
-to provide hop-by-hop and end-to-end security guarantees.  Both the
-end-to-end and hop-by-hop cryptographic algorithms can utilize an
-authenticated encryption with associated data scheme or take advantage
-of future SRTP transforms with different properties.
+In some conferencing scenarios, it is desirable for an intermediary
+to be able to manipulate some parameters in Real Time Protocol (RTP)
+packets, while still providing strong end-to-end security
+guarantees. This document defines a cryptographic transform for the
+Secure Real Time Protocol (SRTP) that uses two separate but related
+cryptographic operations to provide hop-by-hop and end-to-end
+security guarantees.  Both the end-to-end and hop-by-hop
+cryptographic algorithms can utilize an authenticated encryption
+with associated data scheme or take advantage of future SRTP
+transforms with different properties.
 
 
 {mainmatter}
@@ -74,32 +76,34 @@ of future SRTP transforms with different properties.
 
 Cloud conferencing systems that are based on switched conferencing
 have a central Media Distributor device that receives media from
-endpoints and distributes it to other endpoints, but does not need to
-interpret or change the media content.  For these systems, it is
+endpoints and distributes it to other endpoints, but does not need
+to interpret or change the media content.  For these systems, it is
 desirable to have one cryptographic key from the sending endpoint to
 the receiving endpoint that can encrypt and authenticate the media
-end-to-end while still allowing certain RTP header information to be
-changed by the Media Distributor.  At the same time, a separate
-cryptographic key provides integrity and optional confidentiality for
-the media flowing between the Media Distributor and the endpoints.
-The framework document [@I-D.ietf-perc-private-media-framework]
+end-to-end while still allowing certain information in the header of
+a Real Time Protocol (RTP) packet to be changed by the Media
+Distributor.  At the same time, a separate cryptographic key
+provides integrity and optional confidentiality for the media
+flowing between the Media Distributor and the endpoints.  The
+framework document [@I-D.ietf-perc-private-media-framework]
 describes this concept in more detail.
 
-This specification defines an SRTP transform that uses the AES-GCM
-algorithm [@!RFC7714] to provide encryption and integrity for an RTP
-packet for the end-to-end cryptographic key as well as a hop-by-hop
-cryptographic encryption and integrity between the endpoint and the
-Media Distributor. The Media Distributor decrypts and checks
-integrity of the hop-by-hop security. The Media Distributor MAY
-change some of the RTP header information that would impact the
-end-to-end integrity. In that case, the original value of any RTP 
-header field that is changed is included in a new RTP header extension 
-called the Original Header Block. The new RTP packet is encrypted with the
+This specification defines a transform for the Secure Real Time
+Protocol (SRTP) that uses the AES-GCM algorithm [@!RFC7714] to
+provide encryption and integrity for an RTP packet for the
+end-to-end cryptographic key as well as a hop-by-hop cryptographic
+encryption and integrity between the endpoint and the Media
+Distributor. The Media Distributor decrypts and checks integrity of
+the hop-by-hop security. The Media Distributor MAY change some of
+the RTP header information that would impact the end-to-end
+integrity. In that case, the original value of any RTP header field
+that is changed is included in a new RTP header extension called the
+Original Header Block. The new RTP packet is encrypted with the
 hop-by-hop cryptographic algorithm before it is sent. The receiving
 endpoint decrypts and checks integrity using the hop-by-hop
 cryptographic algorithm and then replaces any parameters the Media
-Distributor changed using the information in the Original Header Block
-before decrypting and checking the end-to-end integrity.
+Distributor changed using the information in the Original Header
+Block before decrypting and checking the end-to-end integrity.
 
 One can think of the double as a normal SRTP transform for encrypting
 the RTP in a way where things that only know half of the key, can
@@ -117,19 +121,19 @@ capitals, as shown here.
 
 Terms used throughout this document include:
 
-* Media Distributor: device that receives media from endpoints and
+* Media Distributor: A device that receives media from endpoints and
   distributes it to other endpoints, but does not need to interpret
   or change the media content (see also
   [@?I-D.ietf-perc-private-media-framework])
 
-* end-to-end: meaning the link from one endpoint through one or
+* end-to-end: The path from one endpoint through one or
   more Media Distributors to the endpoint at the other end.
 
-* hop-by-hop: meaning the link from the endpoint to or from the
+* hop-by-hop: The path from the endpoint to or from the
   Media Distributor.
 
-* OHB: Original Header Block is an octet string that contains
-  the original values from the RTP header that might have been changed
+* Original Header Block (OHB): An octet string that contains the
+  original values from the RTP header that might have been changed
   by a Media Distributor.
 
 
@@ -172,20 +176,22 @@ steps:
 * The SEQ and ROC are tracked independently for the inner and outer
   algorithms.
 
-Obviously, if the Media Distributor is to be able to modify header
-fields but not decrypt the payload, then it must have cryptographic
-key for the outer algorithm, but not the inner (end-to-end) algorithm. 
-This document does not define how the Media Distributor should be
-provisioned with this information.  One possible way to provide keying
-material for the outer (hop-by-hop) algorithm is to use
+If the Media Distributor is to be able to modify header fields but
+not decrypt the payload, then it must have cryptographic key for the
+outer algorithm, but not the inner (end-to-end) algorithm.  This
+document does not define how the Media Distributor should be
+provisioned with this information.  One possible way to provide
+keying material for the outer (hop-by-hop) algorithm is to use
 [@I-D.ietf-perc-dtls-tunnel].
 
 ## Key Derivation
 
 In order to allow the inner and outer keys to be managed
 independently via the master key, the transforms defined in this
-document MUST be used with the following PRF, which preserves the
-separation between the two halves of the key:
+document MUST be used with the following pseudo-random function
+(PRF), which preserves the separation between the two halves of the
+key.  Given a positive integer `n` representing the desired output
+length, a master key `k_master`, and an input `x`:
 
 ~~~~~
 PRF_double_n(k_master,x) = PRF_inner_(n/2)(k_master,x) || 
@@ -330,8 +336,8 @@ before transmitting.
   this decryption operation contains the original encrypted payload
   with the tag from the inner transform and the OHB appended.
 
-2. Change any parts of the RTP packet that the relay wishes to change
-  and should be changed.
+2. Make any desired changes to the fields are allowed to be changed,
+   i.e., PT, SEQ, and M.
 
 3. A Media Distributor can add information to the OHB, but MUST NOT
   change existing information in the OHB. If RTP value is changed and
@@ -414,10 +420,10 @@ RTP ordering.
 The PT and sequence number from the inner SRTP packet can be used for
 collection of various statistics. 
 
-If any of the following RTP headers extensions are found in the outer
-SRTP packet, they MAY be used:
-
-* Mixer-to-client audio level indicators (See [@RFC6465])
+If the RTP header of the outer packet contains extensions, they MAY
+be used.  However, because extensions are not protected end-to-end,
+implementations SHOULD reject an RTP packet containing headers that
+would require end-to-end protection.
 
 # RTCP Operations
 
@@ -429,25 +435,32 @@ additional steps.
 
 # Use with Other RTP Mechanisms
 
-There are some RTP related extensions that need special consideration
-to be used by a relay when using the double transform due to the
-end-to-end protection of the RTP.  The repair mechanism, when used
-with double, typically operates on the double encrypted data and 
-encrypts them using only the HBH key. This results in three cryptography 
-operation happening to the repair data sent over the wire.
+Media distributors sometimes interact with RTP media packets sent
+by endpoints, e.g., to provide recovery or receive commands via
+DTMF.  When media packets are encrypted end-to-end, these procedures
+require modification.
 
-## RTX {#rtx} 
+Repair mechanisms, in general, will need to perform recovery on
+encrypted packets (double-encrypted when using this transform).
+When the recovery mechanism calls for the recovery packet itself to
+be encrypted, it is encrypted with only the outer, HBH key.  This
+allows a media distributor to generate recovery packets without
+having access to the inner, E2E keys.  However, it also results in
+recovery packets being triple-encrypted, twice for the base
+transform, and once for the recovery protection.
+
+## RTP Retransmission (RTX) {#rtx} 
 
 When using RTX [@RFC4588] with double, the cached payloads MUST be the
-encrypted packets with the bits that are sent over the wire to the
+double-encrypted packets, i.e., the bits that are sent over the wire to the
 other side. When encrypting a retransmission packet, it MUST be
-encrypted the packet in repair mode.
+encrypted the packet in repair mode (i.e., with only the HBH key).
 
 A typical RTX receiver would decrypt the packet, undo the RTX
 transformation, then process the resulting packet normally by
 using the steps in (#decrypt).
 
-## RED {#red}
+## Redundant Audio Data (RED) {#red}
 
 When using RED [@RFC2198] with double, the primary encoding MAY
 contain RTP header extensions and CSRC identifiers but non primary
@@ -467,7 +480,6 @@ extensions along with the primary payload and PT from inside the RED
 payload (for the primary encoding) are used to form the encrypted 
 primary RTP packet which can then be decrypted with double. 
 
-
 The RTP headers (but not header extensions or CSRC) along with PT 
 from inside the RED payload corresponding to the redundant 
 encoding are used to from the non primary payloads. The time 
@@ -479,32 +491,29 @@ Note that Flex FEC [@I-D.ietf-payload-flexible-fec-scheme] is a
 superset of the capabilities of RED.  For most applications, FlexFEC
 is a better choice than RED.
 
-
-## FEC {#fec}
+## Forward Error Correction (FEC) {#fec}
 
 When using Flex FEC [@I-D.ietf-payload-flexible-fec-scheme] with
-double, the negotiation of double for the crypto is the out of band
-signaling that indicates that the repair packets MUST use the order
-of operations of SRTP followed by FEC when encrypting. This is to
-ensure that the original media is not revealed to the Media
-Distributor but at the same time allow the Media Distributor to repair
-media.  When encrypting a packet that contains the Flex FEC data,
-which is already encrypted, it MUST be encrypted in repair mode
-packet.
+double, repair packets MUST be constructed by first
+double-encrypting the packet, then performing FEC.  Processing of
+repair packets proceeds in the opposite order, performing FEC
+recovery and then decrypting.  This ensures that the original media
+is not revealed to the Media Distributor but at the same time allows
+the Media Distributor to repair media.  When encrypting a packet
+that contains the Flex FEC data, which is already encrypted, it MUST
+be encrypted with only the outer, HBH transform.
 
-The algorithm recommend in [@I-D.ietf-rtcweb-fec] for repair of video
+The algorithm recommended in [@I-D.ietf-rtcweb-fec] for repair of video
 is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  Note that for
 interoperability with WebRTC, [@I-D.ietf-rtcweb-fec] recommends not
 using additional FEC only m-line in SDP for the repair packets.
 
-
 ## DTMF {#dtmf}
 
-When DTMF is sent with [@RFC4733], it is end-to-end encrypted and the
-relay can not read it so it cannot be used to control the
-relay. Other out of band methods to control the relay need to be used
-instead.
-
+When DTMF is sent using the mechanism in [@RFC4733], it is
+end-to-end encrypted and the relay can not read it, so it cannot be
+used to control the relay. Other out of band methods to control the
+relay need to be used instead.
 
 # Recommended Inner and Outer Cryptographic Algorithms
 
@@ -536,8 +545,8 @@ and outer cryptographic algorithms, the total additional length is 32
 octets.  If no other header extensions are present in the packet and
 the OHB is introduced, that will consume an additional 8 octets.  If
 other extensions are already present, the OHB will consume up to 4
-additional octets. For packets in repair mode, the data they are
-caring is often already encrypted further increasing the size. 
+additional octets.  Packets in repair mode will carry additional
+repair data, further increasing their size.
 
 # Security Considerations {#sec} 
 
