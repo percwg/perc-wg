@@ -49,9 +49,8 @@
     initials = "D."
     surname = "Wing"
     fullname = "Dan Wing"
-    organization = "Cisco Systems"
       [author.address]
-      email = "dwing@cisco.com"
+      email = "dwing-ietf@fuggles.com"
 
     [[author]]
     initials = "F.A."
