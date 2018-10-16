@@ -324,11 +324,12 @@ before transmitting.
   then [@!RFC6904] MUST be used.
 
 The Media Distributor that decrypts, modifies, and re-encrypts
-packets in this way MUST use an independent key and salt for each
-recipient, and MUST NOT re-encrypt the packet using the sender's
-keys.  If the Media Distributor decrypts and re-encrypts with the
-same key and salt, it will result in the reuse of a (key, nonce)
-pair, undermining the security of GCM.
+packets in this way MUST use an independent key for each recipient,
+SHOULD use an independent salt for each recipient, and MUST NOT
+re-encrypt the packet using the sender's keys.  If the Media
+Distributor decrypts and re-encrypts with the same key and salt, it
+will result in the reuse of a (key, nonce) pair, undermining the
+security of GCM.
 
 ## Decrypting a Packet {#decrypt} 
 
