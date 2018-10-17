@@ -364,6 +364,14 @@ If a subsequent MD changes the value of a header field that has
 already been changed, then the original value will already be in the
 OHB, so no update to the OHB is required.
 
+A Media Distributor that decrypts, modifies, and re-encrypts
+packets in this way MUST use an independent key for each recipient,
+SHOULD use an independent salt for each recipient, and MUST NOT
+re-encrypt the packet using the sender's keys.  If the Media
+Distributor decrypts and re-encrypts with the same key and salt, it
+will result in the reuse of a (key, nonce) pair, undermining the
+security of GCM.
+
 ## Decrypting a Packet {#decrypt} 
 
 To decrypt a packet, the endpoint first decrypts and verifies using
