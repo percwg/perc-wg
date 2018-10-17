@@ -49,9 +49,8 @@
     initials = "D."
     surname = "Wing"
     fullname = "Dan Wing"
-    organization = "Cisco Systems"
       [author.address]
-      email = "dwing@cisco.com"
+      email = "dwing-ietf@fuggles.com"
 
     [[author]]
     initials = "F.A."
@@ -149,7 +148,7 @@ One way to use this is described in the architecture defined
 by [@?I-D.ietf-perc-private-media-framework]. Each participant in the
 conference forms a DTLS-SRTP connection to a common key
 distributor that distributes the same EKTKey to all the endpoints. 
-Then each endpoint picks their own SRTP master key for the media 
+Then each endpoint picks its own SRTP master key for the media 
 they send. When sending media, the endpoint also includes the 
 SRTP master key encrypted with the EKTKey in the SRTP packet. 
 This allows all the endpoints to decrypt the media.
@@ -157,9 +156,7 @@ This allows all the endpoints to decrypt the media.
 
 # Conventions Used In This Document
 
-The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
-"SHOULD", "SHOULD NOT", "RECOMMENDED", "MAY", and "OPTIONAL" in this
-document are to be interpreted as described in [@!RFC2119].
+The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT", "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and "OPTIONAL" in this document are to be interpreted as described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they appear in all capitals, as shown here.
 
 # Encrypted Key Transport {#srtp_ekt}
 
@@ -179,8 +176,8 @@ field received if EKT is in use.
 
 ## EKTField Formats {#EKT}
 
-The EKTField uses the format defined below for the FullEKTField and
-ShortEKTField.
+The EKTField uses the format defined in (#tag-format-base) for the
+FullEKTField and ShortEKTField.
 
 
 {#tag-format-base}
@@ -365,6 +362,10 @@ The computed value of the FullEKTField is written into the SRTP packet.
 When a packet is sent with the ShortEKTField, the ShortEKFField is
 simply appended to the packet.
 
+Outbound packets SHOULD continue to use the old SRTP Master Key
+for 250 ms after sending any new key. This gives all the
+receivers in the system time to get the new key before they
+start receiving media encrypted with the new key. 
 
 ### Inbound Processing
 
@@ -391,10 +392,11 @@ applied for each SRTP received packet.
    the steps described below are not performed. The EKT parameter 
    set contains the EKTKey, EKTCipher, and the SRTP Master Salt.
 
-3. The EKTCiphertext authentication is checked and is decrypted, as
+3. The EKTCiphertext is authenticated and decrypted, as
    described in (#cipher), using the EKTKey and EKTCipher found in the
    previous step. If the EKT decryption operation returns an
-   authentication failure, then the packet processing stops.
+   authentication failure, then EKT processing MUST be aborted.  The
+   receiver SHOULD discard the whole UDP packet.
 
 4. The resulting EKTPlaintext is parsed as described in (#EKT), to
    recover the SRTP Master Key, SSRC, and ROC fields. The SRTP Master
@@ -410,39 +412,46 @@ applied for each SRTP received packet.
 6. The SRTP Master Key, ROC, and SRTP Master Salt from the previous
    steps are saved in a map indexed by the SSRC found in the
    EKTPlaintext and can be used for any future crypto operations on
-   the inbound packets with that SSRC.  If the SRTP Master Key
-   recovered from the EKTPlaintext is longer than needed by SRTP
-   transform in use, the first bytes are used. If the SRTP Master Key
-   recovered from the EKTPlaintext is shorter than needed by SRTP
-   transform in use, then the bytes received replace the first bytes
-   in the existing key but the other bytes after that remain the same
-   as the old key. This applies in transforms such as [@?I-D.ietf-perc-double]
-   for replacing just half the key, but SHOULD return a processing
-   error otherwise. Outbound packets SHOULD continue to use the old 
-   SRTP Master Key for 250 ms after sending any new key. This gives all 
-   the receivers in the system time to get the new key before they start 
-   receiving media encrypted with the new key.
+   the inbound packets with that SSRC.  
+   
+   * Unless the transform specifies other acceptable key lengths,
+     the length of the SRTP Master Key MUST be the same as the
+     master key length for the SRTP transform in use.  If this is
+     not the case, then the receiver MUST abort EKT processing and
+     SHOULD discared the whole UDP packet.
 
+   * If the length of the SRTP Master Key is less than the master
+     key length for the SRTP transform in use, and the transform
+     specifies that this length is acceptable, then the SRTP Master
+     Key value is used to replace the first bytes in the existing
+     master key.  The other bytes remain the same as in the old key.
+     For example, the Double GCM transform [@?I-D.ietf-perc-double]
+     allows replacement of the first, "end to end" half of the
+     master key.
+   
 7. At this point, EKT processing has successfully completed, and the
-   normal SRTP or SRTCP processing takes place including replay
-   protection.
-
+   normal SRTP or SRTCP processing takes place.
 
 ## Implementation Notes {#inbound-impl-notes}
 
 The value of the EKTCiphertext field is identical in successive
 packets protected by the same EKT parameter set and the same SRTP
-master key, and ROC.  This ciphertext value MAY be cached by an SRTP
-receiver to minimize computational effort by noting when the SRTP
-master key is unchanged and avoiding repeating the steps defined in
-{#pkt_proc}.
+master key, and ROC.  SRTP senders and receivers MAY cache an
+EKTCiphertext value to optimize processing in cases where the master
+key hasn't changed.  Instead of encrypting and decrypting, senders
+can simply copy the pre-computed value and receivers can compare a
+received EKTCiphertext to the known value.
 
-The receiver may want to have a sliding window to retain old SRTP
-Master Keys (and related context) for some brief period of time, so
-that out of order packets can be processed as well as packets sent
-during the time keys are changing.
+(#outbound-processing) recommends that SRTP senders continue using
+an old key for some time after sending a new key in an EKT tag.
+Receivers that wish to avoid packet loss due to decryption failures
+MAY perform trial decryption with both the old key and the new key,
+keeping the result of whichever decryption succeeds.  Note that this
+approach is only compatible with SRTP transforms that include
+integrity protection.
 
-When receiving a new EKTKey, implementations need to use the ekt\_ttl
+When receiving a new EKTKey, implementations need to use the
+ekt\_ttl field (see (#ekt_key))
 to create a time after which this key cannot be used and they also
 need to create a counter that keeps track of how many times the key
 has been used to encrypt data to ensure it does not exceed the T value
@@ -544,11 +553,12 @@ the current EKTKey.
 
 ## Transport {#srtp}
 
-EKT SHOULD be used over SRTP, and other specification MAY define how
-to use it over SRTCP. SRTP is preferred because it shares fate with
-the transmitted media, because SRTP rekeying can occur without concern for
-RTCP transmission limits, and to avoid SRTCP compound packets with RTP
-translators and mixers.
+This document defines the use of EKT with SRTP.  Its use with SRTCP
+would be similar, but is reserved for a future specification.  SRTP
+is preferred for transmitting key material because it shares fate
+with the transmitted media, because SRTP rekeying can occur without
+concern for RTCP transmission limits, and because it avoids the need
+for SRTCP compound packets with RTP translators and mixers.
 
 
 ## Timing and Reliability Consideration {#timing}
@@ -562,7 +572,7 @@ This section describes how to reliably and expediently deliver new
 SRTP master keys to receivers.
 
 There are three cases to consider. The first case is a new sender
-joining a session which needs to communicate its SRTP master key to
+joining a session, which needs to communicate its SRTP master key to
 all the receivers.  The second case is a sender changing its SRTP
 master key which needs to be communicated to all the receivers. The
 third case is a new receiver joining a session already in progress
@@ -573,9 +583,13 @@ The three cases are:
 New sender:
 : A new sender SHOULD send a packet containing the
 FullEKTField as soon as possible, always before or coincident with
-sending its initial SRTP packet. To accommodate packet loss, it is
+sending its initial SRTP packet.  To accommodate packet loss, it is
 RECOMMENDED that three consecutive packets contain the FullEKTField
-be transmitted.
+be transmitted.  If the sender does not send a FullEKTField in its
+initial packets and receivers have not otherwise been provisioned
+with a decryption key, then decryption will fail and SRTP packets
+will be dropped until the the receives a FullEKTField from the
+sender.
 
 Rekey:
 : By sending EKT tag over SRTP, the rekeying event shares fate with the
@@ -623,8 +637,7 @@ key management method for SRTP, and a new RTP-specific data format
 for DTLS.
 
 
-## SRTP EKT Key Transport Extensions to DTLS-SRTP
-{#dtls-srtp-extensions}
+## SRTP EKT Key Transport Extensions to DTLS-SRTP {#dtls-srtp-extensions}
 
 This document defines a new TLS negotiated extension
 supported\_ekt\_ciphers and a new TLS handshake message type
@@ -632,11 +645,12 @@ ekt\_key.  The extension negotiates the cipher to be used in
 encrypting and decrypting EKTCiphertext values, and the handshake
 message carries the corresponding key.
 
-The diagram below shows a message flow of DTLS 1.3 client and server
+(#dtls-srtp-flow) shows a message flow of DTLS 1.3 client and server
 using EKT configured using the DTLS extensions described in this
 section.  (The initial cookie exchange and other normal DTLS
 messages are omitted.)
 
+{#dtls-srtp-flow}
 ~~~
 Client                                             Server
 
@@ -675,7 +689,7 @@ ClientHello
 
 In the context of a multi-party SRTP session in which each endpoint
 performs a DTLS handshake as a client with a central DTLS server,
-the extensions defined in this session allows the DTLS server to set
+the extensions defined in this document allow the DTLS server to set
 a common EKTKey for all participants. Each endpoint can then use
 EKT tags encrypted with that common key to inform other endpoint of
 the keys it uses to protect SRTP packets.  This avoids the need
@@ -727,7 +741,7 @@ struct {
 ~~~
 
 
-### Establishing an EKT Key
+### Establishing an EKT Key {#ekt_key}
 
 Once a client and server have concluded a handshake that negotiated
 an EKTCipher, the server MUST provide to the client a key to be
@@ -773,7 +787,7 @@ or the server.
 
 When an EKTKey is received and processed successfully, the recipient
 MUST respond with an Ack handshake message as described in Section 7
-of [@I-D.ietf-tls-dtls13].  The EKTKey message and Ack must be
+of [@I-D.ietf-tls-dtls13].  The EKTKey message and Ack MUST be
 retransmitted following the rules in Section 4.2.4 of [@RFC6347].
   
   Note: To be clear, EKT can be used with versions of DTLS prior to
@@ -800,8 +814,9 @@ finished with an Ack message or an alert is received.
 
 # Security Considerations {#sec}
 
-EKT inherits the security properties of the DTLS-SRTP (or other)
-keying it uses.
+EKT inherits the security properties of the the key management
+protocol that is used to establish the EKTKey, e.g., the DTLS-SRTP
+extension defined in this document.
 
 With EKT, each SRTP sender and receiver MUST generate distinct SRTP
 master keys. This property avoids any security concern over the re-use
@@ -838,10 +853,20 @@ transit and cause the integrity check to fail.
 
 An attacker could send packets containing a FullEKTField, in an
 attempt to consume additional CPU resources of the receiving system by
-causing the receiving system will decrypt the EKT ciphertext and
+causing the receiving system to decrypt the EKT ciphertext and
 detect an authentication failure. In some cases, caching the previous
 values of the Ciphertext as described in (#inbound-impl-notes) helps
 mitigate this issue.
+
+In a similar vein, EKT has no replay protection, so an attacker
+could implant improper keys in receivers by capturing EKTCiphertext
+values encrypted with a given EKTKey and replaying them in a
+different context, e.g., from a different sender.  When the
+underlying SRTP transform provides integrity protection, this attack
+will just result in packet loss.  If it does not, then it will
+result in random data being fed to RTP payload processing.  An
+attacker that is in a position to mount these attacks, however,
+could achieve the same effects more easily without attacking EKT.
 
 Each EKT cipher specifies a value T that is the maximum number of
 times a given key can be used. An endpoint MUST NOT encrypt more than
@@ -868,7 +893,7 @@ the conferences is rekeyed so that member no longer has the key. When
 changing to a new EKTKey, it is possible that the attacker could block
 the EKTKey message getting to a particular endpoint and that endpoint
 would keep sending media encrypted using the old key. To mitigate that
-risk, the lifetime of the EKTKey SHOULD be limited using the ekt_ttl.
+risk, the lifetime of the EKTKey MUST be limited using the ekt_ttl.
 
 
 # IANA Considerations {#iana}
@@ -936,9 +961,6 @@ specification and allocate a value of TBD to for this.
 
 [[ Note to RFC Editor: TBD will be allocated by IANA. ]]
 
-Considerations for this type of extension are described in Section 5
-of [@RFC4366] and requires "IETF Consensus".
-
 
 ## TLS Handshake Type
 
@@ -949,9 +971,6 @@ DTLS-OK value of "Y", and allocate a value of TBD to for this
 content type.
 
 [[ Note to RFC Editor: TBD will be allocated by IANA. ]]
-
-This registry was defined in Section 12 of [@!RFC5246] and requires
-"Standards Action".
 
 
 # Acknowledgements
