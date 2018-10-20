@@ -4,17 +4,23 @@
     # DTLS Tunnel for PERC
     #
     # Generation tool chain:
-    #   mmark (https://github.com/miekg/mmark)
+    #   mmark (https://github.com/mmarkdown/mmark)
     #   xml2rfc (http://xml2rfc.ietf.org/)
     #
 
-    Title = "DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange"
+    title = "DTLS Tunnel between a Media Distributor and Key Distributor to Facilitate Key Exchange"
     abbrev = "DTLS Tunnel for PERC"
     category = "std"
-    docName = "draft-ietf-perc-dtls-tunnel-03"
     ipr= "trust200902"
     area = "Internet"
+    workgroup = ""
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
+
+    [seriesInfo]
+    status = "standard"
+    name = "Internet-Draft"
+    value = "draft-ietf-perc-dtls-tunnel-04"
+    stream = "IETF"
 
     [pi]
     subcompact = "yes"
@@ -69,6 +75,7 @@
     #          - Removed editor's note about how key distributor gets
     #            The dtls-id from SDP
     #   03 - No change; rev to address expiration
+    #   04 - Expiration refresh
     #
 
 %%%
@@ -646,14 +653,15 @@ single octet in length.  This document defines the values shown in
 (#data_types) below, leaving the balance of possible values reserved
 for future specifications:
 
+{#data_types}
 MsgType | Description
---------|:----------------------------------------
+:------:|:----------------------------------------
 0x01    | Supported SRTP Protection Profiles
 0x02    | Unsupported Version
 0x03    | Media Keys
 0x04    | Tunneled DTLS
 0x05    | Endpoint Disconnect
-Table: Data Type Values for the DTLS Tunnel Protocol {#data_types}
+Table: Data Type Values for the DTLS Tunnel Protocol
 
 The value 0x00 and all values in the range 0x06 to 0xFF are reserved.
 

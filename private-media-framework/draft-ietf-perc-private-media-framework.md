@@ -2,7 +2,7 @@
 
     #
     # Solution Framework for Private Media
-    # Generation tool: mmark (https://github.com/miekg/mmark)
+    # Generation tool: mmark (https://github.com/mmarkdown/mmark)
     #
 
     title = "A Solution Framework for Private Media in Privacy Enhanced RTP Conferencing"
