@@ -653,7 +653,6 @@ single octet in length.  This document defines the values shown in
 (#data_types) below, leaving the balance of possible values reserved
 for future specifications:
 
-{#data_types}
 MsgType | Description
 :------:|:----------------------------------------
 0x01    | Supported SRTP Protection Profiles
@@ -661,7 +660,7 @@ MsgType | Description
 0x03    | Media Keys
 0x04    | Tunneled DTLS
 0x05    | Endpoint Disconnect
-Table: Data Type Values for the DTLS Tunnel Protocol
+Table: Data Type Values for the DTLS Tunnel Protocol {#data_types}
 
 The value 0x00 and all values in the range 0x06 to 0xFF are reserved.
 
