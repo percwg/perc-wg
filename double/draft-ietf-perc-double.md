@@ -66,7 +66,7 @@ Secure Real Time Protocol (SRTP) that uses two separate but related
 cryptographic operations to provide hop-by-hop and end-to-end
 security guarantees.  Both the end-to-end and hop-by-hop
 cryptographic algorithms can utilize an authenticated encryption
-with associated data scheme or take advantage of future SRTP
+with associated data (AEAD) algorithm or take advantage of future SRTP
 transforms with different properties.
 
 
@@ -78,8 +78,8 @@ Cloud conferencing systems that are based on switched conferencing
 have a central Media Distributor device that receives media from
 endpoints and distributes it to other endpoints, but does not need
 to interpret or change the media content.  For these systems, it is
-desirable to have one cryptographic key from the sending endpoint to
-the receiving endpoint that can encrypt and authenticate the media
+desirable to have one cryptographic key that enables encryption and
+authentication of the media
 end-to-end while still allowing certain information in the header of
 a Real Time Protocol (RTP) packet to be changed by the Media
 Distributor.  At the same time, a separate cryptographic key
@@ -186,6 +186,8 @@ keying material for the outer (hop-by-hop) algorithm is to use
 
 ## Key Derivation
 
+Although SRTP uses a single master key to derive keys for an SRTP
+session, this transform requires separate inner and outer keys.
 In order to allow the inner and outer keys to be managed
 independently via the master key, the transforms defined in this
 document MUST be used with the following pseudo-random function
@@ -194,11 +196,8 @@ key.  Given a positive integer `n` representing the desired output
 length, a master key `k_master`, and an input `x`:
 
 ~~~~~
-PRF_double_n(k_master,x) = PRF_inner_(n/2)(k_master,x) || 
-                           PRF_outer_(n/2)(k_master,x)
-
-PRF_inner_n(k_master,x)  = PRF_n(inner(k_master),x)
-PRF_outer_n(k_master,x)  = PRF_n(outer(k_master),x)
+PRF\_double\_n(k\_master,x) = PRF\_(n/2)(inner(k\_master),x) || 
+                              PRF\_(n/2)(outer(k\_master),x)
 ~~~~~
 
 Here `PRF_n(k, x)` represents the AES_CM PRF KDF [@RFC3711] for 
@@ -230,7 +229,6 @@ PT = OCTET
 SEQ = 2OCTET
 Config = OCTET
 OHB = [ PT ] [ SEQ ] Config
-
 ~~~~~
 
 If present, the PT and SEQ parts of the OHB contain the original payload type
@@ -254,13 +252,16 @@ marker bit (if necessary):
 In particular, an all-zero OHB config octet (0x00) indicates that
 there have been no modifications from the original header.
 
+If the marker bit is not present (M=0), then B MUST be set to zero.
+That is, if `C` represents the value of the config octet, then the
+masked value `C & 0x0C` MUST NOT have the value `0x80`. 
+
 # RTP Operations
 
 As implied by the use of the word "double" above, this transform
 applies AES-GCM to the SRTP packet twice.  This allows media
 distributors to be able to modify some header fields while allowing
-endpoints to verify the end-to-end integrity and confidentiality of
-a packet.
+endpoints to verify the end-to-end integrity of a packet.
 
 The first, "inner" application of AES-GCM encrypts the SRTP payload
 and integrity-protects a version of the SRTP header with extensions
@@ -370,7 +371,7 @@ SHOULD use an independent salt for each recipient, and MUST NOT
 re-encrypt the packet using the sender's keys.  If the Media
 Distributor decrypts and re-encrypts with the same key and salt, it
 will result in the reuse of a (key, nonce) pair, undermining the
-security of GCM.
+security of AES-GCM.
 
 ## Decrypting a Packet {#decrypt} 
 
@@ -451,9 +452,9 @@ require modification.
 Repair mechanisms, in general, will need to perform recovery on
 encrypted packets (double-encrypted when using this transform).
 When the recovery mechanism calls for the recovery packet itself to
-be encrypted, it is encrypted with only the outer, HBH key.  This
+be encrypted, it is encrypted with only the outer, hop-by-hop key.  This
 allows a media distributor to generate recovery packets without
-having access to the inner, E2E keys.  However, it also results in
+having access to the inner, end-to-end keys.  However, it also results in
 recovery packets being triple-encrypted, twice for the base
 transform, and once for the recovery protection.
 
@@ -462,7 +463,7 @@ transform, and once for the recovery protection.
 When using RTX [@RFC4588] with double, the cached payloads MUST be the
 double-encrypted packets, i.e., the bits that are sent over the wire to the
 other side. When encrypting a retransmission packet, it MUST be
-encrypted the packet in repair mode (i.e., with only the HBH key).
+encrypted the packet in repair mode (i.e., with only the hop-by-hop key).
 
 A typical RTX receiver would decrypt the packet, undo the RTX
 transformation, then process the resulting packet normally by
@@ -477,7 +478,7 @@ encodings cannot.
 The sender takes encrypted payload from the cached packets to form
 the RED payload. Any header extensions from the primary encoding are
 copied to the RTP packet that will carry the RED payload and the other
-RTP header information such as SSRC, SEQ, CSRC, etc are set to the
+RTP header information (SSRC, SEQ, CSRC, etc.) are set to the
 same as the primary payload. The RED RTP packet is then encrypted in
 repair mode and sent.
 
@@ -490,7 +491,7 @@ primary RTP packet which can then be decrypted with double.
 
 The RTP headers (but not header extensions or CSRC) along with PT 
 from inside the RED payload corresponding to the redundant 
-encoding are used to from the non primary payloads. The time 
+encoding are used to from the non-primary payloads. The time 
 offset and packet rate information in the RED data MUST be used 
 to adjust the sequence number in the RTP header. At this point 
 the non primary packets can be decrypted with double.
@@ -509,7 +510,7 @@ recovery and then decrypting.  This ensures that the original media
 is not revealed to the Media Distributor but at the same time allows
 the Media Distributor to repair media.  When encrypting a packet
 that contains the Flex FEC data, which is already encrypted, it MUST
-be encrypted with only the outer, HBH transform.
+be encrypted with only the outer, hop-by-hop transform.
 
 The algorithm recommended in [@I-D.ietf-rtcweb-fec] for repair of video
 is Flex FEC [@I-D.ietf-payload-flexible-fec-scheme].  Note that for
