@@ -400,7 +400,7 @@ transmitted during the life of a conference.
 Thus, an endpoint **MUST** maintain a list of SSRCs from received RTP
 flows and each SSRC's associated E2E key information.  An endpoint **MUST**
 discard old E2E keys no later than when it leaves the conference
-(see Section [@keyexchange]).
+(see [@keyexchange]).
 
 If there is a need to encrypt one or more RTP header extensions
 end-to-end, the endpoint derives an encryption key from the E2E SRTP
