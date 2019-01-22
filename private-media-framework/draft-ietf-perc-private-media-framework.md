@@ -461,7 +461,7 @@ following way:
 ### Initial Key Exchange and Key Distributor
 
 The Media Distributor maintains a tunnel with the Key Distributor
-(e.g., using [@?I-D.ietf-perc-dtls-tunnel]), making it
+(e.g., using [@I-D.ietf-perc-dtls-tunnel]), making it
 possible for the Media Distributor to facilitate the establishment of
 a secure DTLS association between each endpoint and the Key
 Distributor as shown the following figure.  The DTLS association
@@ -570,7 +570,7 @@ An endpoint **MAY** retain old keys until the end of the conference.
 Endpoints **MAY** follow the procedures in section 5.2 of [@RFC5764]
 to re-negotiate HBH keys as desired.  If new HBH keys are generated,
 the new keys are also delivered to the Media Distributor following
-the procedures defined in [@!I-D.ietf-perc-dtls-tunnel].
+the procedures defined in [@I-D.ietf-perc-dtls-tunnel].
 
 Endpoints **MAY** change the E2E encryption key used at
 any time.  Endpoints **MUST** generate a new E2E encryption key
@@ -638,7 +638,7 @@ The Key Distributor needs to know what endpoints are being added to a
 given conference. Thus, the Key Distributor and the Media Distributor
 need to know endpoint-to-conference mappings, which is enabled by
 exchanging a conference-specific unique identifier as defined in
-[@!I-D.ietf-perc-dtls-tunnel].  How this unique identifier is assigned
+[@I-D.ietf-perc-dtls-tunnel].  How this unique identifier is assigned
 is outside the scope of this document.
 
 # PERC Keys
@@ -702,7 +702,7 @@ material is for hop-by-hop operations, so that half of the key
 the HBH key.
 
 The Key Distributor informs the Media Distributor of the HBH key
-value via the tunnel protocol ([@!I-D.ietf-perc-dtls-tunnel]).  The Key
+value via the tunnel protocol ([@I-D.ietf-perc-dtls-tunnel]).  The Key
 Distributor sends the least significant bits corresponding to the
 half of the keying material determined through DTLS-SRTP with the endpoint
 to the Media Distributor via the tunnel protocol.  A salt value is
@@ -877,7 +877,7 @@ Distributor may cascade to another legitimate Media Distributor
 creating a false version of the real conference.
 
 This attack is be mitigated by the false Media Distributor not being
-authenticated by the Key Distributor during the tunnel [@!I-D.ietf-perc-dtls-tunnel]
+authenticated by the Key Distributor during the tunnel [@I-D.ietf-perc-dtls-tunnel]
 establishment. Without the tunnel in place, endpoints are unable to
 establish secure associations with the Key Distributor and
 receive the KEK, causing the conference to not proceed.
