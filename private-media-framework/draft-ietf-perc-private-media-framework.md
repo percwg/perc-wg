@@ -329,7 +329,7 @@ To enable all of the above, this framework defines the use of two
 security contexts and two associated encryption keys: an "inner" key
 (an E2E key distinct for each transmitted media flow) for authenticated
 encryption of RTP media between endpoints and an "outer" key (HBH key)
-known only to media distributor and the adjacent endpoint)
+known only to Media Distributor and the adjacent endpoint)
 for the hop between an endpoint and a Media Distributor or between Media
 Distributor.
 
@@ -369,7 +369,7 @@ keys. See [@keyinventory] for a description of the keys used in PERC
 and [@packetformat] for diagram of how encrypted RTP packets appear on the
 wire.
 
-RTCP can only be encrypted hop-by-hop, not end-to-end.  This framework
+RTCP is only encrypted hop-by-hop, not end-to-end.  This framework
 introduces no additional step for RTCP authenticated encryption, so
 the procedures needed are specified in [@!RFC3711] and use the same
 outer, hop-by-hop cryptographic context chosen in the Double operation
@@ -467,8 +467,8 @@ a secure DTLS association between each endpoint and the Key
 Distributor as shown the following figure.  The DTLS association
 between endpoints and the Key Distributor enables each endpoint to
 generate E2E and HBH keys and receive the Key Encryption Key (KEK)
-(i.e., EKT Key).  At the same time, the Key Distributor can securely
-provide the HBH key information to the Media Distributor.  The key
+(i.e., EKT Key).  At the same time, the Key Distributor securely
+provides the HBH key information to the Media Distributor.  The key
 information summarized here may include the SRTP master key, SRTP
 master salt, and the negotiated cryptographic transform.
 
@@ -504,10 +504,6 @@ with the Key Distributor.  The Media Distributor does not terminate
 the DTLS signaling, but instead forwards DTLS packets received
 from an endpoint on to the Key Distributor (and vice versa) via a
 tunnel established between Media Distributor and the Key Distributor.
-This tunnel is used to encapsulate the DTLS-SRTP signaling between the
-Key Distributor and endpoints is also used to convey HBH key
-information from the Key Distributor to the Media Distributor, so no
-additional protocol or interface is required.
 
 In establishing the DTLS association between endpoints and the
 Key Distributor, the endpoint **MUST** act as the DTLS client and the
@@ -515,6 +511,10 @@ Key Distributor **MUST** act as the DTLS server.  The Key Encryption Key (KEK)
 (i.e., EKT Key) is conveyed by the Key Distributor over the DTLS
 association to endpoints via procedures defined in EKT
 [@I-D.ietf-perc-srtp-ekt-diet] via the EKTKey message.
+
+The Key Distributor **MUST NOT** establish DTLS-SRTP associations with
+endpoints without first authenticating the Media Distributor tunneling the
+DTLS-SRTP packets from the endpoint.
 
 Note that following DTLS-SRTP procedures for the [@!I-D.ietf-perc-double]
 cipher, the endpoint generates both E2E and HBH encryption keys
@@ -568,9 +568,9 @@ endpoints that used the prior keys for a period of time after re-keying began.
 An endpoint **MAY** retain old keys until the end of the conference.
 
 Endpoints **MAY** follow the procedures in section 5.2 of [@RFC5764]
-to re-negotiate HBH keys as desired.  If new HBH keys are generated,
+to renegotiate HBH keys as desired.  If new HBH keys are generated,
 the new keys are also delivered to the Media Distributor following
-the procedures defined in [@I-D.ietf-perc-dtls-tunnel].
+the procedures defined in [@I-D.ietf-perc-dtls-tunnel] as one possible method.
 
 Endpoints **MAY** change the E2E encryption key used at
 any time.  Endpoints **MUST** generate a new E2E encryption key
@@ -637,7 +637,7 @@ authorized Key Distributor for this conference.
 The Key Distributor needs to know what endpoints are being added to a
 given conference. Thus, the Key Distributor and the Media Distributor
 need to know endpoint-to-conference mappings, which is enabled by
-exchanging a conference-specific unique identifier as defined in
+exchanging a conference-specific unique identifier defined in
 [@I-D.ietf-perc-dtls-tunnel].  How this unique identifier is assigned
 is outside the scope of this document.
 
@@ -701,15 +701,15 @@ material is for hop-by-hop operations, so that half of the key
 (corresponding to the least significant bits) is assigned internally as
 the HBH key.
 
-The Key Distributor informs the Media Distributor of the HBH key
-value via the tunnel protocol ([@I-D.ietf-perc-dtls-tunnel]).  The Key
-Distributor sends the least significant bits corresponding to the
+The Key Distributor informs the Media Distributor of the HBH key.  Specifically,
+the Key Distributor sends the least significant bits corresponding to the
 half of the keying material determined through DTLS-SRTP with the endpoint
-to the Media Distributor via the tunnel protocol.  A salt value is
+to the Media Distributor.  A salt value is
 generated along with the HBH key.  The salt is also longer than needed
 for hop-by-hop operations, thus only the least significant bits of the
 required length (i.e., half of the generated salt material) are sent to the
-media distributor via the tunnel protocol.
+Media Distributor.  One way to transmit this key and salt information
+is via the tunnel protocol defined in [@I-D.ietf-perc-dtls-tunnel].
 
 No two endpoints have the same HBH key, thus the Media Distributor
 **MUST** keep track each distinct HBH key (and the corresponding salt) and
@@ -877,10 +877,9 @@ Distributor may cascade to another legitimate Media Distributor
 creating a false version of the real conference.
 
 This attack is be mitigated by the false Media Distributor not being
-authenticated by the Key Distributor during the tunnel [@I-D.ietf-perc-dtls-tunnel]
-establishment. Without the tunnel in place, endpoints are unable to
-establish secure associations with the Key Distributor and
-receive the KEK, causing the conference to not proceed.
+authenticated by the Key Distributor.  They Key Distributor
+will fail to establish the secure association with the endpoint if
+the Media Distributor cannot be authenticated.
 
 ##   Media Distributor Attacks
 
