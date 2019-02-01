@@ -16,7 +16,7 @@
     [seriesInfo]
     status = "standard"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-private-media-framework-08"
+    value = "draft-ietf-perc-private-media-framework-09"
     stream = "IETF"
 
     [[author]]
@@ -64,6 +64,7 @@
     #   06 - Editorial improvements (https://github.com/ietf/perc-wg/pull/150)
     #   07 - Expiration refresh
     #   08 - Address comments from Ben Campbell
+    #   09 - Last call comments
     #
 
 %%%
@@ -98,10 +99,10 @@ RTP [@!RFC3550] headers, for example, but the actual media content
 An advantage of switched conferencing is that Media Distributors can
 be more easily deployed on general-purpose computing hardware,
 including virtualized environments in private and public clouds.
-While virutalized public cloud environments have been viewed as less
+Virutalized public cloud environments have been viewed as less
 secure since resources are not always physically controlled by
 those who use them and since there are usually several ports open to
-the public, this draft aims to improve security so as to lower the barrier
+the public.  This document aims to improve security so as to lower the barrier
 to taking advantage of those environments.
 
 This document defines a solution framework wherein media privacy is
@@ -550,8 +551,8 @@ re-keyed is outside the scope of this document, but this framework
 does accommodate re-keying during the life of a conference.
 
 When a Key Distributor decides to re-key a conference, it transmits a
-new EKTKey message [@!I-D.ietf-perc-srtp-ekt-diet] to
-each of the conference participants containing the new EKT Key.
+new EKTKey message containing the new EKT Key [@!I-D.ietf-perc-srtp-ekt-diet]
+to each of the conference participants.
 Upon receipt of the new EKT Key, the endpoint **MUST** create a
 new SRTP master key and prepare to send that key inside a Full EKT
 Field using the new EKT Key as per Section 4.5 of [@!I-D.ietf-perc-srtp-ekt-diet].
@@ -673,7 +674,7 @@ The various keys used in PERC are shown in
 ~~~
 Figure: Key Inventory
 
-While the number key types is very small, it should be understood that
+While the number of key types is very small, it should be understood that
 the actual number of distinct keys can be large as the conference
 grows in size.
 
