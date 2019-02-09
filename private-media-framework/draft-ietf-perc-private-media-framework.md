@@ -16,7 +16,7 @@
     [seriesInfo]
     status = "standard"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-private-media-framework-08"
+    value = "draft-ietf-perc-private-media-framework-09"
     stream = "IETF"
 
     [[author]]
@@ -64,6 +64,7 @@
     #   06 - Editorial improvements (https://github.com/ietf/perc-wg/pull/150)
     #   07 - Expiration refresh
     #   08 - Address comments from Ben Campbell
+    #   09 - Last call comments
     #
 
 %%%
@@ -98,10 +99,10 @@ RTP [@!RFC3550] headers, for example, but the actual media content
 An advantage of switched conferencing is that Media Distributors can
 be more easily deployed on general-purpose computing hardware,
 including virtualized environments in private and public clouds.
-While virutalized public cloud environments have been viewed as less
+Virutalized public cloud environments have been viewed as less
 secure since resources are not always physically controlled by
 those who use them and since there are usually several ports open to
-the public, this draft aims to improve security so as to lower the barrier
+the public.  This document aims to improve security so as to lower the barrier
 to taking advantage of those environments.
 
 This document defines a solution framework wherein media privacy is
@@ -141,7 +142,11 @@ Trusted Endpoint: An RTP flow terminating entity that has possession
 of E2E media encryption keys and terminates E2E encryption.  This may
 include embedded user conferencing equipment or browsers on computers,
 media gateways, MCUs, media recording device and more that are in the
-trusted domain for a given deployment.
+trusted domain for a given deployment. In the context of WebRTC, where
+control of a session is divided between a JavaScript application and a
+browser, the browser acts as the Trusted Endpoint for purposes of this
+framework (just as it acts as the endpoint for DTLS-SRTP [@RFC5764] in
+one-to-one calls).
 
 Media Distributor (MD): An RTP middlebox that forwards endpoint media
 content (e.g., voice or video data) unaltered, either a subset or all
@@ -150,7 +155,11 @@ to E2E encryption keys.  It operates according to the
 Selective Forwarding Middlebox RTP topologies [@RFC7667] per the
 constraints defined by the PERC system, which includes, but not limited
 to, having no access to RTP media unencrypted and having limits on what
-RTP header field it can alter.
+RTP header field it can alter.  This header fields that may be
+modified by a Media Distributor are enumerated in Section 4 of the Double
+cryptographic transform specification [@!I-D.ietf-perc-double] and chosen
+with respect to utility and the security considerations outlined in this
+document.
 
 Key Distributor: An entity that is a logical function which
 distributes keying material and related information to trusted
@@ -550,8 +559,8 @@ re-keyed is outside the scope of this document, but this framework
 does accommodate re-keying during the life of a conference.
 
 When a Key Distributor decides to re-key a conference, it transmits a
-new EKTKey message [@!I-D.ietf-perc-srtp-ekt-diet] to
-each of the conference participants containing the new EKT Key.
+new EKTKey message containing the new EKT Key [@!I-D.ietf-perc-srtp-ekt-diet]
+to each of the conference participants.
 Upon receipt of the new EKT Key, the endpoint **MUST** create a
 new SRTP master key and prepare to send that key inside a Full EKT
 Field using the new EKT Key as per Section 4.5 of [@!I-D.ietf-perc-srtp-ekt-diet].
@@ -673,7 +682,7 @@ The various keys used in PERC are shown in
 ~~~
 Figure: Key Inventory
 
-While the number key types is very small, it should be understood that
+While the number of key types is very small, it should be understood that
 the actual number of distinct keys can be large as the conference
 grows in size.
 
@@ -953,8 +962,8 @@ There are no IANA considerations for this document.
 
 # Acknowledgments
 
-The authors would like to thank Mo Zanaty and Christian Oien for
-invaluable input on this document.  Also, we would like to acknowledge
+The authors would like to thank Mo Zanaty, Christian Oien, and Richard Barnes
+for invaluable input on this document.  Also, we would like to acknowledge
 Nermeen Ismail for serving on the initial versions of this document as
 a co-author.
 
