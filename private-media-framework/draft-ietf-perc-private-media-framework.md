@@ -917,7 +917,7 @@ endpoints resources.  While E2E authentication would fail and the
 cryptographic context would be destroyed, the key derivation operation
 would nonetheless consume some computational resources.  While resource
 consumption attacks cannot be mitigated entirely, rate-limiting packets
-might help reduce the effectiveness of such attacks.
+might help reduce the impact of such attacks.
 
 ###  Replay Attack
 
