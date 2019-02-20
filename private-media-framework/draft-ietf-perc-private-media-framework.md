@@ -64,7 +64,7 @@
     #   06 - Editorial improvements (https://github.com/ietf/perc-wg/pull/150)
     #   07 - Expiration refresh
     #   08 - Address comments from Ben Campbell
-    #   09 - Last call comments
+    #   09 - Last call comments (Gorry, Linda, and Vincent)
     #
 
 %%%
@@ -99,7 +99,7 @@ RTP [@!RFC3550] headers, for example, but the actual media content
 An advantage of switched conferencing is that Media Distributors can
 be more easily deployed on general-purpose computing hardware,
 including virtualized environments in private and public clouds.
-Virutalized public cloud environments have been viewed as less
+Virtualized public cloud environments have been viewed as less
 secure since resources are not always physically controlled by
 those who use them and since there are usually several ports open to
 the public.  This document aims to improve security so as to lower the barrier
@@ -111,7 +111,8 @@ gain access to keys needed to decrypt or authenticate the actual media
 content sent between conference participants.  At the same time, the
 framework allows for the Media Distributors to modify certain RTP
 headers; add, remove, encrypt, or decrypt RTP header extensions; and
-encrypt and decrypt RTCP packets.  The framework also prevents replay
+encrypt and decrypt RTP Control Protocol (RTCP) [@!RFC3550] packets.
+The framework also prevents replay
 attacks by authenticating each packet transmitted between a given
 participant and the media distributor using a unique key per
 endpoint that is independent from the key for media encryption and
@@ -150,7 +151,7 @@ one-to-one calls).
 
 Media Distributor (MD): An RTP middlebox that forwards endpoint media
 content (e.g., voice or video data) unaltered, either a subset or all
-of the flows at any given time, and is never allowed have access
+of the flows at any given time, and is never allowed to have access
 to E2E encryption keys.  It operates according to the
 Selective Forwarding Middlebox RTP topologies [@RFC7667] per the
 constraints defined by the PERC system, which includes, but not limited
@@ -304,7 +305,7 @@ for both end-to-end (E2E) and hop-by-hop (HBH) security and for providing key
 information to Media Distributors for the hop-by-hop security.
 
 Interaction between the Key Distributor and the call processing
-function is necessary to for proper conference-to-endpoint
+function is necessary for proper conference-to-endpoint
 mappings. This is described in (#conf-id).
 
 The Key Distributor needs to be secured and managed in a way to
@@ -320,7 +321,8 @@ switch, hence not terminate, media.  It does not otherwise attempt to
 hide the fact that a conference between endpoints is taking place.
 
 This framework reuses several specified RTP security technologies,
-including SRTP [@!RFC3711], EKT [@!I-D.ietf-perc-srtp-ekt-diet],
+including Secure Real-time Transport Protocol (SRTP) [@!RFC3711],
+Encrypted Key Transport (EKT) [@!I-D.ietf-perc-srtp-ekt-diet],
 and DTLS-SRTP [@!RFC5764].
 
 ## End-to-End and Hop-by-Hop Authenticated Encryption
@@ -623,7 +625,8 @@ scenarios where parts of the session signaling may be assumed
 trustworthy for the purposes of exchanging, in a manner that can be
 authenticated, the fingerprint of an entity's certificate.
 
-As a concrete example, SIP [@RFC3261] and SDP [@RFC4566] can be used
+As a concrete example, SIP [@RFC3261] and
+Session Description Protocol (SDP) [@RFC4566] can be used
 to convey the fingerprint information per [@RFC5763].  An endpoint's
 SIP User Agent would send an INVITE message containing SDP for the
 media session along with the endpoint's certificate fingerprint, which
@@ -652,8 +655,7 @@ is outside the scope of this document.
 
 # PERC Keys
 
-This section describes the various keys employed by PERC, how they are
-derived, conveyed, and so forth.
+This section describes the various keys employed by PERC.
 
 ## Key Inventory and Management Considerations {#keyinventory}
 
@@ -672,12 +674,12 @@ The various keys used in PERC are shown in
 | Key       | Description                                        |
 +-----------+----------------------------------------------------+
 | KEK       | Key shared by all endpoints and used to encrypt    |
-| (EKT Key) | each endpoint's SRTP master key so receiving       |
+| (EKT Key) | each endpoint's E2E SRTP master key so receiving   |
 |           | endpoints can decrypt media.                       |
 +-----------+----------------------------------------------------+
-| HBH Key   | Key used to encrypt media hop-by-hop.              |
+| HBH Key   | SRTP master key used to encrypt media hop-by-hop.  |
 +-----------+----------------------------------------------------+
-| E2E Key   | Key used to encrypt media end-to-end.              |
+| E2E Key   | SRTP master key used to encrypt media end-to-end.  |
 +-----------+----------------------------------------------------+
 ~~~
 Figure: Key Inventory
@@ -760,7 +762,7 @@ The media distributor is not given the KEK (i.e., EKT Key).
 ## Endpoints fabricate an SRTP Master Key
 
 As stated earlier, the E2E key determined via DTLS-SRTP **MAY** be
-discarded in favor of a locally-generated SRTP master key.  While the
+discarded in favor of a locally-generated E2E SRTP master key.  While the
 DTLS-SRTP-derived SRTP master key can be used initially, the endpoint might
 choose to change the SRTP master key periodically and **MUST** change the
 SRTP master key as a result of the EKT key changing.
@@ -871,29 +873,38 @@ encryption.  The integrity protection mitigates packet modification
 and encryption makes selective blocking of packets harder, but not
 impossible.
 
-Off-path attackers may try connecting to different PERC entities and
-send specifically crafted packets.  A successful attacker might be
-able to get the Media Distributor to forward such packets.  The Media
-Distributor mitigates such an attack by performing hop-by-hop authentication
-and discarding packets that fail authentication.
+Off-path attackers could try connecting to different PERC entities and
+send specifically crafted packets.  Endpoints and Media Distributors mitigate
+such an attack by performing hop-by-hop authentication and discarding packets
+that fail authentication.
 
-Another potential attack is a third party claiming to be a Media
-Distributor, fooling endpoints in to sending packets to the false
+Another attack vector is a third party claiming to be a Media
+Distributor, fooling endpoints into sending packets to the false
 Media Distributor instead of the correct one.  The deceived sending
-endpoints could incorrectly assuming their packets have been delivered
-to endpoints when they in fact have not.  Further, the false Media
-Distributor may cascade to another legitimate Media Distributor
-creating a false version of the real conference.
+endpoints could incorrectly assume their packets have been delivered
+to endpoints when they in fact have not.  While this attack is possible,
+the result is a simple denial of service with no leakage of confidential
+information, since the false Media Distributor would not have access
+to either HBH or E2E encryption keys.
 
-This attack is be mitigated by the false Media Distributor not being
-authenticated by the Key Distributor.  They Key Distributor
-will fail to establish the secure association with the endpoint if
-the Media Distributor cannot be authenticated.
+If mutual DTLS authentication is not employed, a false Media Distributor
+could cascade to another legitimate Media Distributor that is part of a
+larger conference.  However, this scenario will also produce no positive
+results for the false Media Distributor since it would not have access to
+keying material.
+
+A third party could cause a denial-of-service by transmitting many bogus
+or replayed packets toward receiving devices that ultimately degrade
+conference or device performance.  Therefore, implementations might wish to
+devise mechanisms to safeguard against such illegitimate packets, such as
+utilizing rate-limiting or performing basic sanity-checks on packets
+(e.g., looking at packet length or expected sequence number ranges) before
+performing more expensive decryption operations.
 
 ##   Media Distributor Attacks
 
-The Media Distributor can attack the session in a number of possible
-ways.
+A malicious or compromised Media Distributor can attack the session in a
+number of possible ways.
 
 ###   Denial of service
 
@@ -914,19 +925,21 @@ a message would trigger the receiver to form a new cryptographic
 context, the Media Distributor can attempt to consume the receiving
 endpoints resources.  While E2E authentication would fail and the
 cryptographic context would be destroyed, the key derivation operation
-would nonetheless consume some computational resources.
+would nonetheless consume some computational resources.  While resource
+consumption attacks cannot be mitigated entirely, rate-limiting packets
+might help reduce the impact of such attacks.
 
 ###  Replay Attack
 
-A replay attack is when an already received packets from a previous
+A replay attack is when an already received packet from a previous
 point in the RTP stream is replayed as new packet.  This could, for
 example, allow a Media Distributor to transmit a sequence of packets
 identified as a user saying "yes", instead of the "no" the user
 actually said.
 
-The mitigation for a replay attack is to prevent old packets beyond a
-small-to-modest jitter and network re-ordering sized window to be
-rejected.  End-to-end replay protection **MUST** be provided for the
+The mitigation for a replay attack is to implement replay protection as
+described in Section 3.3.2 of [@!RFC3711].
+End-to-end replay protection **MUST** be provided for the
 whole duration of the conference.
 
 ###  Delayed Playout Attack
@@ -934,7 +947,7 @@ whole duration of the conference.
 The delayed playout attack is a variant of the replay attack.  This
 attack is possible even if E2E replay protection is in place.
 However, due to fact that the Media Distributor is allowed to select a
-sub-set of streams and not forward the rest to a receiver, such as in
+subset of streams and not forward the rest to a receiver, such as in
 forwarding only the most active speakers, the receiver has to accept
 gaps in the E2E packet sequence.  The issue with this is that a Media
 Distributor can select to not deliver a particular stream for a while.
@@ -948,13 +961,23 @@ now, and only delayed due to transport delay.
 
 ###  Splicing Attack
 
-The splicing attack is an attack where a Media Distributor receiving
+A splicing attack is an attack where a Media Distributor receiving
 multiple media sources splices one media stream into the other.  If
-the Media Distributor is able to change the SSRC without the receiver
+the Media Distributor were able to change the SSRC without the receiver
 having any method for verifying the original source ID, then the Media
 Distributor could first deliver stream A and then later forward stream
-B under the same SSRC as stream A was previously using.  By not allowing
-the Media Distributor to change the SSRC, PERC mitigates this attack.
+B under the same SSRC as stream A was previously using.  By including
+the SSRC in the integrity check for each packet, both HBH and E2E, PERC
+prevents splicing attacks.
+
+###  RTCP Attacks
+
+PERC does not provide end-to-end protection of RTCP messages.  This allows
+a compromised Media Distributor to impact any message that might be
+transmitted via RTCP, including media statistics, picture requests, or loss
+indication.  It is also possible for a compromised Media Distributor to forge
+requests, such as requests to the endpoint to send a new picture.  Such
+requests can consume significant bandwidth and impair conference performance.
 
 # IANA Considerations
 
@@ -965,6 +988,8 @@ There are no IANA considerations for this document.
 The authors would like to thank Mo Zanaty, Christian Oien, and Richard Barnes
 for invaluable input on this document.  Also, we would like to acknowledge
 Nermeen Ismail for serving on the initial versions of this document as
-a co-author.
+a co-author.  We would also like to acknowledge John Mattsson, Mats Naslund,
+and Magnus Westerlund for providing some of the text in the document,
+including much of the original text in the security considerations section.
 
 {backmatter}
