@@ -64,7 +64,7 @@
     #   06 - Editorial improvements (https://github.com/ietf/perc-wg/pull/150)
     #   07 - Expiration refresh
     #   08 - Address comments from Ben Campbell
-    #   09 - Last call comments
+    #   09 - Last call comments (Gorry, Linda, and Vincent)
     #
 
 %%%
@@ -874,22 +874,32 @@ and encryption makes selective blocking of packets harder, but not
 impossible.
 
 Off-path attackers could try connecting to different PERC entities and
-send specifically crafted packets.  The Media Distributor mitigates such
-an attack by performing hop-by-hop authentication and discarding packets
+send specifically crafted packets.  Endpoints and Media Distributors mitigate
+such an attack by performing hop-by-hop authentication and discarding packets
 that fail authentication.
 
-Another potential attack is a third party claiming to be a Media
+Another attack vector is a third party claiming to be a Media
 Distributor, fooling endpoints into sending packets to the false
 Media Distributor instead of the correct one.  The deceived sending
 endpoints could incorrectly assume their packets have been delivered
-to endpoints when they in fact have not.  Further, the false Media
-Distributor may cascade to another legitimate Media Distributor
-creating a false version of the real conference.
+to endpoints when they in fact have not.  While this attack is possible,
+the result is a simple denial of service with no leakage of confidential
+information, since the false Media Distributor would not have access
+to either HBH or E2E encryption keys.
 
-This attack is mitigated by the false Media Distributor not being
-authenticated by the Key Distributor.  They Key Distributor
-will fail to establish the secure association with the endpoint if
-the Media Distributor cannot be authenticated.
+If mutual DTLS authentication is not employed, a false Media Distributor
+could cascade to another legitimate Media Distributor that is part of a
+larger conference.  However, this scenario will also produce no positive
+results for the false Media Distributor since it would not have access to
+keying material.
+
+A third party could cause a denial-of-service by transmitting many bogus
+or replayed packets toward receiving devices that ultimately degrade
+conference or device performance.  Therefore, implementations might wish to
+devise mechanisms to safeguard against such illegitimate packets, such as
+utilizing rate-limiting or performing basic sanity-checks on packets
+(e.g., looking at packet length or expected sequence number ranges) before
+performing more expensive decryption operations.
 
 ##   Media Distributor Attacks
 
@@ -937,7 +947,7 @@ whole duration of the conference.
 The delayed playout attack is a variant of the replay attack.  This
 attack is possible even if E2E replay protection is in place.
 However, due to fact that the Media Distributor is allowed to select a
-sub-set of streams and not forward the rest to a receiver, such as in
+subset of streams and not forward the rest to a receiver, such as in
 forwarding only the most active speakers, the receiver has to accept
 gaps in the E2E packet sequence.  The issue with this is that a Media
 Distributor can select to not deliver a particular stream for a while.
@@ -963,11 +973,11 @@ prevents splicing attacks.
 ###  RTCP Attacks
 
 PERC does not provide end-to-end protection of RTCP messages.  This allows
-a malicious Media Distributor to impact any message that might be transmitted
-via RTCP, including media statistics, picture requests, os loss indication.
-It is also possible for the Media Distributor to forge requests, such as
-requests to the endpoint to send a new picture.  Such requests can consume
-significant bandwidth and impair conference performance.
+a compromised Media Distributor to impact any message that might be
+transmitted via RTCP, including media statistics, picture requests, or loss
+indication.  It is also possible for a compromised Media Distributor to forge
+requests, such as requests to the endpoint to send a new picture.  Such
+requests can consume significant bandwidth and impair conference performance.
 
 # IANA Considerations
 
@@ -978,6 +988,8 @@ There are no IANA considerations for this document.
 The authors would like to thank Mo Zanaty, Christian Oien, and Richard Barnes
 for invaluable input on this document.  Also, we would like to acknowledge
 Nermeen Ismail for serving on the initial versions of this document as
-a co-author.
+a co-author.  We would also like to acknowledge John Mattsson, Mats Naslund,
+and Magnus Westerlund for providing some of the text in the document,
+including much of the original text in the security considerations section.
 
 {backmatter}
