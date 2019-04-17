@@ -19,7 +19,7 @@
     [seriesInfo]
     status = "standard"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-dtls-tunnel-04"
+    value = "draft-ietf-perc-dtls-tunnel-05"
     stream = "IETF"
 
     [pi]
@@ -76,6 +76,7 @@
     #            The dtls-id from SDP
     #   03 - No change; rev to address expiration
     #   04 - Expiration refresh
+    #   05 - Expiration refresh
     #
 
 %%%
