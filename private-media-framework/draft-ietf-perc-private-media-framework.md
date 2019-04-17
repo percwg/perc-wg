@@ -156,7 +156,7 @@ to E2E encryption keys.  It operates according to the
 Selective Forwarding Middlebox RTP topologies [@RFC7667] per the
 constraints defined by the PERC system, which includes, but not limited
 to, having no access to RTP media unencrypted and having limits on what
-RTP header field it can alter.  This header fields that may be
+RTP header field it can alter.  The header fields that may be
 modified by a Media Distributor are enumerated in Section 4 of the Double
 cryptographic transform specification [@!I-D.ietf-perc-double] and chosen
 with respect to utility and the security considerations outlined in this
