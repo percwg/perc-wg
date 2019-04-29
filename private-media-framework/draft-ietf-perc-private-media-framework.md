@@ -440,7 +440,9 @@ Media Distributor the flexibility to forward RTCP content unchanged,
 transmit compound RTCP packets or to initiate RTCP packets for
 reporting statistics or conveying other information.  Performing
 hop-by-hop authentication for all RTP and RTCP packets also helps
-provide replay protection (see (#attacks)).
+provide replay protection (see (#attacks)).  The use of the replay
+protection mechanism specified in Section 3.3.2 of [@!RFC3711] is
+**REQUIRED** at each hop.
 
 If there is a need to encrypt one or more RTP header extensions
 hop-by-hop, the endpoint derives an encryption key from the HBH SRTP
@@ -868,6 +870,10 @@ Figure: Encrypted Media Packet Format
 
 ##  Third Party Attacks
 
+Third party attacks are attacks attempted by an adversary that is not
+supposed to have access to keying material or is otherwise not an
+authorized participant in the conference.
+
 On-path attacks are mitigated by hop-by-hop integrity protection and
 encryption.  The integrity protection mitigates packet modification
 and encryption makes selective blocking of packets harder, but not
@@ -887,11 +893,13 @@ the result is a simple denial of service with no leakage of confidential
 information, since the false Media Distributor would not have access
 to either HBH or E2E encryption keys.
 
-If mutual DTLS authentication is not employed, a false Media Distributor
-could cascade to another legitimate Media Distributor that is part of a
-larger conference.  However, this scenario will also produce no positive
-results for the false Media Distributor since it would not have access to
-keying material.
+Use of mutual DTLS authentication (as required by DTLS-SRTP) ensures that a
+false endpoint or false Media Distributor cannot interact with a legitimate
+Media Distributor or endpoint.  While confidentiality would not be
+compromised by failing to implement mutual authentication, employing it
+helps mitigate against denial of service attacks wherein a false entity
+sends a stream of packets that the would force a legitimate entity to
+spend time attempting to decrypt.
 
 A third party could cause a denial-of-service by transmitting many bogus
 or replayed packets toward receiving devices that ultimately degrade
@@ -937,15 +945,19 @@ example, allow a Media Distributor to transmit a sequence of packets
 identified as a user saying "yes", instead of the "no" the user
 actually said.
 
-The mitigation for a replay attack is to implement replay protection as
+A replay attack is mitigated by the requirement to implement
+replay protection as
 described in Section 3.3.2 of [@!RFC3711].
 End-to-end replay protection **MUST** be provided for the
-whole duration of the conference.
+duration of the conference.
 
 ###  Delayed Playout Attack
 
-The delayed playout attack is a variant of the replay attack.  This
-attack is possible even if E2E replay protection is in place.
+A delayed playout attack is one where media is received and held by
+a media distributor and then forwarded to endpoints at a later point
+in time.
+
+This attack is possible even if E2E replay protection is in place.
 However, due to fact that the Media Distributor is allowed to select a
 subset of streams and not forward the rest to a receiver, such as in
 forwarding only the most active speakers, the receiver has to accept
@@ -958,6 +970,11 @@ select an arbitrary starting point when resuming forwarding packets.
 Thus what the media source said can be substantially delayed at the
 receiver with the receiver believing that it is what was said just
 now, and only delayed due to transport delay.
+
+While this attack cannot be eliminated entirely, its effectiveness
+can be reduced by re-keying the conference periodically since such
+significantly-delayed media would not be understood by endpoints that
+have expired old keys used to encrypt the media.
 
 ###  Splicing Attack
 
