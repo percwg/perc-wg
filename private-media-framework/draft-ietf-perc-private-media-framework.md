@@ -16,7 +16,7 @@
     [seriesInfo]
     status = "standard"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-private-media-framework-09"
+    value = "draft-ietf-perc-private-media-framework-10"
     stream = "IETF"
 
     [[author]]
@@ -65,6 +65,7 @@
     #   07 - Expiration refresh
     #   08 - Address comments from Ben Campbell
     #   09 - Last call comments (Gorry, Linda, and Vincent)
+    #   10 - Addressed additional comments from Vincent
     #
 
 %%%
