@@ -972,9 +972,9 @@ receiver with the receiver believing that it is what was said just
 now, and only delayed due to transport delay.
 
 While this attack cannot be eliminated entirely, its effectiveness
-can be reduced by re-keying the conference periodically since such
-significantly-delayed media would not be understood by endpoints that
-have expired old keys used to encrypt the media.
+can be reduced by re-keying the conference periodically since
+significantly-delayed media encrypted with expired keys would not be
+decrypted by endpoints.
 
 ###  Splicing Attack
 
