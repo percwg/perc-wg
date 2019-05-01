@@ -296,12 +296,8 @@ this length field and the following EKT Message Type.
 
 Message Type: The last byte is used to indicate the type of the
 EKTField. This MUST be 2 for the FullEKTField format and 0 in
-ShortEKTField format. Values less than 64 are mandatory to understand
-while other values are optional to understand. A receiver SHOULD
-discard the whole EKTField if it contains any message type value that
-is less than 64 and that is not understood. Message type values that
-are 64 or greater but not implemented or understood can simply be
-ignored.
+ShortEKTField format.  If a received EKT tag has an unknown message
+type, then the receiver MUST discard the whole EKT tag.
 
 
 ## Packet Processing and State Machine {#pkt_proc}
