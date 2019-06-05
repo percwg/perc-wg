@@ -16,7 +16,7 @@
     [seriesInfo]
     status = "standard"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-private-media-framework-11"
+    value = "draft-ietf-perc-private-media-framework-12"
     stream = "IETF"
 
     [[author]]
@@ -67,7 +67,8 @@
     #   09 - Last call comments (Gorry, Linda, and Vincent)
     #   10 - Addressed additional comments from Vincent
     #   11 - Addressed additional comments received from Vincent, Barry,
-    #        Mirja, Adam, Magnus, Alissa, and Roman.
+    #        Mirja, Adam, Magnus, Alissa, and Roman
+    #   12 - Minor edits based on exchange with Roman
     #
 
 %%%
@@ -104,9 +105,8 @@ be more easily deployed on general-purpose computing hardware,
 including virtualized environments in private and public clouds.
 Virtualized public cloud environments have been viewed as less
 secure since resources are not always physically controlled by
-those who use them and since there are usually several ports open to
-the public.  This document defines improved security so as to lower the barrier
-to taking advantage of those environments.
+those who use them.  This document defines improved security so as to
+lower the barrier to taking advantage of those environments.
 
 This document defines a solution framework wherein media privacy is
 ensured by making it impossible for a Media Distributor to
