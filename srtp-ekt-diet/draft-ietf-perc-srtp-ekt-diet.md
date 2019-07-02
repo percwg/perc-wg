@@ -232,9 +232,10 @@ ROC = 4BYTE ; ROC from SRTP FOR THE GIVEN SSRC
 EKTPlaintext = SRTPMasterKeyLength SRTPMasterKey SSRC ROC
 
 EKTCiphertext = 1*256BYTE ; EKTEncrypt(EKTKey, EKTPlaintext)
+Epoch = 2BYTE
 SPI = 2BYTE
 
-FullEKTField = EKTCiphertext SPI EKTMsgLength EKTMsgTypeFull
+FullEKTField = EKTCiphertext SPI Epoch EKTMsgLength EKTMsgTypeFull
 
 ShortEKTField = EKTMsgTypeShort
 
@@ -285,6 +286,13 @@ the packet, within a given conference. The length of this field is
   this EKT Key. The master salt is communicated separately, via
   signaling, typically along with the EKTKey. (Recall that the SRTP
   master salt is used in the formation of IVs / nonces.)
+
+Epoch: This field indicates how many SRTP keys have been used for this
+SSRC in this session, prior to the current key, as a two-byte
+integer in network byte order.  It starts at zero at the beginning
+of a session, and increments by one every time the key is changed.
+The recipient of a FullEKTField MUST reject any future FullEKTField
+for this SSRC that has an equal or lower epoch value.
 
 Together, these data elements are called an EKT parameter set. Each
 distinct EKT parameter set that is used MUST be associated with a
@@ -473,9 +481,11 @@ EKT uses an authenticated cipher to encrypt and authenticate the
 EKTPlaintext.  This specification defines the interface to the cipher,
 in order to abstract the interface away from the details of that
 function. This specification also defines the default cipher that is
-used in EKT. The default cipher described in (#DefaultCipher) MUST be
-implemented, but another cipher that conforms to this interface MAY be
-used.
+used in EKT. The default cipher described in (#DefaultCipher) MUST
+be implemented, but another cipher that conforms to this interface
+MAY be used.  The cipher used for a given EKTCiphertext value is
+negotiated using the supported\_ekt\_ciphers and indicated with the
+SPI value in the FullEKTField.
 
 An EKTCipher consists of an encryption function and a decryption
 function. The encryption function E(K, P) takes the following inputs:
@@ -854,7 +864,9 @@ that arise due to the lack of a cryptographic binding between the
 EKT tag and the rest of the SRTP packet.  SRTP tags can only be
 cut-and-pasted within the stream of packets sent by a given RTP
 endpoint; an attacker cannot "cross the streams" and use an EKT tag
-from one SSRC to reset the key for another SSRC.
+from one SSRC to reset the key for another SSRC.  The epoch field
+in the FullEKTField also prevents an attacker from rolling back to a
+previous key.
 
 An attacker who tampers with the bits in FullEKTField can prevent the
 intended receiver of that packet from being able to decrypt it. This
