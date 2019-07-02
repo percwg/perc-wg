@@ -276,7 +276,8 @@ this field is 32 bits.
 Security Parameter Index (SPI): This field indicates the appropriate
 EKTKey and other parameters for the receiver to use when processing
 the packet, within a given conference. The length of this field is
-16 bits. The parameters identified by this field are:
+16 bits, representing a two-byte integer in network byte order. The
+parameters identified by this field are:
 
 * The EKT cipher used to process the packet.
 
@@ -305,13 +306,8 @@ this length field and the following EKT Message Type.
 
 Message Type: The last byte is used to indicate the type of the
 EKTField. This MUST be 2 for the FullEKTField format and 0 in
-ShortEKTField format. Values less than 64 are mandatory to understand
-while other values are optional to understand. A receiver SHOULD
-discard the whole EKTField if it contains any message type value that
-is less than 64 and that is not understood. Message type values that
-are 64 or greater but not implemented or understood can simply be
-ignored.
-
+ShortEKTField format. A receiver MUST discard the whole EKTField if
+it contains an unknown message type.
 
 ## Packet Processing and State Machine {#pkt_proc}
 
@@ -350,7 +346,7 @@ processing.
 
 2. The EKTPlaintext field is computed from the SRTP Master Key, SSRC,
    and ROC fields, as shown in (#EKT). The ROC, SRTP Master Key, and
-   SSRC used in EKT processing SHOULD be the same as the one used in
+   SSRC used in EKT processing MUST be the same as the one used in
    the SRTP processing.
 
 3. The EKTCiphertext field is set to the ciphertext created by
@@ -366,7 +362,8 @@ processing.
      packets protected by the same EKTKey and SRTP master key. This value MAY
      be cached by an SRTP sender to minimize computational effort.
 
-The computed value of the FullEKTField is written into the SRTP packet.
+The computed value of the FullEKTField is appended to the end of the
+SRTP packet, after the encrypted payload.
 
 When a packet is sent with the ShortEKTField, the ShortEKFField is
 simply appended to the packet.
@@ -467,7 +464,7 @@ ekt\_ttl field (see (#ekt_key))
 to create a time after which this key cannot be used and they also
 need to create a counter that keeps track of how many times the key
 has been used to encrypt data to ensure it does not exceed the T value
-for that cipher (see {#cipher}). If either of these limits are exceeded, 
+for that cipher (see (#cipher)). If either of these limits are exceeded, 
 the key can no longer be used for encryption. At this point implementation 
 need to either use the call signaling to renegotiate a new session 
 or need to terminate the existing session.  Terminating the session is a
@@ -602,7 +599,7 @@ RECOMMENDED that three consecutive packets contain the FullEKTField
 be transmitted.  If the sender does not send a FullEKTField in its
 initial packets and receivers have not otherwise been provisioned
 with a decryption key, then decryption will fail and SRTP packets
-will be dropped until the the receives a FullEKTField from the
+will be dropped until the receiver receives a FullEKTField from the
 sender.
 
 Rekey:
@@ -641,7 +638,7 @@ In cases where the DTLS termination point is more trusted than the
 media relay, the protection that DTLS affords to EKT key material
 can allow EKT keys to be tunneled through an untrusted relay such as
 a centralized conference bridge.  For more details, see
-{{?I-D.ietf-perc-private-media-framework}}.
+[@?I-D.ietf-perc-private-media-framework].
 
 ## DTLS-SRTP Recap
 
@@ -739,7 +736,7 @@ containing a cipher selected from among those advertised by the
 client.
 
 The extension\_data field of this extension contains an "EKTCipher" value,
-encoded using the syntax defined in [@!RFC5246]:
+encoded using the syntax defined in [@!RFC8446]:
 
 ~~~
 enum {
@@ -867,18 +864,6 @@ endpoint; an attacker cannot "cross the streams" and use an EKT tag
 from one SSRC to reset the key for another SSRC.  The epoch field
 in the FullEKTField also prevents an attacker from rolling back to a
 previous key.
-
-An attacker who tampers with the bits in FullEKTField can prevent the
-intended receiver of that packet from being able to decrypt it. This
-is a minor denial of service vulnerability.  Similarly the attacker
-could take an old FullEKTField from the same session and attach it to
-the packet. The FullEKTField would correctly decode and pass integrity
-checks. However, the key extracted from the FullEKTField , when used 
-to decrypt the SRTP payload, would be wrong and the SRTP integrity check 
-would fail. Note that the FullEKTField only changes the decryption key 
-and does not change the encryption key. None of these are considered
-significant attacks as any attacker that can modify the packets in
-transit and cause the integrity check to fail.
 
 An attacker could send packets containing a FullEKTField, in an
 attempt to consume additional CPU resources of the receiving system by
