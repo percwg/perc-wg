@@ -97,8 +97,8 @@ Distributor. The Media Distributor decrypts and checks integrity of
 the hop-by-hop security. The Media Distributor MAY change some of
 the RTP header information that would impact the end-to-end
 integrity. In that case, the original value of any RTP header field
-that is changed is included in a new RTP header extension called the
-Original Header Block. The new RTP packet is encrypted with the
+that is changed is included in an "Original Headers Block" that is
+added to the packet. The new RTP packet is encrypted with the
 hop-by-hop cryptographic algorithm before it is sent. The receiving
 endpoint decrypts and checks integrity using the hop-by-hop
 cryptographic algorithm and then replaces any parameters the Media
@@ -201,7 +201,8 @@ PRF_inner_n(k_master,x)  = PRF_n(inner(k_master),x)
 PRF_outer_n(k_master,x)  = PRF_n(outer(k_master),x)
 ~~~~~
 
-Here `PRF_n(k, x)` represents the AES_CM PRF KDF [@RFC3711] for 
+Here `PRF_n(k, x)` represents the AES_CM PRF KDF (see Section 4.3.3
+of [@RFC3711]) for 
 DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM algorithm and 
 AES_256_CM_PRF KDF [@!RFC6188] for DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM 
 algorithm. `inner(key)` represents the first half of the key, and `outer(key)`
@@ -209,11 +210,12 @@ represents the second half of the key.
 
 # Original Header Block {#ohb} 
 
-The Original Header Block (OHB) contains the original values of any modified
-RTP header fields. In the encryption process, the OHB is appended to the RTP
-payload.  In the decryption process, the receiving endpoint uses it to
-reconstruct the original RTP header, so that it can pass the proper AAD value
-to the inner transform.
+The Original Header Block (OHB) contains the original values of any
+modified RTP header fields. In the encryption process, the OHB is
+included in an SRTP packet as described in (#rtp-operations).  In the
+decryption process, the receiving endpoint uses it to reconstruct
+the original RTP header, so that it can pass the proper AAD value to
+the inner transform.
 
 The OHB can reflect modifications to the following fields in an RTP header: the
 payload type, the sequence number, and the marker bit.  All other fields in the
@@ -302,9 +304,9 @@ The processes is as follows:
    from the previous step.
 
 5. Replace the header of the protected RTP packet with the header of
-   the original packet, and append an empty OHB (0x00) to the 
-   encrypted payload (with the authentication tag) obtained from the 
-   step 4.
+   the original packet (to restore any header extensions and reset
+   the X bit), and append an empty OHB (0x00) to the encrypted
+   payload (with the authentication tag) obtained from the step 4.
   
 6. Apply the outer cryptographic algorithm to the RTP packet.  If
    encrypting RTP header extensions hop-by-hop, then [@!RFC6904] MUST
@@ -337,26 +339,34 @@ before transmitting.
   with the tag from the inner transform and the OHB appended.
 
 2. Make any desired changes to the fields are allowed to be changed,
-   i.e., PT, SEQ, and M.
+   i.e., PT, SEQ, and M.  The Media Distributor MAY also make
+   modifications to header extensions, without the need to reflect
+   these changes in the OHB.
 
-3. A Media Distributor can add information to the OHB, but MUST NOT
-  change existing information in the OHB. If RTP value is changed and
-  not already in the OHB, then add it with its original value to the
-  OHB.
+3. Reflect any changes to header fields in the OHB:
 
-4. If the Media Distributor resets a parameter to its original value,
-  it MAY drop it from the OHB. Note that this might result in a
-  decrease in the size of the OHB.
+   * If Media Distributor changed a field that is not already in the
+     OHB, then it MUST add the original value of the field to the
+     OHB.  Note that this might result in an increase in the size of
+     the OHB.
 
-5. Apply the outer (hop-by-hop) cryptographic algorithm to the
+   * If the Media Distributor reset to its original value a field
+     that had been previously modified, then it SHOULD drop the
+     corresponding information from the OHB.  Note that this might
+     result in a decrease in the size of the OHB.
+
+   * Otherwise, the Media Distributor MUST NOT modify the OHB.
+
+4. Apply the outer (hop-by-hop) cryptographic algorithm to the
   packet. If the RTP Sequence Number has been modified, SRTP
   processing happens as defined in SRTP and will end up using the new
   Sequence Number. If encrypting RTP header extensions hop-by-hop,
   then [@!RFC6904] MUST be used.
 
 In order to avoid nonce reuse, the cryptographic contexts used in
-step 1 and step 5 MUST use different, independent master keys and
-master salts.
+step 1 and step 5 MUST use different, independent master keys.  Note
+that this means that the key used for encryption MUST be different
+from the key used for encryption.
 
 Note that if multiple MDs modify the same packet, then the first MD
 to alter a given header field is the one that adds it to the OHB.
@@ -366,11 +376,10 @@ OHB, so no update to the OHB is required.
 
 A Media Distributor that decrypts, modifies, and re-encrypts
 packets in this way MUST use an independent key for each recipient,
-SHOULD use an independent salt for each recipient, and MUST NOT
-re-encrypt the packet using the sender's keys.  If the Media
-Distributor decrypts and re-encrypts with the same key and salt, it
-will result in the reuse of a (key, nonce) pair, undermining the
-security of GCM.
+and MUST NOT re-encrypt the packet using the sender's keys.  If the
+Media Distributor decrypts and re-encrypts with the same key and
+salt, it will result in the reuse of a (key, nonce) pair,
+undermining the security of GCM.
 
 ## Decrypting a Packet {#decrypt} 
 
@@ -443,13 +452,17 @@ additional steps.
 
 # Use with Other RTP Mechanisms
 
-Media distributors sometimes interact with RTP media packets sent
+Media Distributors sometimes interact with RTP media packets sent
 by endpoints, e.g., to provide recovery or receive commands via
 DTMF.  When media packets are encrypted end-to-end, these procedures
-require modification.
+require modification.  (End-to-end interactions, including
+end-to-end recovery, are not affected by end-to-end encryption.)
 
 Repair mechanisms, in general, will need to perform recovery on
-encrypted packets (double-encrypted when using this transform).
+encrypted packets (double-encrypted when using this transform),
+since the Media Distributor does not have access to the plaintext of
+the packet, only an intermediate, E2E-encrypted form.
+
 When the recovery mechanism calls for the recovery packet itself to
 be encrypted, it is encrypted with only the outer, HBH key.  This
 allows a media distributor to generate recovery packets without
@@ -463,6 +476,11 @@ When using RTX [@RFC4588] with double, the cached payloads MUST be the
 double-encrypted packets, i.e., the bits that are sent over the wire to the
 other side. When encrypting a retransmission packet, it MUST be
 encrypted the packet in repair mode (i.e., with only the HBH key).
+
+If the Media Distributor were to cache the inner, E2E-encrypted
+payload and retransmit that with an RTX OSN field prepended, then
+the modifications to the payload would cause the inner integrity
+check to fail at the receiver.
 
 A typical RTX receiver would decrypt the packet, undo the RTX
 transformation, then process the resulting packet normally by
@@ -547,14 +565,12 @@ defined that provided only integrity, that would also be reasonable to
 use for the outer transform as the payload data is already encrypted by the
 inner transform.
 
-The AES-GCM cryptographic algorithm introduces an additional 16 octets
-to the length of the packet.  When using AES-GCM for both the inner
-and outer cryptographic algorithms, the total additional length is 32
-octets.  If no other header extensions are present in the packet and
-the OHB is introduced, that will consume an additional 8 octets.  If
-other extensions are already present, the OHB will consume up to 4
-additional octets.  Packets in repair mode will carry additional
-repair data, further increasing their size.
+The AES-GCM cryptographic algorithm introduces an additional 16
+octets to the length of the packet.  When using AES-GCM for both the
+inner and outer cryptographic algorithms, the total additional
+length is 32 octets.  The OHB will consume an additional 1-4 octets.
+Packets in repair mode will carry additional repair data, further
+increasing their size.
 
 # Security Considerations {#sec} 
 
@@ -565,7 +581,12 @@ provides no protections against an attacker that holds both the
 inner and outer keys.
 
 The protections with regard to the network are the same as with the
-normal SRTP AES-GCM transforms.
+normal SRTP AES-GCM transforms.  The major difference is that the
+double transforms are designed to work better in a group context.
+In such contexts, it is important to note that because these
+transforms are symmetric, they do not protect against attacks within
+the group.  Any member of the group can generate valid SRTP packets
+for any SSRC in use by the group.
 
 With regard to a malicious MD, the recipient can verify the
 integrity of the base header fields and confidentiality and
@@ -576,7 +597,7 @@ The main innovation of this transform relative to other SRTP
 transforms is that it allows a partly-trusted MD to decrypt, modify,
 and re-encrypt a packet.  When this is done, the cryptographic
 contexts used for decryption and re-encryption MUST use different,
-independent master keys and master salts.  If the same context is
+independent master keys.  If the same context is
 used, the nonce formation rules for SRTP will cause the same key and
 nonce to be used with two different plaintexts, which substantially
 degrades the security of AES-GCM.
