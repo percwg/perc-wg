@@ -288,12 +288,15 @@ parameters identified by this field are:
   signaling, typically along with the EKTKey. (Recall that the SRTP
   master salt is used in the formation of IVs / nonces.)
 
-Epoch: This field indicates how many SRTP keys have been used for this
-SSRC in this session, prior to the current key, as a two-byte
+Epoch: This field indicates how many SRTP keys have been sent for this
+SSRC under the current EKTKey, prior to the current key, as a two-byte
 integer in network byte order.  It starts at zero at the beginning
-of a session, and increments by one every time the key is changed.
-The recipient of a FullEKTField MUST reject any future FullEKTField
-for this SSRC that has an equal or lower epoch value.
+of a session and resets to zero whenever the EKTKey is changed
+(i.e., when a new SPI appears).  The epoch for an SSRC increments by
+one every time the sender transmits a new key.  The recipient of a
+FullEKTField MUST reject any future FullEKTField for this SPI and
+SSRC that has an equal or lower epoch value to an epoch already
+seen.
 
 Together, these data elements are called an EKT parameter set. Each
 distinct EKT parameter set that is used MUST be associated with a
@@ -806,7 +809,7 @@ MUST respond with an Ack handshake message as described in Section 7
 of [@I-D.ietf-tls-dtls13].  The EKTKey message and Ack MUST be
 retransmitted following the rules in Section 4.2.4 of [@RFC6347].
   
-EKT MAY be used witxh versions of DTLS prior to 1.3.  In such cases,
+EKT MAY be used with versions of DTLS prior to 1.3.  In such cases,
 the Ack message is still used to provide reliability.  Thus, DTLS
 implementations supporting EKT with DTLS pre-1.3 will need to have
 explicit affordances for sending the Ack message in response to an
