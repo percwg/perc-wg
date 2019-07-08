@@ -488,34 +488,20 @@ using the steps in (#decrypt).
 
 ## Redundant Audio Data (RED) {#red}
 
-When using RED [@RFC2198] with double, the primary encoding MAY
-contain RTP header extensions and CSRC identifiers but non primary
-encodings cannot.
+When using RED [@RFC2198] with double, the processing at the sender
+and receiver is the same as when using RED with any other SRTP
+transform.
 
-The sender takes encrypted payload from the cached packets to form
-the RED payload. Any header extensions from the primary encoding are
-copied to the RTP packet that will carry the RED payload and the other
-RTP header information such as SSRC, SEQ, CSRC, etc are set to the
-same as the primary payload. The RED RTP packet is then encrypted in
-repair mode and sent.
+The main difference between double and any other transform is that
+in an intermediated environment, usage of RED must be end-to-end.  A
+Media Distributor cannot synthesize RED packets, because it lacks
+access to the plaintext media payloads that are combined to form a
+RED payload.
 
-The receiver decrypts the payload to find the encrypted RED payload. 
-Note a media relay can do this decryption as the packet was sent in repair
-mode that only needs the hop-by-hop key. The RTP headers and header
-extensions along with the primary payload and PT from inside the RED
-payload (for the primary encoding) are used to form the encrypted 
-primary RTP packet which can then be decrypted with double. 
-
-The RTP headers (but not header extensions or CSRC) along with PT 
-from inside the RED payload corresponding to the redundant 
-encoding are used to from the non primary payloads. The time 
-offset and packet rate information in the RED data MUST be used 
-to adjust the sequence number in the RTP header. At this point 
-the non primary packets can be decrypted with double.
-
-Note that Flex FEC [@I-D.ietf-payload-flexible-fec-scheme] is a
+Note that FlexFEC [@I-D.ietf-payload-flexible-fec-scheme] is a
 superset of the capabilities of RED.  For most applications, FlexFEC
-is a better choice than RED.
+is a better choice than RED; in particular, FlexFEC has modes in
+which the Media Distributor can synthesize recovery packets.
 
 ## Forward Error Correction (FEC) {#fec}
 
