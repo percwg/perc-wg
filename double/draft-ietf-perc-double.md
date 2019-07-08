@@ -97,7 +97,7 @@ Distributor. The Media Distributor decrypts and checks integrity of
 the hop-by-hop security. The Media Distributor MAY change some of
 the RTP header information that would impact the end-to-end
 integrity. In that case, the original value of any RTP header field
-that is changed is included in an "Original Headers Block" that is
+that is changed is included in an "Original Header Block" that is
 added to the packet. The new RTP packet is encrypted with the
 hop-by-hop cryptographic algorithm before it is sent. The receiving
 endpoint decrypts and checks integrity using the hop-by-hop
@@ -350,10 +350,10 @@ before transmitting.
      OHB.  Note that this might result in an increase in the size of
      the OHB.
 
-   * If the Media Distributor reset to its original value a field
-     that had been previously modified, then it SHOULD drop the
-     corresponding information from the OHB.  Note that this might
-     result in a decrease in the size of the OHB.
+   * If the Media Distributor took a field that had previously been
+     modified and reset to its original value, then it SHOULD drop
+     the corresponding information from the OHB.  Note that this
+     might result in a decrease in the size of the OHB.
 
    * Otherwise, the Media Distributor MUST NOT modify the OHB.
 
@@ -365,8 +365,8 @@ before transmitting.
 
 In order to avoid nonce reuse, the cryptographic contexts used in
 step 1 and step 5 MUST use different, independent master keys.  Note
-that this means that the key used for encryption MUST be different
-from the key used for encryption.
+that this means that the key used for decryption by the MD MUST be
+different from the key used for re-encryption to the end recipient.
 
 Note that if multiple MDs modify the same packet, then the first MD
 to alter a given header field is the one that adds it to the OHB.
