@@ -11,7 +11,7 @@
     Title = "SRTP Double Encryption Procedures"
     abbrev = "Double SRTP"
     category = "std"
-    docName = "draft-ietf-perc-double-09"
+    docName = "draft-ietf-perc-double-11"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
@@ -498,10 +498,10 @@ Media Distributor cannot synthesize RED packets, because it lacks
 access to the plaintext media payloads that are combined to form a
 RED payload.
 
-Note that FlexFEC [@I-D.ietf-payload-flexible-fec-scheme] is a
-superset of the capabilities of RED.  For most applications, FlexFEC
-is a better choice than RED; in particular, FlexFEC has modes in
-which the Media Distributor can synthesize recovery packets.
+Note that FlexFEC may often provide similar or better repair
+capabilities compared to RED.  For most applications, FlexFEC is a
+better choice than RED; in particular, FlexFEC has modes in which
+the Media Distributor can synthesize recovery packets.
 
 ## Forward Error Correction (FEC) {#fec}
 
