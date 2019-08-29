@@ -299,7 +299,8 @@ The processes is as follows:
     * The X bit is set to zero
     * The header is truncated to remove any extensions (i.e., keep
       only the first 12 + 4 * CC bytes of the header)
-  * Payload: The RTP payload of the original packet
+  * Payload: The RTP payload of the original packet (including padding when
+    present) 
 
 4. Apply the inner cryptographic algorithm to the synthetic RTP packet
    from the previous step.
