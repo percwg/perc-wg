@@ -19,7 +19,7 @@
     [seriesInfo]
     status = "standard"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-dtls-tunnel-05"
+    value = "draft-ietf-perc-dtls-tunnel-06"
     stream = "IETF"
 
     [pi]
@@ -77,6 +77,7 @@
     #   03 - No change; rev to address expiration
     #   04 - Expiration refresh
     #   05 - Expiration refresh
+    #   06 - Expiration refresh
     #
 
 %%%
