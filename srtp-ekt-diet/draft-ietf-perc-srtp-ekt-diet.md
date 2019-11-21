@@ -49,8 +49,8 @@
     initials = "D."
     surname = "Wing"
     fullname = "Dan Wing"
-    organization: Citrix Systems, Inc.
-    orgabbrev: Citrix
+    organization = "Citrix Systems, Inc."
+    orgabbrev =  "Citrix"
       [author.address]
       email = "dwing-ietf@fuggles.com"
 
