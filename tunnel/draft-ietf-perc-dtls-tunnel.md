@@ -230,7 +230,7 @@ Figure: Sample DTLS-SRTP Exchange via the Tunnel
 
 After the initial TLS connection has been established each of the
 messages on the right-hand side of (#fig-message-flow) is a tunneling
-protocol message as defined in Section (#tunneling-protocol).
+protocol message as defined in (#tunneling-protocol).
 
 SRTP protection profiles supported by the media distributor will be
 sent in a `SupportedProfiles` message when the TLS tunnel is initially
