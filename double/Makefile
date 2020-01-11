@@ -32,3 +32,6 @@ $(DRAFT).diff.html: $(DRAFT)-$(VERSION).txt $(DRAFT)-old.txt
 	htmlwdiff   $(DRAFT)-old.txt   $(DRAFT)-$(VERSION).txt >   $(DRAFT).diff.html
 
 
+rfc8723.diff.html: rfc8723.txt rfc8723-old.txt 
+	htmlwdiff   rfc8723-old.txt   rfc8723.txt >   rfc8723.diff.html
+
