@@ -835,14 +835,15 @@ or the server.
 When an EKTKey is received and processed successfully, the recipient
 MUST respond with an ACK handshake message as described in Section 7
 of [@I-D.ietf-tls-dtls13].  The EKTKey message and ACK MUST be
-retransmitted following the rules in Section 4.2.4 of [@RFC6347].
+retransmitted following the rules of the negotiated version of DTLS.
   
 EKT MAY be used with versions of DTLS prior to 1.3.  In such cases,
 the ACK message is still used to provide reliability.  Thus, DTLS
 implementations supporting EKT with DTLS pre-1.3 will need to have
 explicit affordances for sending the ACK message in response to an
 EKTKey message, and for verifying that an ACK message was received.
-The retransmission rules for both sides are the same as in DTLS 1.3.
+The retransmission rules for both sides are otherwise defined by the
+negotiated version of DTLS.
 
 If an EKTKey message is received that cannot be processed, then the
 recipient MUST respond with an appropriate DTLS alert.
