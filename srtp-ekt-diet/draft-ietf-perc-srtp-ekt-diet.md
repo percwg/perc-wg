@@ -238,13 +238,13 @@ EKTMsgTypeExtension = %x03-FF
 EKTMsgLength = 2BYTE;
 
 SRTPMasterKeyLength = BYTE
-SRTPMasterKey = 1\*256BYTE
+SRTPMasterKey = 1*256BYTE
 SSRC = 4BYTE; SSRC from RTP
 ROC = 4BYTE ; ROC from SRTP FOR THE GIVEN SSRC
 
 EKTPlaintext = SRTPMasterKeyLength SRTPMasterKey SSRC ROC
 
-EKTCiphertext = 1\*256BYTE ; EKTEncrypt(EKTKey, EKTPlaintext)
+EKTCiphertext = 1*256BYTE ; EKTEncrypt(EKTKey, EKTPlaintext)
 Epoch = 2BYTE
 SPI = 2BYTE
 
@@ -252,7 +252,7 @@ FullEKTField = EKTCiphertext SPI Epoch EKTMsgLength EKTMsgTypeFull
 
 ShortEKTField = EKTMsgTypeShort
 
-ExtensionData = 1\*1024BYTE
+ExtensionData = 1*1024BYTE
 ExtensionEKTField = ExtensionData EKTMsgLength EKTMsgTypeExtension
 
 EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
@@ -1010,7 +1010,7 @@ Security (TLS) Extensions" registry:
 
 ~~~
 Value: [TBD-at-Registration]
-Extension Name: supported\_ekt\_ciphers
+Extension Name: supported_ekt_ciphers
 TLS 1.3: CH, SH
 Recommended: Y
 Reference: RFCAAAA
@@ -1027,7 +1027,7 @@ Parameters" registry:
 
 ~~~
 Value: [TBD-at-Registration]
-Description: ekt\_key
+Description: ekt_key
 DTLS-OK: Y
 Reference: RFCAAAA
 Comment: 
