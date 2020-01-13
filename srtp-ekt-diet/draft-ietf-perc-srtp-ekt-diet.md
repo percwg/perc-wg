@@ -833,7 +833,7 @@ its ServerHello, then EKTKey messages MUST NOT be sent by the client
 or the server.
 
 When an EKTKey is received and processed successfully, the recipient
-MUST respond with an ACK handshake message as described in Section 7
+MUST respond with an ACK message as described in Section 7
 of [@I-D.ietf-tls-dtls13].  The EKTKey message and ACK MUST be
 retransmitted following the rules of the negotiated version of DTLS.
   
