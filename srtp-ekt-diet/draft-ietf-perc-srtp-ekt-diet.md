@@ -238,13 +238,13 @@ EKTMsgTypeExtension = %x03-FF
 EKTMsgLength = 2BYTE;
 
 SRTPMasterKeyLength = BYTE
-SRTPMasterKey = 1\*256BYTE
+SRTPMasterKey = 1*256BYTE
 SSRC = 4BYTE; SSRC from RTP
 ROC = 4BYTE ; ROC from SRTP FOR THE GIVEN SSRC
 
 EKTPlaintext = SRTPMasterKeyLength SRTPMasterKey SSRC ROC
 
-EKTCiphertext = 1\*256BYTE ; EKTEncrypt(EKTKey, EKTPlaintext)
+EKTCiphertext = 1*256BYTE ; EKTEncrypt(EKTKey, EKTPlaintext)
 Epoch = 2BYTE
 SPI = 2BYTE
 
@@ -252,7 +252,7 @@ FullEKTField = EKTCiphertext SPI Epoch EKTMsgLength EKTMsgTypeFull
 
 ShortEKTField = EKTMsgTypeShort
 
-ExtensionData = 1\*1024BYTE
+ExtensionData = 1*1024BYTE
 ExtensionEKTField = ExtensionData EKTMsgLength EKTMsgTypeExtension
 
 EKTField = FullEKTField / ShortEKTField / ExtensionEKTField
@@ -695,7 +695,7 @@ section.  (The initial cookie exchange and other normal DTLS
 messages are omitted.)  To be clear, EKT can be used with versions
 of DTLS prior to 1.3.  The only difference is that in a pre-1.3 TLS
 stacks will not have built-in support for generating and processing
-Ack messages.
+ACK messages.
 
 {#dtls-srtp-flow}
 ~~~
@@ -715,10 +715,10 @@ ClientHello
 
 {... Finished}          -------->
 
-                                                     [Ack]
+                                                     [ACK]
                         <--------                 [EKTKey]
 
-[Ack]                   -------->
+[ACK]                   -------->
 
 |SRTP packets|          <------->           |SRTP packets|
 + <EKT tags>                                  + <EKT tags>
@@ -833,16 +833,17 @@ its ServerHello, then EKTKey messages MUST NOT be sent by the client
 or the server.
 
 When an EKTKey is received and processed successfully, the recipient
-MUST respond with an Ack handshake message as described in Section 7
-of [@I-D.ietf-tls-dtls13].  The EKTKey message and Ack MUST be
-retransmitted following the rules in Section 4.2.4 of [@RFC6347].
+MUST respond with an ACK message as described in Section 7
+of [@I-D.ietf-tls-dtls13].  The EKTKey message and ACK MUST be
+retransmitted following the rules of the negotiated version of DTLS.
   
 EKT MAY be used with versions of DTLS prior to 1.3.  In such cases,
-the Ack message is still used to provide reliability.  Thus, DTLS
+the ACK message is still used to provide reliability.  Thus, DTLS
 implementations supporting EKT with DTLS pre-1.3 will need to have
-explicit affordances for sending the Ack message in response to an
-EKTKey message, and for verifying that an Ack message was received.
-The retransmission rules for both sides are the same as in DTLS 1.3.
+explicit affordances for sending the ACK message in response to an
+EKTKey message, and for verifying that an ACK message was received.
+The retransmission rules for both sides are otherwise defined by the
+negotiated version of DTLS.
 
 If an EKTKey message is received that cannot be processed, then the
 recipient MUST respond with an appropriate DTLS alert.
@@ -859,7 +860,7 @@ Answer messaging.
 
 The DTLS EKTKey message is sent using the retransmissions
 specified in Section 4.2.4.  of DTLS [@!RFC6347].  Retransmission is
-finished with an Ack message or an alert is received.
+finished with an ACK message or an alert is received.
 
 
 # Security Considerations {#sec}
@@ -1010,7 +1011,7 @@ Security (TLS) Extensions" registry:
 
 ~~~
 Value: [TBD-at-Registration]
-Extension Name: supported\_ekt\_ciphers
+Extension Name: supported_ekt_ciphers
 TLS 1.3: CH, SH
 Recommended: Y
 Reference: RFCAAAA
@@ -1027,7 +1028,7 @@ Parameters" registry:
 
 ~~~
 Value: [TBD-at-Registration]
-Description: ekt\_key
+Description: ekt_key
 DTLS-OK: Y
 Reference: RFCAAAA
 Comment: 
