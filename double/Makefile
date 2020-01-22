@@ -35,3 +35,20 @@ $(DRAFT).diff.html: $(DRAFT)-$(VERSION).txt $(DRAFT)-old.txt
 rfc8723.diff.html: rfc8723.txt rfc8723-old.txt 
 	htmlwdiff   rfc8723-old.txt   rfc8723.txt >   rfc8723.diff.html
 
+
+diag.svg: diag.asc Makefile 
+	~/.cargo/bin/svgbob < diag.asc |\
+		sed -e 's/<rect.*\/>//g' |\
+		sed -e 's/width="576"/width="576" version="1.1" baseProfile="tiny"/g' |\
+		sed -e 's/<svg /<\!DOCTYPE svg PUBLIC "-\/\/W3C\/\/DTD SVG 1.1 Tiny\/\/EN" "http:\/\/www.w3.org\/Graphics\/SVG\/1.1\/DTD\/svg11-tiny.dtd"\> <svg /g' |\
+		tr -d '\n' |\
+		sed -e 's/<line/<line stroke="black" stroke-width="2" /g' |\
+		sed -e 's/<defs>.*<\/defs>//g' |\
+		sed -e 's/<style.*<\/style>//g' |\
+		xmllint --format - |\
+		sed -e 's/version="1.0"/version="1.0" encoding="UTF-8"/g' |\
+		sed -e 's/class="bob" //g' |\
+		sed -e 's/marker-end="[a-zA-Z()#]*"//g' |\
+		sed -e 's/arial/mono/g' |\
+		cat > diag.svg
+
