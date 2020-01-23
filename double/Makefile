@@ -49,6 +49,6 @@ diag.svg: diag.asc Makefile
 		sed -e 's/version="1.0"/version="1.0" encoding="UTF-8"/g' |\
 		sed -e 's/class="bob" //g' |\
 		sed -e 's/marker-end="[a-zA-Z()#]*"//g' |\
-		sed -e 's/arial/mono/g' |\
+		sed -e 's/arial/monospace/g' |\
 		cat > diag.svg
 
