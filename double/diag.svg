@@ -1,22 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" font-family="monospace" font-size="14" height="480" width="576" viewBox="0 0 576.0 480.0" version="1.1" baseProfile="tiny">
+<svg xmlns="http://www.w3.org/2000/svg" font-family="monospace" font-size="14" height="480" width="576" viewBox="0 0 576.0 480.0" version="1.2" baseProfile="tiny">
+  <defs/>
+  <title id="title">Diagram showing layout of packet with parts that are
+  endcrypted and authenticted with each part of key. </title>
+  <desc id="desc"><![CDATA[
+     0                   1                   2                   3
+     0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |V=2|P|X|  CC   |M|     PT      |       sequence number         |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                           timestamp                           |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |           synchronization source (SSRC) identifier            |
+    +=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+
+    |            contributing source (CSRC) identifiers             |
+    | ....                                                          |
+    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+    |                    RTP extension (OPTIONAL) ...               |
++>+>+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+O I |                          payload ...                          |
+O I |                               +-------------------------------+
+O I |                               | RTP padding   | RTP pad count |
+O +>+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+O | |                    E2E authentication tag                     |
+O | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+O | |                            OHB ...                            |
++>| +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| | |                    HBH authentication tag                     |
+| | +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+| |
+| +- E2E Encrypted Portion
+|
++--- HBH Encrypted Portion
+
+
+ 0                   1                   2                   3
+ 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+<+
+|V=2|P|X|  CC   |M|     PT      |       sequence number         | I O
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ I O
+|                           timestamp                           | I O
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ I O
+|           synchronization source (SSRC) identifier            | I O
++=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+=+ I O
+|            contributing source (CSRC) identifiers             | I O
+|                               ....                            | I O
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O
+|                    RTP extension (OPTIONAL) ...               | | O
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O
+|                           payload ...                         | I O
+|                               +-------------------------------+ I O
+|                               | RTP padding   | RTP pad count | I O
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+<+ O
+|                    E2E authentication tag                     | | O
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | O
+|                            OHB ...                            | | O
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ |<+
+|                    HBH authentication tag                     | | |
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+ | |
+                                                                  | |
+                                     E2E Authenticated Portion ---+ |
+                                                                    |
+                                     HBH Authenticated Portion -----+
+
+]]></desc>
   <g>
     <line stroke="black" stroke-width="2" x1="4" x2="4" y1="216" y2="224"/>
-    <line stroke="black" stroke-width="2"  x1="4" x2="12" y1="216" y2="216"/>
+    <line stroke="black" stroke-width="2" x1="4" x2="12" y1="216" y2="216"/>
   </g>
   <g>
     <line stroke="black" stroke-width="2" x1="4" x2="4" y1="344" y2="336"/>
     <line stroke="black" stroke-width="2" x1="4" x2="4" y1="344" y2="440"/>
-    <line stroke="black" stroke-width="2"  x1="4" x2="12" y1="344" y2="344"/>
+    <line stroke="black" stroke-width="2" x1="4" x2="12" y1="344" y2="344"/>
     <line stroke="black" stroke-width="2" x1="4" x2="32" y1="440" y2="440"/>
   </g>
   <g>
     <line stroke="black" stroke-width="2" x1="20" x2="16" y1="216" y2="216"/>
-    <line stroke="black" stroke-width="2"  x1="20" x2="28" y1="216" y2="216"/>
+    <line stroke="black" stroke-width="2" x1="20" x2="28" y1="216" y2="216"/>
   </g>
   <g>
     <line stroke="black" stroke-width="2" x1="20" x2="20" y1="280" y2="408"/>
-    <line stroke="black" stroke-width="2"  x1="20" x2="28" y1="280" y2="280"/>
+    <line stroke="black" stroke-width="2" x1="20" x2="28" y1="280" y2="280"/>
     <line stroke="black" stroke-width="2" x1="20" x2="32" y1="408" y2="408"/>
   </g>
   <g>
@@ -688,26 +752,26 @@
   <g>
     <line stroke="black" stroke-width="2" x1="536" x2="564" y1="408" y2="408"/>
     <line stroke="black" stroke-width="2" x1="564" x2="564" y1="280" y2="408"/>
-    <line stroke="black" stroke-width="2"  x1="564" x2="572" y1="280" y2="280"/>
+    <line stroke="black" stroke-width="2" x1="564" x2="572" y1="280" y2="280"/>
   </g>
   <g>
     <line stroke="black" stroke-width="2" x1="536" x2="572" y1="440" y2="440"/>
     <line stroke="black" stroke-width="2" x1="572" x2="572" y1="344" y2="440"/>
   </g>
   <g>
-    <line stroke="black" stroke-width="2"  x1="564" x2="556" y1="40" y2="40"/>
+    <line stroke="black" stroke-width="2" x1="564" x2="556" y1="40" y2="40"/>
     <line stroke="black" stroke-width="2" x1="564" x2="572" y1="40" y2="40"/>
     <line stroke="black" stroke-width="2" x1="572" x2="572" y1="40" y2="48"/>
   </g>
   <g>
-    <line stroke="black" stroke-width="2"  x1="564" x2="556" y1="184" y2="184"/>
+    <line stroke="black" stroke-width="2" x1="564" x2="556" y1="184" y2="184"/>
     <line stroke="black" stroke-width="2" x1="564" x2="564" y1="184" y2="216"/>
-    <line stroke="black" stroke-width="2"  x1="564" x2="556" y1="216" y2="216"/>
-    <line stroke="black" stroke-width="2"  x1="564" x2="572" y1="184" y2="184"/>
-    <line stroke="black" stroke-width="2"  x1="564" x2="572" y1="216" y2="216"/>
+    <line stroke="black" stroke-width="2" x1="564" x2="556" y1="216" y2="216"/>
+    <line stroke="black" stroke-width="2" x1="564" x2="572" y1="184" y2="184"/>
+    <line stroke="black" stroke-width="2" x1="564" x2="572" y1="216" y2="216"/>
   </g>
   <g>
-    <line stroke="black" stroke-width="2"  x1="564" x2="556" y1="280" y2="280"/>
+    <line stroke="black" stroke-width="2" x1="564" x2="556" y1="280" y2="280"/>
   </g>
   <g>
     <line stroke="black" stroke-width="2" x1="572" x2="572" y1="344" y2="336"/>
