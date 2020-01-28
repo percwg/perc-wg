@@ -36,11 +36,13 @@ rfc8723.diff.html: rfc8723.txt rfc8723-old.txt
 	htmlwdiff   rfc8723-old.txt   rfc8723.txt >   rfc8723.diff.html
 
 
+# This line break svgcheck if you add it
+# <svg xmlns="http://www.w3.org/2000/svg" font-family="monospace" font-size="14" height="480" width="576" version="1.1" baseProfile="tiny">
+
 diag.svg: diag.asc Makefile 
 	~/.cargo/bin/svgbob < diag.asc |\
 		sed -e 's/<rect.*\/>//g' |\
-		sed -e 's/width="576"/width="576" version="1.1" baseProfile="tiny"/g' |\
-		sed -e 's/<svg /<\!DOCTYPE svg PUBLIC "-\/\/W3C\/\/DTD SVG 1.1 Tiny\/\/EN" "http:\/\/www.w3.org\/Graphics\/SVG\/1.1\/DTD\/svg11-tiny.dtd"\> <svg /g' |\
+		sed -e 's/width="576"/width="576" viewBox="0 0 576.0 480.0" version="1.1" baseProfile="tiny"/g' |\
 		tr -d '\n' |\
 		sed -e 's/<line/<line stroke="black" stroke-width="2" /g' |\
 		sed -e 's/<defs>.*<\/defs>//g' |\
@@ -48,7 +50,8 @@ diag.svg: diag.asc Makefile
 		xmllint --format - |\
 		sed -e 's/version="1.0"/version="1.0" encoding="UTF-8"/g' |\
 		sed -e 's/class="bob" //g' |\
-		sed -e 's/marker-end="[a-zA-Z()#]*"//g' |\
+		sed -e 's/marker-end="[a-zA-Z()#_]*"//g' |\
 		sed -e 's/arial/monospace/g' |\
 		cat > diag.svg
+	svgcheck  diag.svg
 
