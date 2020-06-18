@@ -11,7 +11,7 @@
     Title = "Encrypted Key Transport for DTLS and Secure RTP"
     abbrev = "EKT SRTP"
     category = "std"
-    docName = "draft-ietf-perc-srtp-ekt-diet-11"
+    docName = "draft-ietf-perc-srtp-ekt-diet-12"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
