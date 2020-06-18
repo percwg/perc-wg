@@ -202,10 +202,10 @@ FullEKTField and ShortEKTField.
 :                        EKT Ciphertext                         :
 :                                                               :
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|   Security Parameter Index    | Length                        |
+|   Security Parameter Index    |             Epoch             |
 +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-|0 0 0 0 0 0 1 0|
-+-+-+-+-+-+-+-+-+
+|            Length             |0 0 0 0 0 0 1 0|
++-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 ~~~
 Figure: FullEKTField format
 
