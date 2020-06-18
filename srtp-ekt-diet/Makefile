@@ -7,7 +7,7 @@ kramdown-rfc2629 ?= kramdown-rfc2629
 mmark ?= mmark
 
 DRAFT = draft-ietf-perc-srtp-ekt-diet
-VERSION = 11
+VERSION = 12
 
 .PHONY: all clean diff
 .PRECIOUS: %.xml
