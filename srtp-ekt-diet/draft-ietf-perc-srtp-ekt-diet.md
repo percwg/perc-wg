@@ -369,7 +369,7 @@ of all SRTP packets. The decision on which to send when is specified
 in (#timing).
 
 
-### Outbound Processing {#outbound}
+### Outbound Processing
 
 See (#timing) which describes when to send an SRTP packet with a
 FullEKTField. If a FullEKTField is not being sent, then a
@@ -593,7 +593,8 @@ EKTCipher. The cipher MUST provide integrity protection.
 
 If a source has its EKTKey changed by the key management, it MUST also
 change its SRTP master key, which will cause it to send out a new
-FullEKTField and eventually begin encrypting with it, as defined in (#outbound).
+FullEKTField and eventually begin encrypting with it, as defined in
+(#outbound-processing).
 This ensures that if key management thought the EKTKey
 needs changing (due to a participant leaving or joining) and
 communicated that to a source, the source will also change its SRTP
