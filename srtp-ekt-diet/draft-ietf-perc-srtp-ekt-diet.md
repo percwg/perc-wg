@@ -11,7 +11,7 @@
     Title = "Encrypted Key Transport for DTLS and Secure RTP"
     abbrev = "EKT SRTP"
     category = "std"
-    docName = "draft-ietf-perc-srtp-ekt-diet-12"
+    docName = "draft-ietf-perc-srtp-ekt-diet-13"
     ipr= "trust200902"
     area = "Internet"
     keyword = ["PERC", "SRTP", "RTP", "conferencing", "encryption"]
@@ -112,7 +112,7 @@ EKT extends DTLS and SRTP to enable a common key encryption key
 endpoint can securely send its SRTP master key and current SRTP
 rollover counter to the other participants in the session. This data
 furnishes the information needed by the receiver to instantiate an
-SRTP/SRTCP receiver context.
+SRTP receiver context.
 
 EKT can be used in conferences where the central media distributor or
 conference bridge cannot decrypt the media, such as the type defined
@@ -190,8 +190,8 @@ for SRTCP compound packets with RTP translators and mixers.
 ## EKTField Formats {#EKT}
 
 The EKTField uses the format defined in (#tag-format-base) for the
-FullEKTField and ShortEKTField.
-
+FullEKTField and ShortEKTField.  The EKTField appended to an SRTP
+packet can be referred to as an "EKT tag".
 
 {#tag-format-base}
 ~~~
@@ -220,7 +220,7 @@ Figure: FullEKTField format
 Figure: ShortEKTField format
 
 The following shows the syntax of the EKTField expressed in ABNF
-[@!RFC5234].  The EKTField is added to the end of an SRTP or SRTCP
+[@!RFC5234].  The EKTField is added to the end of an SRTP
 packet. The EKTPlaintext is the concatenation of SRTPMasterKeyLength,
 SRTPMasterKey, SSRC, and ROC in that order. The EKTCiphertext is
 computed by encrypting the EKTPlaintext using the EKTKey. Future
@@ -233,18 +233,19 @@ BYTE = %x00-FF
 
 EKTMsgTypeFull = %x02
 EKTMsgTypeShort = %x00
-EKTMsgTypeExtension = %x03-FF
+EKTMsgTypeExtension = %x03-FF ; Message type %x01 is reserved, due to
+                              ; usage by legacy implementations.
 
 EKTMsgLength = 2BYTE;
 
 SRTPMasterKeyLength = BYTE
-SRTPMasterKey = 1*256BYTE
+SRTPMasterKey = 1*242BYTE
 SSRC = 4BYTE; SSRC from RTP
 ROC = 4BYTE ; ROC from SRTP FOR THE GIVEN SSRC
 
 EKTPlaintext = SRTPMasterKeyLength SRTPMasterKey SSRC ROC
 
-EKTCiphertext = 1*256BYTE ; EKTEncrypt(EKTKey, EKTPlaintext)
+EKTCiphertext = 1*251BYTE ; EKTEncrypt(EKTKey, EKTPlaintext)
 Epoch = 2BYTE
 SPI = 2BYTE
 
@@ -284,8 +285,8 @@ EKT tag MUST be the same as the one in the header of the SRTP packet
 to which the tag is appended.
 
 Rollover Counter (ROC): On the sender side, this is set to the
-current value of the SRTP rollover counter in the SRTP/SRTCP context
-associated with the SSRC in the SRTP or SRTCP packet. The length of
+current value of the SRTP rollover counter in the SRTP context
+associated with the SSRC in the SRTP packet. The length of
 this field is 32 bits.
 
 Security Parameter Index (SPI): This field indicates the appropriate
@@ -348,17 +349,17 @@ protocol, e.g., the DTLS-SRTP extension defined in
 
 ## Packet Processing and State Machine {#pkt_proc}
 
-At any given time, each SRTP/SRTCP source has associated with it a
+At any given time, each SRTP source has associated with it a
 single EKT parameter set. This parameter set is used to process all
 outbound packets, and is called the outbound parameter set for that
 SSRC. There may be other EKT parameter sets that are used by other
-SRTP/SRTCP sources in the same session, including other SRTP/SRTCP
+SRTP sources in the same session, including other SRTP
 sources on the same endpoint (e.g., one endpoint with voice and video
 might have two EKT parameter sets, or there might be multiple video
 sources on an endpoint each with their own EKT parameter set).  All of
 the received EKT parameter sets SHOULD be stored by all of the
 participants in an SRTP session, for use in processing inbound SRTP
-and SRTCP traffic.  If a participant deletes an EKT parameter set
+traffic.  If a participant deletes an EKT parameter set
 (e.g., because of space limitations, then it will be unable to
 process Full EKT Tags containing updated media keys, and thus unable
 to receive media from a particpant that has changed its media key.
@@ -368,7 +369,7 @@ of all SRTP packets. The decision on which to send when is specified
 in (#timing).
 
 
-### Outbound Processing
+### Outbound Processing {#outbound}
 
 See (#timing) which describes when to send an SRTP packet with a
 FullEKTField. If a FullEKTField is not being sent, then a
@@ -376,9 +377,7 @@ ShortEKTField is sent so the receiver can correctly determine how to
 process the packet.
 
 When an SRTP packet is sent with a FullEKTField, the EKTField for that
-packet is created as follows, or uses an equivalent set of steps. The
-creation of the EKTField MUST precede the normal SRTP packet
-processing.
+packet is created as follows, or uses an equivalent set of steps.
 
 1. The Security Parameter Index (SPI) field is set to the value of the
    Security Parameter Index that is associated with the outbound
@@ -422,12 +421,12 @@ When receiving a packet on a RTP stream, the following steps are
 applied for each SRTP received packet.
 
 1. The final byte is checked to determine which EKT format is in
-   use. When an SRTP or SRTCP packet contains a ShortEKTField, the
-   ShortEKTField is removed from the packet then normal SRTP or SRTCP
+   use. When an SRTP packet contains a ShortEKTField, the
+   ShortEKTField is removed from the packet then normal SRTP
    processing occurs. If the packet contains a FullEKTField, then
    processing continues as described below. The reason for using the
    last byte of the packet to indicate the type is that the length of
-   the SRTP or SRTCP part is not known until the decryption has
+   the SRTP part is not known until the decryption has
    occurred. At this point in the processing, there is no easy way to
    know where the EKTField would start. However, the whole UDP packet
    has been received, so instead of the starting at the front of the
@@ -454,9 +453,10 @@ applied for each SRTP received packet.
    longer than needed by SRTP, then it is truncated by taking the
    first N bytes from the srtp\_master\_salt field.
 
-5. If the SSRC in the EKTPlaintext does not match the SSRC of the SRTP
-   packet received, then all the information from this EKTPlaintext MUST be
-   discarded and the following steps in this list are skipped.
+5. If the SSRC in the EKTPlaintext does not match the SSRC of the SRTP packet
+   received, then this FullEKTField MUST be discarded and the following steps in
+   this list skipped.  After stripping the FullEKTField, the remainder of
+   the SRTP packet MAY be processed as normal.
 
 6. The SRTP Master Key, ROC, and SRTP Master Salt from the previous
    steps are saved in a map indexed by the SSRC found in the
@@ -479,7 +479,7 @@ applied for each SRTP received packet.
      master key.
    
 7. At this point, EKT processing has successfully completed, and the
-   normal SRTP or SRTCP processing takes place.
+   normal SRTP processing takes place.
 
 The value of the EKTCiphertext field is identical in successive
 packets protected by the same EKT parameter set and the same SRTP
@@ -593,7 +593,8 @@ EKTCipher. The cipher MUST provide integrity protection.
 
 If a source has its EKTKey changed by the key management, it MUST also
 change its SRTP master key, which will cause it to send out a new
-FullEKTField. This ensures that if key management thought the EKTKey
+FullEKTField and eventually begin encrypting with it, as defined in (#outbound).
+This ensures that if key management thought the EKTKey
 needs changing (due to a participant leaving or joining) and
 communicated that to a source, the source will also change its SRTP
 master key, so that traffic can be decrypted only by those who know
@@ -623,8 +624,8 @@ New sender:
 : A new sender SHOULD send a packet containing the
 FullEKTField as soon as possible, always before or coincident with
 sending its initial SRTP packet.  To accommodate packet loss, it is
-RECOMMENDED that three consecutive packets contain the FullEKTField
-be transmitted.  If the sender does not send a FullEKTField in its
+RECOMMENDED that the FullEKTField be transmitted in three consecutive packets.
+If the sender does not send a FullEKTField in its
 initial packets and receivers have not otherwise been provisioned
 with a decryption key, then decryption will fail and SRTP packets
 will be dropped until the receiver receives a FullEKTField from the
@@ -649,13 +650,18 @@ RECOMMENDED frequency is the same as the rate of intra coded video
 frames. If only sending audio, the RECOMMENDED frequency is every
 100ms.
 
+In general, sending EKT tags less frequently will consume less bandwidth, but
+increase the time it takes for a join or rekey to take effect.  Applications
+should schedule the sending of EKT tags in a way that makes sense for their
+bandwidth and latency requirements.
+
 
 # Use of EKT with DTLS-SRTP {#dtls-srtp-kt}
 
 This document defines an extension to DTLS-SRTP called SRTP EKTKey
 Transport which enables secure transport of EKT keying material from
 the DTLS-SRTP peer in the server role to the client. This allows
-those peers to process EKT keying material in SRTP (or SRTCP) and
+those peers to process EKT keying material in SRTP and
 retrieve the embedded SRTP keying material.  This combination of
 protocols is valuable because it combines the advantages of DTLS,
 which has strong authentication of the endpoint and flexibility,
