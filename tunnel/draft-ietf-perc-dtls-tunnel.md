@@ -17,9 +17,9 @@
     keyword = ["PERC", "SRTP", "RTP", "DTLS", "DTLS-SRTP", "DTLS tunnel", "conferencing", "security"]
 
     [seriesInfo]
-    status = "standard"
+    status = "informational"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-dtls-tunnel-06"
+    value = "draft-ietf-perc-dtls-tunnel-07"
     stream = "IETF"
 
     [pi]
@@ -78,6 +78,10 @@
     #   04 - Expiration refresh
     #   05 - Expiration refresh
     #   06 - Expiration refresh
+    #   07 - Several changes:
+    #          - Updated references
+    #          - Change status to informational
+    #          - Align terminology with newer UKS draft
     #
 
 %%%
@@ -96,8 +100,8 @@ and authentication is inaccessible to the media distributor.
 
 # Introduction
 
-An objective of Privacy-Enhanced RTP Conferencing (PERC) is to ensure
-that endpoints in a multimedia conference have access to the
+An objective of Privacy-Enhanced RTP Conferencing (PERC) [@!RFC8871] is to
+ensure that endpoints in a multimedia conference have access to the
 end-to-end (E2E) and hop-by-hop (HBH) keying material used to encrypt
 and authenticate Real-time Transport Protocol (RTP) [@!RFC3550]
 packets, while the Media Distributor has access only to the hop-by-hop
@@ -272,13 +276,14 @@ distributor acting as the server.  The endpoint does not need to be
 aware of the fact that DTLS messages it transmits toward the media
 distributor are being tunneled to the key distributor.
 
-The endpoint **MUST** include the `sdp_tls_id` DTLS extension
-[@!I-D.thomson-mmusic-sdp-uks] in the `ClientHello` message when
-establishing a DTLS association.  Likewise, the `tls-id` SDP [@RFC4566]
-attribute **MUST** be included in SDP sent by the endpoint in both the
-offer and answer [@!RFC3264] messages as per [@!I-D.ietf-mmusic-dtls-sdp].
+The endpoint **MUST** include a unique identifier in the `tls-id`
+SDP [@RFC4566] attribute sent by the endpoint in both offer and answer
+[@!RFC3264] messages as per [@!I-D.ietf-mmusic-dtls-sdp]. Further, the
+endpoint **MUST** include this same unique identifier in the
+`external_session_id` DTLS extension [@!I-D.ietf-mmusic-sdp-uks] in the
+`ClientHello` message when establishing a DTLS association.
 
-When receiving a `tls_id` value from the key distributor, the
+When receiving a `external_session_id` value from the key distributor, the
 client **MUST** check to ensure that value matches the `tls-id` value
 received in SDP.  If the values do not match, the endpoint **MUST**
 consider any received keying material to be invalid and terminate the
@@ -373,24 +378,24 @@ key distributor identifies each distinct endpoint-originated DTLS
 association by the association identifier.
 
 When processing an incoming endpoint association, the key distributor
-**MUST** extract the `tls_id` value transmitted in the `ClientHello`
-message and match that against `tls-id` value the endpoint transmitted
-via SDP.  If the values in SDP and the `ClientHello` do not match, the
-DTLS association **MUST** be rejected.
+**MUST** extract the `external_session_id` value transmitted in the
+`ClientHello` message and match that against `tls-id` value the endpoint
+transmitted via SDP.  If the values in SDP and the `ClientHello` do not match,
+the DTLS association **MUST** be rejected.
 
 The process through which the `tls-id` in SDP is conveyed to
 the key distributor is outside the scope of this document.
 
 The key distributor **MUST** correlate the certificate fingerprint and
-`tls_id` received from endpoint's `ClientHello` message with the
+`external_session_id` received from endpoint's `ClientHello` message with the
 corresponding values received from the SDP transmitted by the endpoint.
 It is through this correlation that the key distributor can be sure to
 deliver the correct conference key to the endpoint.
 
 When sending the `ServerHello` message, the key distributor **MUST**
-insert its own `tls_id` value in the `sdp_tls_id` extension.  This value
-**MUST** also be conveyed back to the client via SDP as a `tls-id`
-attribute.
+insert its own unique identifier in the `external_session_id` extension.
+This value **MUST** also be conveyed back to the client via SDP as a
+`tls-id` attribute.
 
 The key distributor **MUST** encapsulate any DTLS message it sends to
 an endpoint inside a `TunneledDtls` message (see
@@ -420,8 +425,9 @@ identifier in the `MediaKeys` message as is used in the `TunneledDtls`
 messages for the given endpoint.
 
 The key distributor uses the certificate fingerprint of the endpoint
-along with the `tls_id` value received in the `sdp_tls_id` extension
-to determine which conference a given DTLS association is associated.
+along with the unique identifier received in the `external_session_id`
+extension to determine which conference a given DTLS association is
+associated.
 
 The key distributor **MUST** select a cipher that is supported by both
 the endpoint and the media distributor to ensure proper HBH
@@ -621,12 +627,7 @@ specified in [@!RFC5246].  This section provides an example of what
 the bits on the wire would look like for the `SupportedProfiles`
 message that advertises support for both
 DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM and
-DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM [@I-D.ietf-perc-double].
-
-RFC Editor Note: Please replace the values 0009 and 000A in the
-following two examples with whatever code points IANA assigned for
-DOUBLE_AEAD_AES_128_GCM_AEAD_AES_128_GCM and
-DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM.
+DOUBLE_AEAD_AES_256_GCM_AEAD_AES_256_GCM [@RFC8723].
 
 {align="left"}
 ```
