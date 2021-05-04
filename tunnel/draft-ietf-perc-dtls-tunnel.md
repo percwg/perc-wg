@@ -19,7 +19,7 @@
     [seriesInfo]
     status = "informational"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-dtls-tunnel-07"
+    value = "draft-ietf-perc-dtls-tunnel-08"
     stream = "IETF"
 
     [pi]
@@ -82,6 +82,7 @@
     #          - Updated references
     #          - Change status to informational
     #          - Align terminology with newer UKS draft
+    #   08 - Addressed WGLC review comments
     #
 
 %%%
@@ -104,8 +105,8 @@ An objective of Privacy-Enhanced RTP Conferencing (PERC) [@!RFC8871] is to
 ensure that endpoints in a multimedia conference have access to the
 end-to-end (E2E) and hop-by-hop (HBH) keying material used to encrypt
 and authenticate Real-time Transport Protocol (RTP) [@!RFC3550]
-packets, while the Media Distributor has access only to the hop-by-hop
-(HBH) keying material for encryption and authentication.
+packets, while the Media Distributor has access only to the HBH
+keying material for encryption and authentication.
 
 This specification defines a tunneling protocol that enables the media
 distributor to tunnel DTLS [@!RFC6347] messages between an endpoint
@@ -149,11 +150,10 @@ the HBH keying material to the media distributor.
 # Conventions Used In This Document
 
 The key words "**MUST**", "**MUST NOT**", "**REQUIRED**", "**SHALL**",
-"**SHALL NOT**", "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**",
+"**SHALL NOT**", "**SHOULD**", "**SHOULD NOT**", "**RECOMMENDED**", "**NOT RECOMMENDED**",
 "**MAY**", and "**OPTIONAL**" in this document are to be interpreted
-as described in [@!RFC2119] when they appear in ALL CAPS.  These words
-may also appear in this document in lower case as plain English words,
-absent their normative meanings.
+as described in BCP 14 [@!RFC2119] [@!RFC8174] when, and only when, they appear in all capitals,
+as shown here.
 
 # Tunneling Concept
 
@@ -240,12 +240,12 @@ SRTP protection profiles supported by the media distributor will be
 sent in a `SupportedProfiles` message when the TLS tunnel is initially
 established.  The key distributor will use that information to select
 a common profile supported by both the endpoint and the media
-distributor to ensure that hop-by-hop operations can be successfully
+distributor to ensure that HBH operations can be successfully
 performed.
 
 As DTLS messages are received from the endpoint by the media
 distributor, they are forwarded to the key distributor encapsulated
-inside abbrev `TunneledDtls` message.  Likewise, as `TunneledDtls`
+inside a `TunneledDtls` message.  Likewise, as `TunneledDtls`
 messages are received by the media distributor from the key
 distributor, the encapsulated DTLS packet is forwarded to the
 endpoint.
@@ -253,7 +253,7 @@ endpoint.
 The key distributor will provide the SRTP [@!RFC3711] keying material
 to the media distributor for HBH operations via the `MediaKeys`
 message.  The media distributor will extract this keying material from
-the `MediaKeys` message when received and use it for hop-by-hop
+the `MediaKeys` message when received and use it for HBH
 encryption and authentication.
 
 # Tunneling Procedures
@@ -277,10 +277,10 @@ aware of the fact that DTLS messages it transmits toward the media
 distributor are being tunneled to the key distributor.
 
 The endpoint **MUST** include a unique identifier in the `tls-id`
-SDP [@RFC4566] attribute sent by the endpoint in both offer and answer
-[@!RFC3264] messages as per [@!I-D.ietf-mmusic-dtls-sdp]. Further, the
+SDP [!@RFC4566] attribute sent by the endpoint in both offer and answer
+[@!RFC3264] messages as per [@!RFC8842]. Further, the
 endpoint **MUST** include this same unique identifier in the
-`external_session_id` DTLS extension [@!I-D.ietf-mmusic-sdp-uks] in the
+`external_session_id` extension [@!RFC8844] in the
 `ClientHello` message when establishing a DTLS association.
 
 When receiving a `external_session_id` value from the key distributor, the
@@ -331,7 +331,8 @@ messages forwarded to the key distributor.  The key distributor will
 subsequently include this identifier in all messages it sends so that
 the media distributor can map messages received via a tunnel and
 forward those messages to the correct endpoint.  The association
-identifier **MUST** be randomly assigned UUID [@!RFC4122] value.
+identifier **MUST** be randomly assigned UUID value as described
+Section 4.4 of [@!RFC4122].
 
 When a DTLS message is received by the media distributor from an
 endpoint, it forwards the UDP payload portion of that message to the
@@ -386,10 +387,10 @@ the DTLS association **MUST** be rejected.
 The process through which the `tls-id` in SDP is conveyed to
 the key distributor is outside the scope of this document.
 
-The key distributor **MUST** correlate the certificate fingerprint and
+The key distributor **MUST** match the certificate fingerprint and
 `external_session_id` received from endpoint's `ClientHello` message with the
-corresponding values received from the SDP transmitted by the endpoint.
-It is through this correlation that the key distributor can be sure to
+values received from the SDP transmitted by the endpoint.
+It is through this process that the key distributor can be sure to
 deliver the correct conference key to the endpoint.
 
 When sending the `ServerHello` message, the key distributor **MUST**
@@ -526,8 +527,8 @@ The `SupportedProfiles` message is defined as:
 uint8 SRTPProtectionProfile[2]; /* from RFC5764 */
 
 struct {
-  uint8 version;
-  SRTPProtectionProfile protection_profiles<0..2^16-1>;
+    uint8 version;
+    SRTPProtectionProfile protection_profiles<0..2^16-1>;
 } SupportedProfiles;
 ```
 
@@ -574,7 +575,8 @@ The fields are described as follows:
 * protection_profiles: The value of the two-octet SRTP protection
   profile value as per [@!RFC5764] used for this DTLS association.
 
-* mki: Master key identifier [@!RFC3711].
+* mki: Master key identifier [@!RFC3711].  A zero-length field indicates that
+  no MKI value is present.
 
 * client_write_SRTP_master_key: The value of the SRTP master key used
   by the client (endpoint).
@@ -669,6 +671,9 @@ The value 0x00 and all values in the range 0x06 to 0xFF are reserved.
 
 The name for this registry is "Datagram Transport Layer Security
 (DTLS) Tunnel Protocol Data Types for Privacy Enhanced Conferencing".
+
+The procedures for updating this table are those defined as "IETF Review"
+in section 4.8 if [!@RFC8126].
 
 # Security Considerations
 
