@@ -22,13 +22,13 @@ clean:
 	-rm -f $(DRAFT)-$(VERSION).{txt,html,xml,pdf} $(DRAFT).diff.html
 
 %.txt: %.xml
-	$(xml2rfc) $< -o $@ --text
+	$(xml2rfc) --v3 $< -o $@ --text
 
 %.html: %.xml
-	$(xml2rfc) $< -o $@ --html
+	$(xml2rfc) --v3 $< -o $@ --html
 
 $(DRAFT)-$(VERSION).xml: $(DRAFT).md
-	mmark -2 $^ > $@
+	mmark $^ > $@
 
 $(DRAFT).diff.html: $(DRAFT)-$(VERSION).txt $(DRAFT)-old.txt
 	htmlwdiff   $(DRAFT)-old.txt   $(DRAFT)-$(VERSION).txt >   $(DRAFT).diff.html
