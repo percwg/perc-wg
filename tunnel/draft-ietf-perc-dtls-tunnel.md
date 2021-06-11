@@ -473,7 +473,7 @@ section 4.  As in [@!RFC5246], all values are stored in network byte
 04 is equivalent to the decimal value 16909060.
 
 This protocol defines several different messages, each of which
-contains the the following information:
+contains the following information:
 
 * Message type identifier
 * Message body length
@@ -619,9 +619,9 @@ The fields are described as follows:
 * `dtls_message`: the content of the DTLS message received by the
   endpoint or to be sent to the endpoint.
 
-## EndpointDisconect Message
+## EndpointDisconnect Message
 
-The `EndpointDisconect` message is defined as:
+The `EndpointDisconnect` message is defined as:
 
 {align="left"}
 ```
@@ -689,7 +689,7 @@ The name for this registry is "Datagram Transport Layer Security
 
 # Security Considerations
 
-Since the procedures in this document rely on TLS [@!RFC5246] for transport
+Since the procedures in this document relies on TLS [@!RFC5246] for transport
 security, the security considerations for TLS should be reviewed when
 implementing the protocol defined in this document.
 
