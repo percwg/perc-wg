@@ -703,7 +703,7 @@ cryptographic transforms for both E2E and HBH encryption and authentication of
 media between an endpoint and a Key Distributor via a Media Distributor.
 Additionally, the procedures result in delivering HBH information to the
 intermediary Media Distributor.  The Key Distributor and endpoint are the only
-two entities with access to both the E2E and HBH keys, while the the Media
+two entities with access to both the E2E and HBH keys, while the Media
 Distributor has access to only HBH information.  Section 8.2 of [@!RFC8871]
 enumerates various attacks against which one must guard when implementing a
 Media Distributor and are important to note.
