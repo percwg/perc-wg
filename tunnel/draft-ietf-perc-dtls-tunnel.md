@@ -19,7 +19,7 @@
     [seriesInfo]
     status = "informational"
     name = "Internet-Draft"
-    value = "draft-ietf-perc-dtls-tunnel-11"
+    value = "draft-ietf-perc-dtls-tunnel-12"
     stream = "IETF"
 
     [pi]
@@ -86,6 +86,7 @@
     #   09 - Addressed IETF LC review comments
     #   10 - Addressed IESG review comments
     #   11 - Addressed additional IESG review comments
+    #   12 - Addressed additional IESG review comments
     #
 
 %%%
@@ -394,7 +395,7 @@ the DTLS association **MUST** be rejected.
 The process through which the `tls-id` in SDP is conveyed to
 the Key Distributor is outside the scope of this document.
 
-The Key Distributor **MUST** match the certificate fingerprint and
+The Key Distributor **MUST** match the fingerprint of the certificate and
 `external_session_id` [@!RFC8844] received from endpoint via DTLS with the
 expected fingerprint [@!RFC8122] and `tls-id` [@!RFC8842] values received via
 SDP.  It is through this process that the Key Distributor can be sure to
